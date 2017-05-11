@@ -9,7 +9,7 @@ import django.contrib.auth.views
 import views
 import description
 import watershed
-# import stream
+import stream
 import algorithms
 import references
 import links_left
@@ -20,7 +20,7 @@ urlpatterns = [
     #front end urls
     url(r'^$', description.description_page, {'model': 'pisces'}),
     url(r'^watershed$', watershed.watershed_page, {'model': 'pisces'}),
-    # url(r'^stream$', input.stream_page, {'model': 'pisces'}),
+    url(r'^stream$', stream.stream_page, {'model': 'pisces'}),
     url(r'^algorithms$', algorithms.algorithm_page, {'model': 'pisces'}),
     url(r'^references$', references.references_page, {'model': 'pisces'}),
     # url(r'^api$', rest.rest_page, {'model': 'pisces'}),
