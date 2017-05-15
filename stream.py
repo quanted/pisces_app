@@ -8,9 +8,9 @@ from pisces_app import views
 
 
 
-def watershed_page(request, model='pisces', header='none'):
+def stream_page(request, model='pisces', header='none'):
     header = views.header
-    x = render_to_string('pisces_watershed_map.html')
+    x = render_to_string('pisces_stream_map.html')
 
     """ Returns the html of the references page for pisces. """
     html = render_to_string('01epa_drupal_header.html', {})
@@ -18,14 +18,14 @@ def watershed_page(request, model='pisces', header='none'):
     html += render_to_string('03epa_drupal_section_title.html', {})
 
     html += render_to_string('04ubertext_start_index_drupal.html', {
-        'TITLE': header + ' HUC Explorer',
+        'TITLE': header + ' Assemblage Predictor',
         'TEXT_PARAGRAPH': x})
 
     html += render_to_string('04ubertext_end_drupal.html', {})
 
-    html += links_left.ordered_list(model, 'watershedmap')
+    html += links_left.ordered_list(model, 'streammap')
     html += render_to_string('10epa_drupal_footer.html', {})
-
+    # html = x
 
     response = HttpResponse()
     response.write(html)
