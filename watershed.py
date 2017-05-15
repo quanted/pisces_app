@@ -18,7 +18,7 @@ def watershed_page(request, model='pisces', header='none'):
     html += render_to_string('03epa_drupal_section_title.html', {})
 
     html += render_to_string('04ubertext_start_index_drupal.html', {
-        'TITLE': header + ' Watershed Map',
+        'TITLE': header + ' HUC Explorer',
         'TEXT_PARAGRAPH': x})
 
     html += render_to_string('04ubertext_end_drupal.html', {})
