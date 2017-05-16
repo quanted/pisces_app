@@ -6,19 +6,6 @@ import unittest
 
 test = {}
 
-servers = ["https://qedinternal.epa.gov/pisces/","http://127.0.0.1:8000/pisces/"]
-
-pages = ["", "watershed", "stream", "algorithms", "references"]
-
-# api_endpoints = ["https://cyan.epa.gov/cyan/cyano/location/data/28.6138/-81.6227/2017-12-08",
-#                  "https://cyan.epa.gov/cyan/cyano/notifications/2015-05-03T20-16-26-000-0400",
-#                  #if the next png 500s, you can get an updated image from a specific location e.g.,
-#                  #https://cyan.epa.gov/cyan/cyano/location/images/28.6138/-81.6227/
-#                  "https://cyan.epa.gov/cyan/cyano/location/images/envisat.2012094.0403.1551C.L3.EF3.v670.CIcyano2.png",
-#                  "https://cyan.epa.gov/cyan/cyano/location/images/28.6138/-81.6227/"]
-
-#following are lists of url's to be processed with tests below
-check_pages = [s + p for s in servers for p in pages]
 
 def build_table(list1, list2):
     # function builds a two column table containing url's and status codes
@@ -28,13 +15,18 @@ def build_table(list1, list2):
     return report
 
 
-def write_report(test_name, col1, col2, start_time):
+def write_report(check_pages, response):
     try:
-        print(test_name)
-        report = build_table(col1, col2)
+        start_time = datetime.datetime.utcnow()
+        print(str(start_time))
+        report = build_table(check_pages, response)
         headers = ["expected", "actual url or status"]
         output_table = tabulate.tabulate(report, headers, tablefmt='grid')
         print(output_table)
+        n_tests = len(response)
+        n_successes = response.count(200)
+        test_result = str(n_successes) + " of " + str(n_tests) + " pass.\n"
+        print(test_result)
     except:
         print('report error in test')
     finally:
@@ -56,15 +48,12 @@ class TestPiscesPages(unittest.TestCase):
         pass
 
     def test_pisces_200(self):
-        start_time = datetime.datetime.utcnow()
-        test_name = str(start_time) + "\nPage access for pisces pages \n"
+        servers = ["https://qedinternal.epa.gov/pisces/", "http://127.0.0.1:8000/pisces/"]
+        pages = ["", "watershed", "stream", "algorithms", "references"]
+        check_pages = [s + p for s in servers for p in pages]
         response = [requests.get(p).status_code for p in check_pages]
-        n_tests = len(response)
-        response_200s = ([200] * n_tests)
-        n_successes = response.count(200)
-        test_result = str(n_successes) + " of " + str(n_tests) + " pass.\n"
-        test_name = test_name + test_result
-        write_report(test_name, check_pages, response, start_time)
+        response_200s = ([200] * len(response))
+        write_report(check_pages, response)
         self.assertListEqual(response, response_200s)
 
 if __name__ == '__main__':
