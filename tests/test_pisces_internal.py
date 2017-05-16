@@ -3,6 +3,7 @@ import requests
 import tabulate
 import unittest
 
+
 test = {}
 
 servers = ["https://qedinternal.epa.gov/pisces/","http://127.0.0.1:8000/pisces/"]
