@@ -14,11 +14,12 @@ def build_table(list1, list2):
         report[idx] = [list1[idx], list2[idx]]
     return report
 
+def start_report():
+    start_time = datetime.datetime.utcnow()
+    print(str(start_time))
 
 def write_report(check_pages, response):
     try:
-        start_time = datetime.datetime.utcnow()
-        print(str(start_time))
         report = build_table(check_pages, response)
         headers = ["expected", "actual url or status"]
         output_table = tabulate.tabulate(report, headers, tablefmt='grid')
@@ -30,10 +31,13 @@ def write_report(check_pages, response):
     except:
         print('report error in test')
     finally:
-        end_time = datetime.datetime.utcnow()
-        print(str(end_time))
-        print("Time elapsed = " + str((end_time-start_time).seconds) + " seconds")
+        pass
+        #print("Time elapsed = " + str((end_time-start_time).seconds) + " seconds")
     return
+
+def end_report():
+    end_time = datetime.datetime.utcnow()
+    print(str(end_time))
 
 class TestPiscesPages(unittest.TestCase):
     """
@@ -48,6 +52,7 @@ class TestPiscesPages(unittest.TestCase):
         pass
 
     def test_pisces_200(self):
+        start_report()
         servers = ["https://qedinternal.epa.gov/pisces/", "http://127.0.0.1:8000/pisces/"]
         pages = ["", "watershed", "stream", "algorithms", "references"]
         check_pages = [s + p for s in servers for p in pages]
@@ -55,6 +60,7 @@ class TestPiscesPages(unittest.TestCase):
         response_200s = ([200] * len(response))
         write_report(check_pages, response)
         self.assertListEqual(response, response_200s)
+        end_report()
 
 if __name__ == '__main__':
     unittest.main()
