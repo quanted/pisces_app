@@ -10,6 +10,7 @@ import views
 import description
 import watershed
 import stream
+import query
 import algorithms
 import references
 import links_left
@@ -21,6 +22,7 @@ urlpatterns = [
     url(r'^$', description.description_page, {'model': 'pisces'}),
     url(r'^watershed$', watershed.watershed_page, {'model': 'pisces'}),
     url(r'^stream$', stream.stream_page, {'model': 'pisces'}),
+    url(r'^query$', query.query_page, {'model': 'pisces'}),
     url(r'^algorithms$', algorithms.algorithm_page, {'model': 'pisces'}),
     url(r'^references$', references.references_page, {'model': 'pisces'}),
     # url(r'^api$', rest.rest_page, {'model': 'pisces'}),

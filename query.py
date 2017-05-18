@@ -8,9 +8,9 @@ from pisces_app import views
 
 
 
-def stream_page(request, model='pisces', header='none'):
+def query_page(request, model='pisces', header='none'):
     header = views.header
-    x = render_to_string('pisces_stream_map.html')
+    x = render_to_string('pisces_database_query.html')
 
     """ Returns the html of the references page for pisces. """
     html = render_to_string('01epa_drupal_header.html', {})
@@ -18,14 +18,14 @@ def stream_page(request, model='pisces', header='none'):
     html += render_to_string('03epa_drupal_section_title.html', {})
 
     html += render_to_string('04ubertext_start_index_drupal.html', {
-        'TITLE': 'Stream Fish Assemblage Predictor',
+        'TITLE': header + ' Database Query',
         'TEXT_PARAGRAPH': x})
 
     html += render_to_string('04ubertext_end_drupal.html', {})
 
-    html += links_left.ordered_list(model, 'streammap')
+    html += links_left.ordered_list(model, 'query')
     html += render_to_string('10epa_drupal_footer.html', {})
-    # html = x
+
 
     response = HttpResponse()
     response.write(html)

@@ -1,24 +1,43 @@
+import datetime
 import requests
+import tabulate
 import unittest
-import numpy.testing as npt
-import linkcheck_helper
+
 
 test = {}
 
-servers = ["https://qedinternal.epa.gov/pisces/","http://127.0.0.1:8000/pisces/"]
 
-pages = ["", "watershed", "stream", "algorithms", "references"]
+def build_table(list1, list2):
+    # function builds a two column table containing url's and status codes
+    report = [""] * len(list1)
+    for idx, item in enumerate(list1):
+        report[idx] = [list1[idx], list2[idx]]
+    return report
 
-# api_endpoints = ["https://cyan.epa.gov/cyan/cyano/location/data/28.6138/-81.6227/2017-12-08",
-#                  "https://cyan.epa.gov/cyan/cyano/notifications/2015-05-03T20-16-26-000-0400",
-#                  #if the next png 500s, you can get an updated image from a specific location e.g.,
-#                  #https://cyan.epa.gov/cyan/cyano/location/images/28.6138/-81.6227/
-#                  "https://cyan.epa.gov/cyan/cyano/location/images/envisat.2012094.0403.1551C.L3.EF3.v670.CIcyano2.png",
-#                  "https://cyan.epa.gov/cyan/cyano/location/images/28.6138/-81.6227/"]
+def start_report():
+    start_time = datetime.datetime.utcnow()
+    print(str(start_time))
 
-#following are lists of url's to be processed with tests below
-check_pages = [s + p for s in servers for p in pages]
+def write_report(check_pages, response):
+    try:
+        report = build_table(check_pages, response)
+        headers = ["expected", "actual url or status"]
+        output_table = tabulate.tabulate(report, headers, tablefmt='grid')
+        print(output_table)
+        n_tests = len(response)
+        n_successes = response.count(200)
+        test_result = str(n_successes) + " of " + str(n_tests) + " pass.\n"
+        print(test_result)
+    except:
+        print('report error in test')
+    finally:
+        pass
+        #print("Time elapsed = " + str((end_time-start_time).seconds) + " seconds")
+    return
 
+def end_report():
+    end_time = datetime.datetime.utcnow()
+    print(str(end_time))
 
 class TestPiscesPages(unittest.TestCase):
     """
@@ -32,49 +51,16 @@ class TestPiscesPages(unittest.TestCase):
     def teardown(self):
         pass
 
-    @staticmethod
-    def test_pisces_200():
-        test_name = "Check page access "
-        try:
-            assert_error = False
-            response = [requests.get(p).status_code for p in check_pages]
-            try:
-                npt.assert_array_equal(response, 200, '200 error', True)
-            except AssertionError:
-                assert_error = True
-            except Exception as e:
-                # handle any other exception
-                print("Error '{0}' occured. Arguments {1}.".format(e.message, e.args))
-        except Exception as e:
-            # handle any other exception
-            print("Error '{0}' occured. Arguments {1}.".format(e.message, e.args))
-        finally:
-            linkcheck_helper.write_report(test_name, assert_error, check_pages, response)
-        return
+    def test_pisces_200(self):
+        start_report()
+        servers = ["https://qedinternal.epa.gov/pisces/", "http://127.0.0.1:8000/pisces/"]
+        pages = ["", "watershed", "stream", "algorithms", "references"]
+        check_pages = [s + p for s in servers for p in pages]
+        response = [requests.get(p).status_code for p in check_pages]
+        response_200s = ([200] * len(response))
+        write_report(check_pages, response)
+        self.assertListEqual(response, response_200s)
+        end_report()
 
-    # @staticmethod
-    # def test_cyan_api_endpoints_200():
-    #     test_name = "Check page access "
-    #     try:
-    #         assert_error = False
-    #         response = [requests.get(p).status_code for p in api_endpoints]
-    #         try:
-    #             npt.assert_array_equal(response, 200, '200 error', True)
-    #         except AssertionError:
-    #             assert_error = True
-    #         except Exception as e:
-    #             # handle any other exception
-    #             print("Error '{0}' occured. Arguments {1}.".format(e.message, e.args))
-    #     except Exception as e:
-    #         # handle any other exception
-    #         print("Error '{0}' occured. Arguments {1}.".format(e.message, e.args))
-    #     finally:
-    #         linkcheck_helper.write_report(test_name, assert_error, api_endpoints, response)
-    #     return
-
-# unittest will
-# 1) call the setup method,
-# 2) then call every method starting with "test",
-# 3) then the teardown method
 if __name__ == '__main__':
     unittest.main()
