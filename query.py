@@ -25,7 +25,7 @@ def query_page(request, model='pisces', header='none'):
 
     html += links_left.ordered_list(model, 'query')
     html += render_to_string('10epa_drupal_footer.html', {})
-    # html = x
+
 
     response = HttpResponse()
     response.write(html)
