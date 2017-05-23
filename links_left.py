@@ -1,7 +1,8 @@
 from django.template.loader import render_to_string
 from collections import OrderedDict
 from django.shortcuts import redirect
-
+import algorithms
+import references
 
 # 03ubertext_links_left:
 def ordered_list(model=None, page=None):
@@ -12,7 +13,9 @@ def ordered_list(model=None, page=None):
          ),
         ('Documentation', OrderedDict([
                 ('API Documentation', '/qedinternal.epa.gov/pisces/rest'),
-                ('Source Code', '/github.com/quanted/qed_pisces')
+                ('Source Code', '/github.com/quanted/qed_pisces'),
+                ('Algorithms', 'pisces/algorithms'),
+                ('References', 'pisces/references')
             ])
          )
     ])
