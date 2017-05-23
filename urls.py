@@ -5,6 +5,7 @@ Definition of urls for qed_pisces.
 from datetime import datetime
 from django.conf.urls import url
 import django.contrib.auth.views
+import pisces_rest_api
 
 import views
 import description
@@ -27,6 +28,11 @@ urlpatterns = [
     url(r'^references/$', references.references_page, {'model': 'pisces'}),
     # url(r'^api$', rest.rest_page, {'model': 'pisces'}),
     # url(r'^swag$', views.getSwaggerJsonContent)
+
+    # rest urls
+    url(r'^rest/fishproperties$', pisces_rest_api.get_fish_properties_by_huc),
+    url(r'^rest/fishranges$', pisces_rest_api.get_fish_range_by_species),
+    url(r'^rest/ecoregion', pisces_rest_api.get_ecoregion_from_pt)
 ]
 # else:
 #     urlpatterns = [
