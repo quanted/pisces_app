@@ -82,17 +82,17 @@ def get_ecoregion_from_lat_lng(lat, long):
     """Return the EcoRegion containing the give coordinate"""
 
     try:
-
-        point = str.format('POINT({0} {1})', long, lat)
+        point = str.format("POINT({0} {1})", long, lat)
         #query = str.format("SELECT gid, aggregated from wsaecoregions where st_contains(geom, ST_GeomFromText({0}, 4326))", point)
-        query = str.format ("select pk_uid, aggregated from wsaecoregions4326 where within(ST_Transform(GeomFromText('{0}', 4326), 4326), wsaecoregions4326.Geometry))")
+        query = str.format ("select pk_uid, aggregated from wsaecoregions4326 where within(ST_Transform(GeomFromText('{0}', 4326), 4326), wsaecoregions4326.Geometry)", point)
         eco_regions = list()
         for eco_region in EcoRegions.objects.raw(query):
             eco_regions.append(eco_region)
 
         return eco_regions
 
-    except:
+    except Exception as e:
+        print(e.message)
         pass
         # logging.error(sys.exc_info()[0])
 
