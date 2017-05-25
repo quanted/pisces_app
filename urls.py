@@ -32,7 +32,7 @@ urlpatterns = [
     # rest urls
     url(r'^rest/fishproperties$', pisces_rest_api.get_fish_properties_by_huc),
     url(r'^rest/fishranges$', pisces_rest_api.get_fish_range_by_species),
-    url(r'^rest/ecoregion', pisces_rest_api.get_ecoregion_from_pt)
+    url(r'^rest/ecoregion$', pisces_rest_api.get_ecoregion_from_pt)
 ]
 # else:
 #     urlpatterns = [
