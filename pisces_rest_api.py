@@ -2,9 +2,12 @@ from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-from models.sqlite_mgr import get_fish_by_huc
-from models.sqlite_mgr import get_fish_range_by_species
-from models.sqlite_mgr import get_ecoregion_from_lat_lng
+#from models.sqlite_mgr import get_fish_by_huc
+from models.postgresql_mgr import get_fish_by_huc
+#from models.sqlite_mgr import get_fish_range_by_species
+from models.postgresql_mgr import get_fish_range_by_species
+#from models.sqlite_mgr import get_ecoregion_from_lat_lng
+from models.postgresql_mgr import get_ecoregion_from_lat_lng
 from models.fish_species_properties import FishSpeciesProperties
 
 def get_fish_properties_by_huc(request):
