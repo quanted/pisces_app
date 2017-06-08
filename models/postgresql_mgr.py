@@ -9,6 +9,7 @@ def get_fish_by_huc(hucIDs):
     and properties by genus.
     """
 
+    print("HUCS:" + hucIDs)
     # If there are no hucs, no reason to continue
     if not hucIDs:
         return []
@@ -82,18 +83,20 @@ def get_ecoregion_from_lat_lng(lat, long):
     """Return the EcoRegion containing the give coordinate"""
 
     try:
-
+        print('Inside get_ecoregion_from_lat_lng - latitude: ' + lat + ', longitude: ' + long)
         point = str.format('POINT({0} {1})', long, lat)
-        query = str.format("SELECT gid, aggregated from wsaecoregions where st_contains(geom, ST_GeomFromText({0}, 4326))", point)
+        query = str.format("SELECT gid, aggregated from wsaecoregions where st_contains(geom, ST_GeomFromText('{0}', 4326))", point)
 
+        print('Query: ' + query)
         eco_regions = list()
         for eco_region in EcoRegions.objects.raw(query):
             eco_regions.append(eco_region)
 
         return eco_regions
 
-    except:
+    except Exception as inst:
+        print ("Exception: " + inst.message)
         pass
-        # logging.error(sys.exc_info()[0])
+
 
     return None
