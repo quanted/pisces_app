@@ -24,9 +24,12 @@ def get_fish_properties_by_huc(request):
     for huc in hucs:
         h = huc
 
+    results = dict()
     fish_props = get_fish_by_huc(hucs)
+    for fish_prop in fish_props:
+        results[fish_prop.species] = fish_prop.get_attributes()
 
-    return HttpResponse(fish_props)
+    return HttpResponse(json.dumps(results))
 
 
 def get_fish_range_by_species(request):
@@ -69,5 +72,6 @@ def get_ecoregion_from_pt(request):
         print(dir(range))
         dct_range['gid'] = range.gid
         dct_range['region'] = range.aggregated
+        break
 
     return HttpResponse(json.dumps(dct_range))

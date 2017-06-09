@@ -9,14 +9,14 @@ def get_fish_by_huc(hucIDs):
     and properties by genus.
     """
 
-    print("HUCS:" + hucIDs)
+    #print("HUCS:" + hucIDs)
     # If there are no hucs, no reason to continue
     if not hucIDs:
         return []
 
     try:
 
-        query = ("select fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
+        query = ("select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
                  "fishproperties.Max_Size, fishhucs.HUC, genera.* "
                  "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
                  "join genera on fishproperties.GenusID=genera.GenusID where ")
@@ -29,8 +29,7 @@ def get_fish_by_huc(hucIDs):
             if count != len(hucIDs):
                 query = query + " or "
 
-        #conn_string = "host='172.20.100.14' dbname='pisces' user='cgifadmin' password='Ptfocns17!cgi5'"
-
+        print('Query: ' + query)
         fish_props = list()
         for fish_prop in FishGenusProperties.objects.raw(query):
             fish_props.append(fish_prop)
@@ -38,9 +37,9 @@ def get_fish_by_huc(hucIDs):
         return fish_props
 
 
-    except:
-        pass
-        # logging.error(sys.exc_info()[0])
+
+    except Exception as inst:
+        print ("Exception: " + inst.message)
 
     return None
 
@@ -83,11 +82,11 @@ def get_ecoregion_from_lat_lng(lat, long):
     """Return the EcoRegion containing the give coordinate"""
 
     try:
-        print('Inside get_ecoregion_from_lat_lng - latitude: ' + lat + ', longitude: ' + long)
+        #print('Inside get_ecoregion_from_lat_lng - latitude: ' + lat + ', longitude: ' + long)
         point = str.format('POINT({0} {1})', long, lat)
         query = str.format("SELECT gid, aggregated from wsaecoregions where st_contains(geom, ST_GeomFromText('{0}', 4326))", point)
 
-        print('Query: ' + query)
+        #print('Query: ' + query)
         eco_regions = list()
         for eco_region in EcoRegions.objects.raw(query):
             eco_regions.append(eco_region)

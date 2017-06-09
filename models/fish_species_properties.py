@@ -3,7 +3,7 @@ from django.db import models
 class FishSpeciesProperties(models.Model):
     """Model class for Fish Species Properties"""
 
-    SpeciesID = models.IntegerField(primary_key=True)
+    SpeciesID = models.IntegerField(db_column='speciesid', primary_key=True)
     GenusID = models.IntegerField
     Genus = models.TextField(max_length=25)
     Species = models.TextField(max_length=25)

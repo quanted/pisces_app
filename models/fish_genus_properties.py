@@ -3,25 +3,53 @@ from django.db import models
 class FishGenusProperties(models.Model):
     """Model class for Fish Genus Properties"""
 
-    CommonName = models.TextField(max_length=50, primary_key=True)
-    Genus = models.TextField(max_length=25)
-    Species = models.TextField(max_length=25)
-    Max_Size = models.FloatField
-    HUC = models.TextField(max_length=8)
-    GenusID = models.IntegerField
-    Cond_L = models.FloatField
-    Cond_U = models.FloatField
-    pH_L = models.FloatField
-    pH_U = models.FloatField
-    Width_L = models.FloatField
-    Width_U = models.FloatField
-    Slope_L = models.FloatField
-    Slope_U = models.FloatField
-    Area_L = models.FloatField
-    Area_U = models.FloatField
-    Depth_L = models.FloatField
-    Depth_U = models.FloatField
-    DO_L = models.FloatField
-    DO_U = models.FloatField
-    TSS_L = models.FloatField
-    TSS_U = models.FloatField
+    speciesid = models.IntegerField(db_column='speciesid', primary_key=True)
+    commonname = models.TextField( max_length=50)
+    genus = models.TextField(max_length=25)
+    species = models.TextField(max_length=25)
+    max_size = models.FloatField
+    huc = models.TextField(max_length=8)
+    genusid = models.IntegerField
+    cond_l = models.FloatField
+    cond_u = models.FloatField
+    ph_l = models.FloatField
+    ph_u = models.FloatField
+    width_l = models.FloatField
+    width_u = models.FloatField
+    slope_l = models.FloatField
+    slope_u = models.FloatField
+    area_l = models.FloatField
+    area_u = models.FloatField
+    depth_l = models.FloatField
+    depth_u = models.FloatField
+    do_l = models.FloatField
+    do_u = models.FloatField
+    tss_l = models.FloatField
+    tss_u = models.FloatField
+
+    def get_attributes(self):
+        attrib = dict()
+        attrib['species_id'] = self.speciesid
+        attrib['common_name'] = self.commonname
+        attrib['genus'] = self.genus
+        attrib['species']= self.species
+        attrib['max_Size'] = self.max_size
+        attrib['huc'] = self.huc
+        attrib['genusID'] = self.genusid
+        attrib['cond_l'] = self.cond_l
+        attrib['cond_u'] = self.cond_u
+        attrib['ph_l'] = self.ph_l
+        attrib['ph_u'] = self.ph_u
+        attrib['width_l'] = self.width_l
+        attrib['width_u'] = self.width_u
+        attrib['slope_l'] = self.slope_l
+        attrib['slope_u'] = self.slope_u
+        attrib['area_l'] = self.area_l
+        attrib['area_u'] = self.area_u
+        attrib['depth_l'] = self.depth_l
+        attrib['depth_u'] = self.depth_u
+        attrib['do_l'] = self.do_l
+        attrib['do_u'] = self.do_u
+        attrib['tss_l'] = self.tss_l
+        attrib['tss_u'] = self.tss_u
+        return attrib
