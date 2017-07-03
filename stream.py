@@ -4,8 +4,8 @@ from collections import OrderedDict
 from django.shortcuts import redirect
 import os
 from django.conf import settings
-import links_left
-from pisces_app import views
+from . import links_left
+from . import views
 
 
 
