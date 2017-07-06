@@ -1,6 +1,6 @@
-from pisces_app.models.fish_genus_properties import FishGenusProperties
-from pisces_app.models.fish_species_properties import FishSpeciesProperties
-from pisces_app.models.ecoregions import EcoRegions
+from .fish_genus_properties import FishGenusProperties
+from .fish_species_properties import FishSpeciesProperties
+from .ecoregions import EcoRegions
 
 def get_fish_by_huc(hucIDs):
     """

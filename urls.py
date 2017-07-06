@@ -5,16 +5,8 @@ Definition of urls for qed_pisces.
 from datetime import datetime
 from django.conf.urls import url
 import django.contrib.auth.views
-import pisces_rest_api
-
-import views
-import description
-import watershed
-import stream
-import species_explorer
-import algorithms
-import references
-import links_left
+from . import pisces_rest_api, views, description, watershed
+from . import stream, species_explorer, algorithms, references, links_left
 
 # if settings.IS_PUBLIC:
 urlpatterns = [
