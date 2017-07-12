@@ -4,8 +4,8 @@ from django.shortcuts import redirect
 import os
 from django.conf import settings
 from . import links_left
-from . import views
 
+from . import views
 
 
 def description_page(request, model='pisces', header='none'):
