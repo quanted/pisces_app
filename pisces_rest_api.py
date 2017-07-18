@@ -8,7 +8,7 @@ from .models.postgresql_mgr import get_fish_by_huc
 from .models.postgresql_mgr import get_fish_range_by_species
 # from models.sqlite_mgr import get_ecoregion_from_lat_lng
 # from .models.sqlite_mgr import get_fish_range_by_species
-from .models.postgresql_mgr import get_fish_range_by_species
+from .models.postgresql_mgr import get_fish_range_by_species as get_fish_range
 # from .models.sqlite_mgr import get_ecoregion_from_lat_lng
 
 from .models.postgresql_mgr import get_ecoregion_from_lat_lng
@@ -45,7 +45,7 @@ def get_fish_range_by_species(request):
     for sp in species:
         s = sp
 
-    ranges = get_fish_range_by_species(species)
+    ranges = get_fish_range(species)
 
     return HttpResponse(ranges)
 
@@ -62,7 +62,6 @@ def get_ecoregion_from_pt(request):
     print(body_unicode)
 
     pt = json.loads(body_unicode)
-
 
     latitude = pt['latitude']
     longitude = pt['longitude']
