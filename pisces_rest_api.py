@@ -25,8 +25,9 @@ def get_fish_properties_by_huc(request):
 
     # debug print
     print(hucs)
+    huc_list = []
     for huc in hucs:
-        h = huc
+        huc_list.append(hucs[huc])
 
     results = dict()
     fish_props = get_fish_by_huc(hucs)
