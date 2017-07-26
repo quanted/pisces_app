@@ -16,11 +16,11 @@ def get_species_by_huc(request, huc8=''):
         REST API endpoint for retrieving fish species data (species id, common name, scientific name) that
         are found in the specified HUC 8
         e.g.
-        https://qedinternal.epa.gov/pisces/rest/api/v1/(huc8)
+        https://qedinternal.epa.gov/pisces/rest/api/v1/fish/hucs/(huc8)
     """
 
     if len(huc8) != 4:
-        return JsonResponse({"error": "argument error: HUC* value provided was not valid, please provide a valid HUC8."
+        return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
                                       " Provided value = " + huc8})
     # debug print
     print(huc8)
@@ -33,6 +33,31 @@ def get_species_by_huc(request, huc8=''):
         lst_fish.append(fish.get_attributes())
 
     data['species'] = lst_fish
+    return JsonResponse(data)
+
+@require_GET
+def get_hucs_by_species(request, speciesid=''):
+    """
+        REST API endpoint for retrieving huc8 ids (e.g.040301010) that
+        are found for specified species id.
+        e.g.
+        https://qedinternal.epa.gov/pisces/rest/api/v1/hucs/fish/(speciesid)
+    """
+
+    if len(speciesid) > 4:
+        return JsonResponse({"error": "argument error: Species ID value provided was not valid, please provide a valid species ID."
+                                      " Provided value = " + speciesid})
+    # debug print
+    print(speciesid)
+    hucs = query_get_species_by_huc(speciesid)
+
+    data = dict()
+    data['speciesid'] = speciesid
+    lst_hucs = list()
+    for huc in hucs:
+        lst_hucs.append(huc.get_attributes())
+
+    data['hucs'] = lst_hucs
     return JsonResponse(data)
 
 
@@ -119,11 +144,7 @@ def get_fish_range_by_species(request):
     for sp in species:
         s = sp
 
-<<<<<<< HEAD
     ranges = query_fish_range_by_species(species)
-=======
-    ranges = get_fish_range(species)
->>>>>>> 4b79badc384d282bd061746f0be625256b452125
 
     return HttpResponse(ranges)
 

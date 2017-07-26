@@ -25,7 +25,10 @@ urlpatterns = [
     # url(r'^swag$', views.getSwaggerJsonContent)
 
     # rest urls
-    url(r'^rest/api/v1/fish/(?P<huc>\w+)$', pisces_rest_api.get_species_by_huc),
+    url(r'^rest/api/v1/fish/hucs/(?P<huc>\w+)$', pisces_rest_api.get_species_by_huc),
+    url(r'^rest/api/v1/hucs/fish/(?P<speciesid>\w+)$', pisces_rest_api.get_hucs_by_species),
+
+
     url(r'^rest/api/v1/fishproperties$', pisces_rest_api.get_fish_properties_by_huc),
     url(r'^rest/api/v1/fishranges$', pisces_rest_api.get_fish_range_by_species),
     url(r'^rest/api/v1/ecoregion$', pisces_rest_api.get_ecoregion_from_pt)
