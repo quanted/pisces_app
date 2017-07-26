@@ -2,11 +2,11 @@ from django.http import HttpRequest, HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 import json
-
 from .models.postgresql_mgr import query_fish_by_huc
 from .models.postgresql_mgr import query_fish_range_by_species
 from .models.postgresql_mgr import query_ecoregion_from_lat_lng
 from .models.postgresql_mgr import query_get_species_by_huc
+
 
 from .models.fish_species_properties import FishSpeciesProperties
 
@@ -98,8 +98,9 @@ def get_fish_properties_by_huc(request):
 
     # debug print
     print(hucs)
+    huc_list = []
     for huc in hucs:
-        h = huc
+        huc_list.append(hucs[huc])
 
     results = dict()
     fish_props = query_fish_by_huc(hucs)
@@ -118,7 +119,11 @@ def get_fish_range_by_species(request):
     for sp in species:
         s = sp
 
+<<<<<<< HEAD
     ranges = query_fish_range_by_species(species)
+=======
+    ranges = get_fish_range(species)
+>>>>>>> 4b79badc384d282bd061746f0be625256b452125
 
     return HttpResponse(ranges)
 
@@ -135,7 +140,6 @@ def get_ecoregion_from_pt(request):
     print(body_unicode)
 
     pt = json.loads(body_unicode)
-
 
     latitude = pt['latitude']
     longitude = pt['longitude']
