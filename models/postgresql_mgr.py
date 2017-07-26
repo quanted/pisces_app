@@ -1,8 +1,39 @@
 from .fish_genus_properties import FishGenusProperties
 from .fish_species_properties import FishSpeciesProperties
+from .fish_names import FishNames
 from .ecoregions import EcoRegions
 
-def get_fish_by_huc(hucIDs):
+def query_get_species_by_huc(huc_id):
+    """
+        Arg1: Value of NHDPlus 8 digit HUC ID.  Include leading zeros
+        Returns: List of species IDS and associated common and scientific names
+        """
+    # If there is no huc, no reason to continue
+    if not huc_id:
+        return None
+
+    try:
+
+        query = (
+            "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Species "       
+            "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID where "
+            "fishhucs.HUC='{0}'")
+
+        query = query.format(huc_id)
+
+        print('Query: ' + query)
+        fish_props = list()
+        for fish_prop in FishNames.objects.raw(query):
+            fish_props.append(fish_prop)
+
+        return fish_props
+
+    except Exception as inst:
+        print ("Exception: " + inst.message)
+
+    return None
+
+def query_fish_by_huc(hucIDs):
     """
     Arg1: List of NHDPlus 8 digit HUC ID.  Include leading zeros
     Returns: List of fish and associated properties from FishProperties (by species)    
@@ -44,7 +75,7 @@ def get_fish_by_huc(hucIDs):
     return None
 
 
-def get_fish_range_by_species(specieIDs):
+def query_fish_range_by_species(specieIDs):
     """
     Arg1: List of fish species ids.
     Returns: List of HUCS
@@ -78,7 +109,7 @@ def get_fish_range_by_species(specieIDs):
 
     return None
 
-def get_ecoregion_from_lat_lng(lat, long):
+def query_ecoregion_from_lat_lng(lat, long):
     """Return the EcoRegion containing the give coordinate"""
 
     try:
