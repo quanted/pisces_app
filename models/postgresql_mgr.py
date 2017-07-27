@@ -16,7 +16,7 @@ def query_species_by_huc(huc_id):
     try:
 
         query = (
-            "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Species "       
+            "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Species, fishproperties.genus "       
             "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID where "
             "fishhucs.HUC='{0}'")
 
