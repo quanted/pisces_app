@@ -114,7 +114,9 @@ def query_fish_names_by_search_string(search_string):
                 "LOWER({0}) or LOWER(species) LIKE LOWER({1}) or LOWER(genus) "
                 "LIKE LOWER({2})")
 
-        query = str.format(query, like_str)
+        query = str.format(query, like_str, like_str, like_str)
+
+        print(query)
 
         fish_props = list()
         for fish_prop in FishNames.objects.raw(query):
@@ -122,7 +124,8 @@ def query_fish_names_by_search_string(search_string):
 
         return fish_props
 
-    except:
+    except Exception as ex:
+        print("Database error: {0}".format(ex))
         pass
         # logging.error(sys.exc_info()[0])
 
