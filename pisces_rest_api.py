@@ -70,7 +70,7 @@ def get_hucs_by_species(request, speciesid=''):
 
 ###########################################################################################
 @require_GET
-def get_fish_names_by_search_string(request, search_string=''):
+def get_fish_names_by_search_string(request, searchstring=''):
     """
         REST API endpoint for retrieving species names (common name, scientific name, genus)
         for specified species id.
@@ -82,11 +82,11 @@ def get_fish_names_by_search_string(request, search_string=''):
     #   return JsonResponse({"error": "argument error: Species ID value provided was not valid, please provide a valid species ID."
     #                                  " Provided value = " + speciesid})
     # debug print
-    print(search_string)
-    names = query_fish_names_by_search_string(search_string)
+    print(searchstring)
+    names = query_fish_names_by_search_string(searchstring)
 
     data = dict()
-    data['search_string'] = search_string
+    data['search_string'] = searchstring
     lst_names = list()
     for name in names:
         lst_names.append(name.get_attributes())
