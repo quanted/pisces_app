@@ -118,7 +118,6 @@ def query_fish_names_by_search_string(search_string):
 
         print(query)
 
-
         fish_props = list()
         for fish_prop in FishNames.objects.raw(query):
             fish_props.append(fish_prop)
@@ -126,7 +125,7 @@ def query_fish_names_by_search_string(search_string):
         return fish_props
 
     except Exception as ex:
-        print(ex.message)
+        print("Database error: {0}".format(ex))
         pass
         # logging.error(sys.exc_info()[0])
 
