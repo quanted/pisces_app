@@ -94,28 +94,29 @@ def query_fish_properties_by_species(speciesid):
 
 
 
-def query_fish_names_by_species(speciesid):
+def query_fish_names_by_search_string(search_string):
     """
         Arg1: Fish species id.
         Returns: common name, scientific name and genus for requested species
         """
 
-    #   If there are no species, no reason to continue
-    if not speciesid:
+    #   If there is no search_string, no reason to continue
+    if not search_string:
         return []
 
     try:
 
-        query = (
-        "select fishproperties.species, fishproperties.commonname, fishproperties.genus from fishproperties "
-        "where fishproperties.SpeciesID={0}")
-        query = str.format(query, speciesid)
+        query = ("select * from fishproperties where LOWER(commonname) LIKE "
+                "LOWER('%{}%') or LOWER(species) LIKE LOWER('%{}%') or LOWER(genus) "
+                "LIKE LOWER('%{}%'")
 
-        fish_names = list()
-        for fish_names in FishNames.objects.raw(query):
-            fish_names.append(fish_names)
+        query = str.format(query, search_string)
 
-        return fish_names
+        fish_props = list()
+        for fish_prop in FishSpeciesProperties.objects.raw(query):
+            fish_props.append(fish_prop)
+
+        return fish_props
 
     except:
         pass
