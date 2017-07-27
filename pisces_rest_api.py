@@ -17,7 +17,7 @@ from .models.fish_species_properties import FishSpeciesProperties
 
 ###########################################################################################
 @require_GET
-def get_species_by_huc(request, huc8=''):
+def get_species_by_huc(request, huc=''):
     """
         REST API endpoint for retrieving fish species data (species id, common name, scientific name) that
         are found in the specified HUC 8
@@ -25,15 +25,15 @@ def get_species_by_huc(request, huc8=''):
         https://qedinternal.epa.gov/pisces/rest/api/v1/fish/hucs/(huc8)
     """
 
-    if len(huc8) != 4:
+    if len(huc) != 4:
         return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
-                                      " Provided value = " + huc8})
+                                      " Provided value = " + huc})
     # debug print
-    print(huc8)
-    fishes = query_species_by_huc(huc8)
+    print(huc)
+    fishes = query_species_by_huc(huc)
 
     data = dict()
-    data['huc'] = huc8
+    data['huc'] = huc
     lst_fish= list()
     for fish in fishes:
         lst_fish.append(fish.get_attributes())
@@ -70,7 +70,7 @@ def get_hucs_by_species(request, speciesid=''):
 
 ###########################################################################################
 @require_GET
-def get_fish_names_by_search_string(request, search_string=''):
+def get_fish_names_by_search_string(request, searchstring=''):
     """
         REST API endpoint for retrieving species names (common name, scientific name, genus)
         for specified species id.
@@ -82,11 +82,11 @@ def get_fish_names_by_search_string(request, search_string=''):
     #   return JsonResponse({"error": "argument error: Species ID value provided was not valid, please provide a valid species ID."
     #                                  " Provided value = " + speciesid})
     # debug print
-    print(search_string)
-    names = query_fish_names_by_search_string(search_string)
+    print(searchstring)
+    names = query_fish_names_by_search_string(searchstring)
 
     data = dict()
-    data['search_string'] = search_string
+    data['search_string'] = searchstring
     lst_names = list()
     for name in names:
         lst_names.append(name.get_attributes())

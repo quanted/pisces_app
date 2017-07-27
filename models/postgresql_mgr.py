@@ -1,6 +1,7 @@
 from .fish_genus_properties import FishGenusProperties
 from .fish_species_properties import FishSpeciesProperties
 from .fish_names import FishNames
+from .hucs import Hucs
 from .ecoregions import EcoRegions
 
 def query_species_by_huc(huc_id):
@@ -50,11 +51,11 @@ def query_hucs_by_species(speciesid):
         query = str.format(query, speciesid)
 
 
-        fish_props = list()
-        for fish_prop in FishSpeciesProperties.objects.raw(query):
-            fish_props.append(fish_prop)
+        hucs = list()
+        for huc in Hucs.objects.raw(query):
+            hucs.append(huc)
 
-        return fish_props
+        return hucs
 
     except:
         pass

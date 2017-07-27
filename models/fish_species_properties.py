@@ -75,8 +75,8 @@ class FishSpeciesProperties(models.Model):
         attrib['subsis_fish'] = self.subsis_fish
         attrib['pollut_tol'] = self.pollut_tol
         attrib['max_length'] = self.max_length
-        attrib['mean_length'] = self.max_length
-        attrib['mean_weight'] = self.max_length
+        attrib['mean_length'] = self.mean_length
+        attrib['mean_weight'] = self.mean_length
         attrib['thinning'] = self.thinning
         attrib['thin_adj'] = self.thin_adj
         attrib['max_age'] = self.max_age
