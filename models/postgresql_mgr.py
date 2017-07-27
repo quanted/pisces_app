@@ -109,14 +109,15 @@ def query_fish_names_by_search_string(search_string):
 
         like_str = "'%{0}%'".format(search_string)
 
-        query = ("select * from fishproperties where LOWER(commonname) LIKE "
+        query = ("select fishproperties.commonname, fishproperties.species, fishproperties.genus "
+                "from fishproperties where LOWER(commonname) LIKE "
                 "LOWER({0}) or LOWER(species) LIKE LOWER({1}) or LOWER(genus) "
                 "LIKE LOWER({2}")
 
         query = str.format(query, like_str)
 
         fish_props = list()
-        for fish_prop in FishSpeciesProperties.objects.raw(query):
+        for fish_prop in FishNames.objects.raw(query):
             fish_props.append(fish_prop)
 
         return fish_props
