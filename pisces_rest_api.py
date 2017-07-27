@@ -25,7 +25,7 @@ def get_species_by_huc(request, huc=''):
         https://qedinternal.epa.gov/pisces/rest/api/v1/fish/hucs/(huc8)
     """
 
-    if len(huc) != 4:
+    if len(huc) != 8:
         return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
                                       " Provided value = " + huc})
     # debug print
