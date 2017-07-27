@@ -116,13 +116,17 @@ def query_fish_names_by_search_string(search_string):
 
         query = str.format(query, like_str)
 
+        print(query)
+
+
         fish_props = list()
         for fish_prop in FishNames.objects.raw(query):
             fish_props.append(fish_prop)
 
         return fish_props
 
-    except:
+    except Exception as ex:
+        print(ex.message)
         pass
         # logging.error(sys.exc_info()[0])
 
