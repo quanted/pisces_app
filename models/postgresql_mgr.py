@@ -107,7 +107,7 @@ def query_fish_names_by_search_string(search_string):
 
     try:
 
-        like_str = "'%{0}%'".format(search_string)
+        like_str = "'%%{0}%%'".format(search_string)
 
         query = ("select fishproperties.speciesid, fishproperties.commonname, fishproperties.species, fishproperties.genus "
                 "from fishproperties where LOWER(commonname) LIKE "
