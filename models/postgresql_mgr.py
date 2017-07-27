@@ -63,6 +63,68 @@ def query_hucs_by_species(speciesid):
     return None
 
 
+def query_fish_properties_by_species(speciesid):
+    """
+        Arg1: Fish species id.
+        Returns: All fish properties from FishProperties for requested species
+        """
+
+    #   If there are no species, no reason to continue
+    if not speciesid:
+        return []
+
+    try:
+
+        query = (
+        "select * from fishproperties "
+        "where fishproperties.SpeciesID={0}")
+        query = str.format(query, speciesid)
+
+        fish_props = list()
+        for fish_prop in FishSpeciesProperties.objects.raw(query):
+            fish_props.append(fish_prop)
+
+        return fish_props
+
+    except:
+        pass
+        # logging.error(sys.exc_info()[0])
+
+    return None
+
+
+
+def query_fish_names_by_species(speciesid):
+    """
+        Arg1: Fish species id.
+        Returns: common name, scientific name and genus for requested species
+        """
+
+    #   If there are no species, no reason to continue
+    if not speciesid:
+        return []
+
+    try:
+
+        query = (
+        "select fishproperties.species, fishproperties.commonname, fishproperties.genus from fishproperties "
+        "where fishproperties.SpeciesID={0}")
+        query = str.format(query, speciesid)
+
+        fish_names = list()
+        for fish_names in FishNames.objects.raw(query):
+            fish_names.append(fish_names)
+
+        return fish_names
+
+    except:
+        pass
+        # logging.error(sys.exc_info()[0])
+
+    return None
+
+
+
 def query_fish_by_huc(hucIDs):
     """
     Arg1: List of NHDPlus 8 digit HUC ID.  Include leading zeros

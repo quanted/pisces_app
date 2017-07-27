@@ -5,11 +5,13 @@ import json
 from .models.postgresql_mgr import query_fish_by_huc
 from .models.postgresql_mgr import query_fish_range_by_species
 from .models.postgresql_mgr import query_ecoregion_from_lat_lng
-from .models.postgresql_mgr import query_get_species_by_huc
+from .models.postgresql_mgr import query_hucs_by_species
+from .models.postgresql_mgr import query_species_by_huc
 
 
 from .models.fish_species_properties import FishSpeciesProperties
 
+###########################################################################################
 @require_GET
 def get_species_by_huc(request, huc8=''):
     """
@@ -24,7 +26,7 @@ def get_species_by_huc(request, huc8=''):
                                       " Provided value = " + huc8})
     # debug print
     print(huc8)
-    fishes = query_get_species_by_huc(huc8)
+    fishes = query_species_by_huc(huc8)
 
     data = dict()
     data['huc'] = huc8
@@ -35,6 +37,7 @@ def get_species_by_huc(request, huc8=''):
     data['species'] = lst_fish
     return JsonResponse(data)
 
+###########################################################################################
 @require_GET
 def get_hucs_by_species(request, speciesid=''):
     """
@@ -49,7 +52,7 @@ def get_hucs_by_species(request, speciesid=''):
                                       " Provided value = " + speciesid})
     # debug print
     print(speciesid)
-    hucs = query_get_species_by_huc(speciesid)
+    hucs = query_hucs_by_species(speciesid)
 
     data = dict()
     data['speciesid'] = speciesid

@@ -15,7 +15,17 @@ class FishSpeciesProperties(models.Model):
     nongame = models.TextField(max_length=1)
     subsis_fish = models.TextField(max_length=1)
     pollut_tol = models.TextField(max_length=100)
-    max_size = models.FloatField
+    max_length = models.FloatField
+    mean_length = models.FloatField
+    mean_weight = models.FloatField
+    thinning = models.FloatField
+    thin_adj = models.FloatField
+    max_age = models.IntegerField
+    w_l_a = models.FloatField
+    w_l_b = models.FloatField
+    l_w_c = models.FloatField
+    l_w_d = models.FloatField
+    regress = models.TextField(max_length=1)
     rarity = models.IntegerField
     caves = models.TextField(max_length=10)
     springs = models.TextField(max_length=10)
@@ -64,7 +74,17 @@ class FishSpeciesProperties(models.Model):
         attrib['nongame'] = self.nongame
         attrib['subsis_fish'] = self.subsis_fish
         attrib['pollut_tol'] = self.pollut_tol
-        attrib['max_size'] = self.max_size
+        attrib['max_length'] = self.max_length
+        attrib['mean_length'] = self.max_length
+        attrib['mean_weight'] = self.max_length
+        attrib['thinning'] = self.thinning
+        attrib['thin_adj'] = self.thin_adj
+        attrib['max_age'] = self.max_age
+        attrib['w_l_a'] = self.w_l_a
+        attrib['w_l_b'] = self.w_l_b
+        attrib['l_w_c'] = self.l_w_c
+        attrib['l_w_d'] = self.l_w_d
+        attrib['regress'] = self.regress
         attrib['rarity'] = self.rarity
         attrib['caves'] = self.caves
         attrib['springs'] = self.springs
