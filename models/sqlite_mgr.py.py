@@ -2,7 +2,7 @@ from .fish_genus_properties import FishGenusProperties
 from .fish_species_properties import FishSpeciesProperties
 from .ecoregions import EcoRegions
 
-def get_fish_by_huc(hucIDs):
+def query_fish_by_huc(hucIDs):
     """
     Arg1: List of NHDPlus 8 digit HUC ID.  Include leading zeros
     Returns: List of fish and associated properties from FishProperties (by species)    
@@ -44,7 +44,7 @@ def get_fish_by_huc(hucIDs):
     return None
 
 
-def get_fish_range_by_species(specieIDs):
+def query_fish_range_by_species(specieIDs):
     """
     Arg1: List of fish species ids.
     Returns: List of HUCS
@@ -78,7 +78,7 @@ def get_fish_range_by_species(specieIDs):
 
     return None
 
-def get_ecoregion_from_lat_lng(lat, long):
+def query_ecoregion_from_lat_lng(lat, long):
     """Return the EcoRegion containing the give coordinate"""
 
     try:
