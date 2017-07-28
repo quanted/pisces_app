@@ -94,6 +94,31 @@ def get_fish_names_by_search_string(request, searchstring=''):
     data['species'] = lst_names
     return JsonResponse(data)
 
+
+###########################################################################################
+@require_POST
+def post_fish_names_by_species(request):
+    """
+        REST API endpoint for retrieving species names (common name, scientific name, genus)
+        for specified species id.
+        e.g.
+        https://qedinternal.epa.gov/pisces/rest/api/v1/fish/properties/names
+    """
+    search = json.loads(request.body, encoding='utf-8')
+    searchstring = search['search_string']
+
+    names = query_fish_names_by_search_string(searchstring)
+
+    data = dict()
+    data['search_string'] = searchstring
+    lst_names = list()
+    for name in names:
+        lst_names.append(name.get_attributes())
+
+    data['species'] = lst_names
+    return JsonResponse(data)
+
+
 ###########################################################################################
 @require_GET
 def get_fish_properties_by_species(request, speciesid=''):
@@ -101,7 +126,7 @@ def get_fish_properties_by_species(request, speciesid=''):
         REST API endpoint for retrieving species names (common name, scientific name, genus)
         for specified species id.
         e.g.
-        https://qedinternal.epa.gov/pisces/rest/api/v1/hucs/fish/(speciesid)
+        https://qedinternal.epa.gov/pisces/rest/api/v1/fish/properties/names/search_string
     """
 
     if len(speciesid) > 4:
@@ -119,6 +144,7 @@ def get_fish_properties_by_species(request, speciesid=''):
 
     data['species'] = lst_props
     return JsonResponse(data)
+
 
 
 # @require_POST
