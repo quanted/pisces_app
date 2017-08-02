@@ -1,5 +1,5 @@
 from django.template.loader import render_to_string
-from django.views.decorators.csrf import requires_csrf_token
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse
 from django.shortcuts import redirect
 import os
@@ -8,7 +8,7 @@ from . import links_left
 from pisces_app import views
 
 
-@requires_csrf_token
+@ensure_csrf_cookie
 def watershed_page(request, model='pisces', header='none'):
     header = views.header
     x = render_to_string('pisces_watershed_map.html', request=request)
