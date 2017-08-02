@@ -10,7 +10,7 @@ from pisces_app import views
 
 def watershed_page(request, model='pisces', header='none'):
     header = views.header
-    x = render_to_string('pisces_watershed_map.html')
+    x = render_to_string('pisces_watershed_map.html', request=request)
 
     """ Returns the html of the references page for pisces. """
     html = render_to_string('01epa_drupal_header.html', {})
