@@ -7,7 +7,10 @@ class FishGenusProperties(models.Model):
     commonname = models.TextField( max_length=50)
     genus = models.TextField(max_length=25)
     species = models.TextField(max_length=25)
-    max_size = models.FloatField
+    mean_weight = models.FloatField
+    thinning = models.FloatField
+    thin_adj = models.FloatField
+    rarity = models.FloatField
     huc = models.TextField(max_length=8)
     genusid = models.IntegerField
     cond_l = models.FloatField
@@ -33,7 +36,10 @@ class FishGenusProperties(models.Model):
         attrib['common_name'] = self.commonname
         attrib['genus'] = self.genus
         attrib['species']= self.species
-        attrib['max_Size'] = self.max_size
+        attrib['mean_weight'] = self.max_size
+        attrib['thinning'] = self.thinning
+        attrib['thin_adj'] = self.thin_adj
+        attrin['rarity'] = self.rarity
         attrib['huc'] = self.huc
         attrib['genusID'] = self.genusid
         attrib['cond_l'] = self.cond_l
