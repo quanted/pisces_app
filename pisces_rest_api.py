@@ -4,6 +4,7 @@ from django.views.decorators.http import require_GET, require_POST
 import json
 
 from .models.postgresql_mgr import query_species_by_huc
+from .models.postgresql_mgr import query_genera_by_huc
 from .models.postgresql_mgr import query_hucs_by_species
 from .models.postgresql_mgr import query_fish_properties_by_species
 from .models.postgresql_mgr import query_fish_names_by_search_string
@@ -56,7 +57,7 @@ def get_genera_by_huc(request, huc=''):
                                       " Provided value = " + huc})
     # debug print
     print(huc)
-    fishes = query_species_by_huc(huc)
+    fishes = query_genera_by_huc(huc)
 
     data = dict()
     data['huc'] = huc
