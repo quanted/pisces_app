@@ -17,7 +17,7 @@ def stream_page(request, model='pisces', header='none'):
     })
 
     """ Returns the html of the references page for pisces. """
-    html = render_to_string('01epa_drupal_header.html', {})
+    html = render_to_string('01pisces_epa_drupal_header.html', {})
     html += render_to_string('02epa_drupal_header_bluestripe_onesidebar.html', {})
     html += render_to_string('03pisces_drupal_section_title.html', {})
     html += stream_ordered_list(model, 'streammap')
