@@ -50,9 +50,9 @@ def query_genera_by_huc(huc_id):
             "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
             "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, genera.* "
             "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
-            "join genera on fishproperties.GenusID=genera.GenusID where ")
+            "join genera on fishproperties.GenusID=genera.GenusID where fishhucs.HUC = '{0}'")
 
-        whereClause = "fishhucs.HUC='{0}'"
+        #whereClause = "fishhucs.HUC='{0}'"
 
         query = query.format(huc_id)
 
