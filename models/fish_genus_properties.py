@@ -36,10 +36,10 @@ class FishGenusProperties(models.Model):
         attrib['common_name'] = self.commonname
         attrib['genus'] = self.genus
         attrib['species']= self.species
-        attrib['mean_weight'] = self.max_size
+        attrib['mean_weight'] = self.mean_weight
         attrib['thinning'] = self.thinning
         attrib['thin_adj'] = self.thin_adj
-        attrin['rarity'] = self.rarity
+        attrib['rarity'] = self.rarity
         attrib['huc'] = self.huc
         attrib['genusID'] = self.genusid
         attrib['cond_l'] = self.cond_l
