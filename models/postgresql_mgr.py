@@ -34,6 +34,41 @@ def query_species_by_huc(huc_id):
 
     return None
 
+
+def query_genera_by_huc(huc_id):
+    """
+        Arg1: Value of NHDPlus 8 digit HUC ID.  Include leading zeros
+        Returns: List of genus properies as well as species IDS and associated common and scientific names
+        """
+    # If there is no huc, no reason to continue
+    if not huc_id:
+        return None
+
+    try:
+
+        query = (
+            "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
+            "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, genera.* "
+            "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
+            "join genera on fishproperties.GenusID=genera.GenusID where fishhucs.HUC = '{0}'")
+
+        #whereClause = "fishhucs.HUC='{0}'"
+
+        query = query.format(huc_id)
+
+        print('Query: ' + query)
+        fish_props = list()
+        for fish_prop in FishGenusProperties.objects.raw(query):
+            fish_props.append(fish_prop)
+
+        return fish_props
+
+    except Exception as inst:
+        print ("Exception: " + inst.message)
+
+    return None
+
+
 def query_hucs_by_species(speciesid):
     """
     Arg1: Fish species id.
