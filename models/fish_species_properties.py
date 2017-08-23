@@ -8,7 +8,8 @@ class FishSpeciesProperties(models.Model):
     genus = models.TextField(max_length=25)
     species = models.TextField(max_length=25)
     commonname = models.TextField(max_length=50)
-    Group = models.TextField(max_length=50)
+    family = commonname = models.TextField(max_length=50)
+    grp = models.TextField(max_length=50)
     native = models.CharField
     pfg_page = models.IntegerField
     sportfishing = models.TextField(max_length=1)
@@ -67,7 +68,8 @@ class FishSpeciesProperties(models.Model):
         attrib['genus'] = self.genus
         attrib['species'] = self.species
         attrib['commonname'] = self.commonname
-        attrib['group'] = self.Group
+        attrib['family'] = self.family
+        attrib['group'] = self.grp
         attrib['native'] = self.native
         attrib['pfg_page'] = self.pfg_page
         attrib['sportfishing'] = self.sportfishing
