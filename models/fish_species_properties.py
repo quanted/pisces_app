@@ -8,7 +8,7 @@ class FishSpeciesProperties(models.Model):
     genus = models.TextField(max_length=25)
     species = models.TextField(max_length=25)
     commonname = models.TextField(max_length=50)
-    family = commonname = models.TextField(max_length=50)
+    family = models.TextField(max_length=50)
     grp = models.TextField(max_length=50)
     native = models.CharField
     pfg_page = models.IntegerField
