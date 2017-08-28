@@ -8,7 +8,8 @@ class FishSpeciesProperties(models.Model):
     genus = models.TextField(max_length=25)
     species = models.TextField(max_length=25)
     commonname = models.TextField(max_length=50)
-    Group = models.TextField(max_length=50)
+    family = models.TextField(max_length=50)
+    grp = models.TextField(max_length=50)
     native = models.CharField
     pfg_page = models.IntegerField
     sportfishing = models.TextField(max_length=1)
@@ -48,7 +49,7 @@ class FishSpeciesProperties(models.Model):
     sand = models.TextField(max_length=10)
     gravel = models.TextField(max_length=10)
     rck_rub_bol = models.TextField(max_length=10)
-    vegatation = models.TextField(max_length=10)
+    vegetation = models.TextField(max_length=10)
     wdyd_brush = models.TextField(max_length=10)
     clearwater = models.TextField(max_length=10)
     turbidwater = models.TextField(max_length=10)
@@ -67,7 +68,8 @@ class FishSpeciesProperties(models.Model):
         attrib['genus'] = self.genus
         attrib['species'] = self.species
         attrib['commonname'] = self.commonname
-        attrib['group'] = self.Group
+        attrib['family'] = self.family
+        attrib['group'] = self.grp
         attrib['native'] = self.native
         attrib['pfg_page'] = self.pfg_page
         attrib['sportfishing'] = self.sportfishing
@@ -107,7 +109,7 @@ class FishSpeciesProperties(models.Model):
         attrib['sand'] = self.sand
         attrib['gravel'] = self.gravel
         attrib['rck_rub_bol'] = self.rck_rub_bol
-        attrib['vegatation'] = self.vegatation
+        attrib['vegetation'] = self.vegetation
         attrib['wdyd_brush'] = self.wdyd_brush
         attrib['clearwater'] = self.clearwater
         attrib['turbidwater'] = self.turbidwater
