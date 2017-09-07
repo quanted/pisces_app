@@ -128,6 +128,32 @@ def query_fish_properties_by_species(speciesid):
 
     return None
 
+##################################################################
+def query_fish_properties_by_filter(query):
+    """
+        Arg1: Fish species id.
+        Returns: All fish properties from FishProperties for requested species
+        """
+
+    #   If there are no species, no reason to continue
+    if not query:
+        return []
+
+    try:
+
+        fish_props = list()
+        for fish_prop in FishSpeciesProperties.objects.raw(query):
+            fish_props.append(fish_prop)
+
+        return fish_props
+
+
+    except Exception as ex:
+        msg = ex
+        # logging.error(sys.exc_info()[0])
+
+    return None
+
 
 
 def query_fish_names_by_search_string(search_string):

@@ -1,4 +1,5 @@
 from django.db import models
+from .structures import  CaseInsensitiveDict
 
 class FishSpeciesProperties(models.Model):
     """Model class for Fish Species Properties"""

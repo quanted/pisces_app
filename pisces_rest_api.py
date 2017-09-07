@@ -3,12 +3,14 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 import json
 
+from .models.fish_filter_query_builder import FishProperties
 from .models.postgresql_mgr import query_species_by_huc
 from .models.postgresql_mgr import query_genera_by_huc
 from .models.postgresql_mgr import query_hucs_by_species
 from .models.postgresql_mgr import query_fish_properties_by_species
 from .models.postgresql_mgr import query_fish_names_by_search_string
 from .models.postgresql_mgr import query_ecoregion_from_lat_lng
+from .models.postgresql_mgr import query_fish_properties_by_filter
 
 #from .models.postgresql_mgr import query_fish_names_by_species
 #from .models.postgresql_mgr import query_fish_properties_by_species
@@ -123,6 +125,36 @@ def get_fish_names_by_search_string(request, searchstring=''):
 
     data['species'] = lst_names
     return JsonResponse(data)
+
+
+###########################################################################################
+@require_GET
+def get_species_by_filter(request):
+    """
+        REST API endpoint for retrieving fish species data based on filtering criteria
+        e.g.
+        https://qedinternal.epa.gov/pisces/rest/api/v1/fish/properties/?commonname=mud_sunfish&native=Y&caves=1
+    """
+    try:
+        query_dict = request.GET.dict()
+        fish_props = FishProperties()
+        query = fish_props.build_query(query_dict)
+        fish_props = query_fish_properties_by_filter(query)
+
+        data = dict()
+        lst_props = list()
+        for fish_prop in fish_props:
+            lst_props.append(fish_prop.get_attributes())
+
+        data['species'] = lst_props
+        return JsonResponse(data)
+
+    except Exception as ex:
+        msg = ex
+
+    return JsonResponse("{fail}")
+
+
 
 
 ###########################################################################################

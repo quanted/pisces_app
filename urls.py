@@ -32,6 +32,10 @@ urlpatterns = [
     url(r'^rest/api/v1/fish/properties/names/(?P<searchstring>\w+)$', pisces_rest_api.get_fish_names_by_search_string),
     url(r'^rest/api/v1/fish/properties/(?P<speciesid>\w+)$', pisces_rest_api.get_fish_properties_by_species),
 
+    # Example querystring
+    # rest/api/v1/fish/properties/?commonname=mud_sunfish&native=Y&caves=1
+    url(r'^rest/api/v1/fish/properties/$', pisces_rest_api.get_species_by_filter),
+
 
     #url(r'^rest/api/v1/fishproperties$', pisces_rest_api.get_fish_properties_by_huc),
     #url(r'^rest/api/v1/fishranges$', pisces_rest_api.get_fish_range_by_species),
