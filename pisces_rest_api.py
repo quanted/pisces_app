@@ -135,19 +135,19 @@ def get_species_by_filter(request):
         e.g.
         https://qedinternal.epa.gov/pisces/rest/api/v1/fish/properties/?commonname=mud_sunfish&native=Y&caves=1
     """
-    try:
-        query_dict = request.GET.dict()
-        fish_props = FishProperties()
-        query = fish_props.build_query(query_dict)
-        fish_props = query_fish_properties_by_filter(query)
+    #try:
+    query_dict = request.GET.dict()
+    fish_props = FishProperties()
+    query = fish_props.build_query(query_dict)
+    fish_props = query_fish_properties_by_filter(query)
 
-        data = dict()
-        lst_props = list()
-        for fish_prop in fish_props:
-            lst_props.append(fish_prop.get_attributes())
+    data = dict()
+    lst_props = list()
+    for fish_prop in fish_props:
+        lst_props.append(fish_prop.get_attributes())
 
-        data['species'] = lst_props
-        return JsonResponse(data)
+    data['species'] = lst_props
+    return JsonResponse(data)
 
     #except Exception as ex:
     #    msg = ex
