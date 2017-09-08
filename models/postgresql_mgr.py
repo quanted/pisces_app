@@ -3,6 +3,7 @@ from .fish_species_properties import FishSpeciesProperties
 from .fish_names import FishNames
 from .hucs import Hucs
 from .ecoregions import EcoRegions
+from .stream_segment import Segments
 
 def query_species_by_huc(huc_id):
     """
@@ -289,5 +290,21 @@ def query_ecoregion_from_lat_lng(lat, long):
         print ("Exception: " + inst.message)
         pass
 
+
+    return None
+
+def query_stream_segment(comid):
+
+    try:
+        query = "select * from nhdplusv21attributes where comid = " + comid
+        lst_stream_segments = []
+        for stream_segment in Segments.objects.raw(query):
+            lst_stream_segments.append(stream_segment)
+
+        return lst_stream_segments
+
+    except Exception as inst:
+        print("Exception: " + inst.message)
+        pass
 
     return None
