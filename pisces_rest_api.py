@@ -149,10 +149,10 @@ def get_species_by_filter(request):
         data['species'] = lst_props
         return JsonResponse(data)
 
-    except Exception as ex:
-        msg = ex
+    #except Exception as ex:
+    #    msg = ex
 
-    return JsonResponse("{fail}")
+    #return JsonResponse("{fail}")
 
 
 
