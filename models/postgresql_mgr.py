@@ -150,7 +150,7 @@ def query_fish_properties_by_filter(query):
 
     except Exception as ex:
         msg = ex
-        # logging.error(sys.exc_info()[0])
+        print(ex)
 
     return None
 
