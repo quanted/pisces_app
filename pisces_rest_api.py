@@ -11,6 +11,8 @@ from .models.postgresql_mgr import query_fish_properties_by_species
 from .models.postgresql_mgr import query_fish_names_by_search_string
 from .models.postgresql_mgr import query_ecoregion_from_lat_lng
 from .models.postgresql_mgr import query_fish_properties_by_filter
+from .models.postgresql_mgr import query_stream_segment
+from .models.stream_width_regression import StreamWidthRegression
 
 #from .models.postgresql_mgr import query_fish_names_by_species
 #from .models.postgresql_mgr import query_fish_properties_by_species
@@ -153,6 +155,57 @@ def get_species_by_filter(request):
     #    msg = ex
 
     #return JsonResponse("{fail}")
+
+
+###########################################################################################
+@require_GET
+def get_stream_properties(request):
+    """
+        REST API endpoint for retrieving stream properties
+        Get NHDplus attributes and eco region to compute streamwidth
+        e.g.
+        https://qedinternal.epa.gov/pisces/rest/api/v1/stream/properties?latitude=X&longitude=Y&comid=NUM
+    """
+    query_dict = request.GET.dict()
+    latitude = query_dict['latitude']
+    longitude = query_dict['longitude']
+    comid = query_dict['comid']
+
+    return_data = dict()
+
+    #Get the ecoregion from a lat/long
+    lst_eco_region_models = query_ecoregion_from_lat_lng(latitude, longitude)
+
+    lst_eco_regions = []
+    for region in lst_eco_region_models:
+        lst_eco_regions.append(region.get_attributes())
+
+    lst_stream_seg = []
+    lst_stream_seg_models = query_stream_segment(comid)
+    for seg in lst_stream_seg_models:
+        lst_stream_seg.append(seg.get_attributes())
+
+    slope = None
+    drainage_area = None
+    precip = None
+    elev = None
+    if len(lst_stream_seg) > 0:
+        slope = lst_stream_seg[0]['slope']
+        drainage_area = lst_stream_seg[0]['totdasqkm']
+        precip = lst_stream_seg[0]['precipvc']
+        elev = lst_stream_seg[0]['mavelv']
+
+    stream_width_reg = StreamWidthRegression()
+
+
+
+
+    data['stream_segment'] = {}
+    return JsonResponse(data)
+
+
+
+
 
 
 
