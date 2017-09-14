@@ -180,6 +180,12 @@ def get_stream_properties(request):
     for region in lst_eco_region_models:
         lst_eco_regions.append(region.get_attributes())
 
+    if len(lst_eco_region_models) < 1:
+        return JsonResponse({"error: no valid ecoregion"})
+
+    eco_region_gid = None
+    eco_region_gid = lst_eco_region_models[0].gid
+
     lst_stream_seg = []
     lst_stream_seg_models = query_stream_segment(comid)
     for seg in lst_stream_seg_models:
@@ -196,18 +202,14 @@ def get_stream_properties(request):
         elev = lst_stream_seg[0]['mavelv']
 
     stream_width_reg = StreamWidthRegression()
+    stream_width = stream_width_reg.calculate_stream_width(eco_region_gid, drainage_area, precip, slope, elev)
 
+    attributes = {'width':stream_width, 'area':drainage_area, 'slope':slope}
 
-
-
-    data['stream_segment'] = {}
+    data = {}
+    data['comid'] = comid
+    data['attributes']= attributes
     return JsonResponse(data)
-
-
-
-
-
-
 
 
 ###########################################################################################
