@@ -83,17 +83,32 @@ class FishProperties:
         qry_mean_length = ''
         qry_max_length = ''
         qry_habitat = ''
+
+        #Used in a couple of places to remove a trailing 'or '
+        trailing_or = 'or '
+
         for req_key, req_val in query_dict.items():
             # Is request param a valid query param
             if req_key in self.attrib:
                 if (req_key.lower() == 'scicomname'):
+                    #Handle empty string
+                    if not req_key:
+                        continue
+
                     words = req_val.split('_')
-                    if len(words) == 1:
-                        qry_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
-                        qry_name = str.format(qry_name, words[0])
-                    elif len(words) == 2:
-                        qry_name = (" (genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or commonname LIKE '%%{0} {1}%%'")
-                        qry_name = str.format(qry_name, words[0], words[1])
+                    #if len(words) == 1:
+                    #    qry_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
+                    #    qry_name = str.format(qry_name, words[0])
+                    #elif len(words) == 2:
+                    #   qry_name = (" (genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or commonname LIKE '%%{0} {1}%%'")
+                    #    qry_name = str.format(qry_name, words[0], words[1])
+                    for word in words:
+                        qry_tmp = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
+                        qry_tmp = str.format(qry_name, words)
+                        qry_name = qry_name + qry_tmp + " or"
+
+                    if qry_name.endswith(trailing_or):
+                        qry_name = qry_name[:-len(trailing_or)]
                     continue
 
 
@@ -104,7 +119,7 @@ class FishProperties:
                     for idx, grp in enumerate(words):
                         if idx != 0:
                             qry_group += " or "
-                        qry_group += str.format(" lower(grp) = '{0}'", grp)
+                        qry_group += str.format(" lower(grp) = '{0}'", grp.lower())
                     continue
 
                 if (req_key.lower() == 'native'):
@@ -150,46 +165,46 @@ class FishProperties:
                 #e.g. caves=1
                 param = req_key.lower()
                 if (req_val == '1'):
-                    qry_habitat += str.format(" {0}='1' and ", param)
+                    qry_habitat += str.format(" {0}='1' or ", param)
 
-        #Remove trailing 'and ' from qry_habitat string
-        trailing_and = 'and '
-        if qry_habitat.endswith(trailing_and):
-            qry_habitat = qry_habitat[:-len(trailing_and)]
+        #Remove trailing 'or ' from qry_habitat string
+        #trailing_or = 'or '
+        if qry_habitat.endswith(trailing_or):
+            qry_habitat = qry_habitat[:-len(trailing_or)]
 
         query = "select * from fishproperties where"
         if qry_name != '':
             query += qry_name
 
         if qry_group != '':
-            query += ' and' + qry_group
+            query += ' or' + qry_group
 
         if qry_native != '':
-            query += 'and' + qry_native
+            query += 'or' + qry_native
 
         if qry_pollut_tol != '':
-            query += ' and' + qry_pollut_tol
+            query += ' or' + qry_pollut_tol
 
         if qry_rarity != '':
-            query += ' and' + qry_rarity
+            query += ' or' + qry_rarity
 
         if qry_range != '':
-            query += ' and' + qry_range
+            query += ' or' + qry_range
 
         if qry_max_age != '':
-            query += ' and' + qry_max_age
+            query += ' or' + qry_max_age
 
         if qry_mean_length != '':
-            query += ' and' + qry_mean_length
+            query += ' or' + qry_mean_length
 
         if qry_max_length != '':
-            query += ' and' + qry_max_length
+            query += ' or' + qry_max_length
 
         if qry_max_length != '':
-            query += ' and' + qry_max_length
+            query += ' or' + qry_max_length
 
         if qry_habitat != '':
-            query += ' and' + qry_habitat
+            query += ' or' + qry_habitat
 
         return query
 

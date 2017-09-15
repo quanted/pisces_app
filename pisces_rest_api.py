@@ -196,8 +196,10 @@ def get_stream_properties(request):
     precip = None
     elev = None
     if len(lst_stream_seg) > 0:
-        slope = lst_stream_seg[0]['slope']
-        drainage_area = lst_stream_seg[0]['totdasqkm']
+        #Multiply by 100 to go from percent
+        slope = lst_stream_seg[0]['slope'] * 100
+        # Multiply by 100 to go from sq km to hectare
+        drainage_area = lst_stream_seg[0]['totdasqkm'] * 100
         precip = lst_stream_seg[0]['precipvc']
         elev = lst_stream_seg[0]['mavelv']
 
