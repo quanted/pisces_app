@@ -2,16 +2,14 @@ from django.db import models
 
 class Segments(models.Model):
     """This class is a wrapper for a NHD+ Flowline Segment - maps to a Segment node"""
-
-    def __init__(self):
-        self.comid = models.IntegerField(db_column='comid', primary_key=True)
-        self.totdasqkm = models.FloatField
-        self.maxelevsmo = models.FloatField
-        self.minelevsmo = models.FloatField
-        self.slope = models.FloatField
-        self.precipvc = models.FloatField
-        self.maflowv = models.FloatField
-        self.mavelv = models.FloatField
+    comid = models.IntegerField(db_column='comid', primary_key=True)
+    totdasqkm = models.FloatField
+    maxelevsmo = models.FloatField
+    minelevsmo = models.FloatField
+    slope = models.FloatField
+    precipvc = models.FloatField
+    maflowv = models.FloatField
+    mavelv = models.FloatField
 
     def get_attributes(self):
         attrib = dict()

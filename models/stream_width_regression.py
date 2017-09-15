@@ -51,8 +51,8 @@ class StreamWidthRegression:
         stream_width_fine   = 0.0
         stream_width_course = 0.0
         for idx, item in enumerate(lst_regressions):
-            stream_width_fine   += regress_vars[idx] * item[0][idx]
-            stream_width_course += regress_vars[idx] * item[1][idx]
+            stream_width_fine   += regress_vars[idx] * lst_regressions[0][idx]
+            stream_width_course += regress_vars[idx] * lst_regressions[1][idx]
 
         dbl_bankfull_width_fine   = math.pow(10, stream_width_fine)
         dbl_mean_width_fine = dbl_bankfull_width_fine * 0.75
