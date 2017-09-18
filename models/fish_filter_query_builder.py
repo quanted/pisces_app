@@ -177,34 +177,34 @@ class FishProperties:
             query += qry_name
 
         if qry_group != '':
-            query += ' or' + qry_group
+            query += ' and' + qry_group
 
         if qry_native != '':
-            query += 'or' + qry_native
+            query += ' and' + qry_native
 
         if qry_pollut_tol != '':
-            query += ' or' + qry_pollut_tol
+            query += ' and' + qry_pollut_tol
 
         if qry_rarity != '':
-            query += ' or' + qry_rarity
+            query += ' and' + qry_rarity
 
         if qry_range != '':
-            query += ' or' + qry_range
+            query += ' and' + qry_range
 
         if qry_max_age != '':
-            query += ' or' + qry_max_age
+            query += ' and' + qry_max_age
+
+        if qry_mean_weight != '':
+            query += ' and' + qry_mean_weight
 
         if qry_mean_length != '':
-            query += ' or' + qry_mean_length
+            query += ' and' + qry_mean_length
 
         if qry_max_length != '':
-            query += ' or' + qry_max_length
-
-        if qry_max_length != '':
-            query += ' or' + qry_max_length
+            query += ' and' + qry_max_length
 
         if qry_habitat != '':
-            query += ' or' + qry_habitat
+            query += ' and' + qry_habitat
 
         return query
 
