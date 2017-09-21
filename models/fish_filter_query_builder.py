@@ -72,7 +72,8 @@ class FishProperties:
 
         # Loop over keys in request dictionary, match them up to database fields
         # Build query accounting for the exceptions
-        qry_name = ''
+        qry_sci_name = ''
+        qry_common_name = ''
         qry_group = ''
         qry_native = ''
         qry_pollut_tol = ''
@@ -90,26 +91,43 @@ class FishProperties:
         for req_key, req_val in query_dict.items():
             # Is request param a valid query param
             if req_key in self.attrib:
-                if (req_key.lower() == 'scicomname'):
-                    #Handle empty string
-                    if not req_key:
-                        continue
 
-                    words = req_val.split('_')
+                if (req_key.lower() == 'scientific_name'):
+                    words = req_val.split(' ')
+                    if len(words) == 1:
+                        qry_sci_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%'")
+                        qry_sci_name = str.format(qry_sci_name, words[0])
+                    elif len(words) == 2:
+                        qry_sci_name = (" (genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or (species LIKE '%%{0}%%' and genus LIKE '%%{1}%%')")
+                        qry_sci_name = str.format(qry_sci_name, words[0], words[1])
+
+                if req_key.lower() == 'common_name':
+                    words = req_val.split(' ')
+                    if len(words) == 1:
+                        qry_common_name = (" commonname LIKE '%%{0}%%'")
+                        qry_common_name = str.format(qry_common_name, words[0])
+                    elif len(words) == 2:
+                        qry_sci_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
+                        qry_sci_name = str.format(qry_sci_name, words[0], words[1])
+                    elif len(words) == 3:
+                        qry_sci_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
+                        qry_sci_name = str.format(qry_sci_name, words[0], words[1], words[2])
+
+                    #words = req_val.split('_')
                     #if len(words) == 1:
                     #    qry_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
                     #    qry_name = str.format(qry_name, words[0])
                     #elif len(words) == 2:
                     #   qry_name = (" (genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or commonname LIKE '%%{0} {1}%%'")
                     #    qry_name = str.format(qry_name, words[0], words[1])
-                    for word in words:
-                        qry_tmp = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
-                        qry_tmp = str.format(qry_name, words)
-                        qry_name = qry_name + qry_tmp + " or"
+                    #for word in words:
+                    #    qry_tmp = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
+                    #    qry_tmp = str.format(qry_name, words)
+                    #    qry_name = qry_name + qry_tmp + " or"
 
-                    if qry_name.endswith(trailing_or):
-                        qry_name = qry_name[:-len(trailing_or)]
-                    continue
+                    #if qry_name.endswith(trailing_or):
+                    #    qry_name = qry_name[:-len(trailing_or)]
+                    #continue
 
 
                 # Can be multiple groups
