@@ -191,8 +191,11 @@ class FishProperties:
             qry_habitat = qry_habitat[:-len(trailing_or)]
 
         query = "select * from fishproperties where"
-        if qry_name != '':
-            query += qry_name
+        if qry_sci_name != '':
+            query += qry_sci_name
+
+        if qry_common_name != '':
+            query += ' and' + qry_common_name
 
         if qry_group != '':
             query += ' and' + qry_group
@@ -223,6 +226,8 @@ class FishProperties:
 
         if qry_habitat != '':
             query += ' and' + qry_habitat
+
+        print(query)
 
         return query
 
