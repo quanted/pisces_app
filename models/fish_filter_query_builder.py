@@ -95,7 +95,7 @@ class FishProperties:
             if req_key in self.attrib:
 
                 if (req_key.lower() == 'scientific_name'):
-                    words = req_val.split(' ')
+                    words = req_val.split('_')
                     if len(words) == 1:
                         qry_sci_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%'")
                         qry_sci_name = str.format(qry_sci_name, words[0])
@@ -104,7 +104,7 @@ class FishProperties:
                         qry_sci_name = str.format(qry_sci_name, words[0], words[1])
 
                 if req_key.lower() == 'common_name':
-                    words = req_val.split(' ')
+                    words = req_val.split('_')
                     if len(words) == 1:
                         qry_common_name = (" commonname LIKE '%%{0}%%'")
                         qry_common_name = str.format(qry_common_name, words[0])
@@ -135,6 +135,7 @@ class FishProperties:
                 # Can be multiple groups
                 #e.g.  grp='Black Bass' or grp='Mullet'
                 if (req_key.lower() == 'group'):
+                    words = words.replace('_', ' ')
                     words = req_val.split(',')
                     for idx, grp in enumerate(words):
                         if idx != 0:
