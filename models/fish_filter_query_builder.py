@@ -4,12 +4,14 @@ from .structures import CaseInsensitiveDict
 class FishProperties:
     def __init__(self):
         self.attrib = CaseInsensitiveDict()
-        self.attrib['scicomname'] = ''
+        #self.attrib['scicomname'] = ''
+        self.attrib['scientific_name'] = ''
+        self.attrib['common_name'] = ''
         self.attrib['speciesid'] = ''
         self.attrib['genusid'] = ''
         self.attrib['genus'] = ''
         self.attrib['species'] = ''
-        self.attrib['commonname'] = ''
+        #self.attrib['commonname'] = ''
         self.attrib['family'] = ''
         self.attrib['group'] = ''
         self.attrib['native'] = ''
