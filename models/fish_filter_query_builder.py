@@ -202,68 +202,68 @@ class FishProperties:
         if qry_common_name != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_common_name
+            first_condition = False
 
         if qry_group != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_group
+            first_condition = False
 
         if qry_native != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_native
+            first_condition = False
 
         if qry_pollut_tol != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_pollut_tol
+            first_condition = False
 
         if qry_rarity != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_rarity
+            first_condition = False
 
         if qry_range != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_range
+            first_condition = False
 
         if qry_max_age != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_max_age
+            first_condition = False
 
         if qry_mean_weight != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_mean_weight
+            first_condition = False
 
         if qry_mean_length != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_mean_length
+            first_condition = False
 
         if qry_max_length != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_max_length
+            first_condition = False
 
         if qry_habitat != '':
             if not first_condition:
                 query += ' and'
-                first_condition = False
             query += qry_habitat
+            first_condition = False
 
         print(query)
 
