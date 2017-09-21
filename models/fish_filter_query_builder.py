@@ -193,41 +193,66 @@ class FishProperties:
             qry_habitat = qry_habitat[:-len(trailing_or)]
 
         query = "select * from fishproperties where"
+        where_condition = False
+
         if qry_sci_name != '':
             query += qry_sci_name
+            where_condition = True
 
         if qry_common_name != '':
-            query += ' and' + qry_common_name
+            if not where_condition:
+                query += ' and'
+            query += qry_common_name
 
         if qry_group != '':
-            query += ' and' + qry_group
+            if not where_condition:
+                query += ' and'
+            query += qry_group
 
         if qry_native != '':
-            query += ' and' + qry_native
+            if not where_condition:
+                query += ' and'
+            query += qry_native
 
         if qry_pollut_tol != '':
-            query += ' and' + qry_pollut_tol
+            if not where_condition:
+                query += ' and'
+            query += qry_pollut_tol
 
         if qry_rarity != '':
-            query += ' and' + qry_rarity
+            if not where_condition:
+                query += ' and'
+            query += qry_rarity
 
         if qry_range != '':
-            query += ' and' + qry_range
+            if not where_condition:
+                query += ' and'
+            query += qry_range
 
         if qry_max_age != '':
-            query += ' and' + qry_max_age
+            if not where_condition:
+                query += ' and'
+            query += qry_max_age
 
         if qry_mean_weight != '':
-            query += ' and' + qry_mean_weight
+            if not where_condition:
+                query += ' and'
+            query += qry_mean_weight
 
         if qry_mean_length != '':
-            query += ' and' + qry_mean_length
+            if not where_condition:
+                query += ' and'
+            query += qry_mean_length
 
         if qry_max_length != '':
-            query += ' and' + qry_max_length
+            if not where_condition:
+                query += ' and'
+            query += qry_max_length
 
         if qry_habitat != '':
-            query += ' and' + qry_habitat
+            if not where_condition:
+                query += ' and'
+            query += qry_habitat
 
         print(query)
 
