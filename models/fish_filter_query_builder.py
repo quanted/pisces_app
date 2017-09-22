@@ -90,6 +90,7 @@ class FishProperties:
 
         #Used in a couple of places to remove a trailing 'or '
         trailing_or = 'or '
+        trailing_and = ' and'
 
         for req_key, req_val in query_dict.items():
             # Is request param a valid query param
@@ -189,12 +190,15 @@ class FishProperties:
                 #e.g. caves=1
                 param = req_key.lower()
                 if (req_val == '1'):
-                    qry_habitat += str.format(" {0}='1' and ", param)
+                    qry_habitat += str.format(" {0}='1' and", param)
 
         #Remove trailing 'or ' from qry_habitat string
         #trailing_or = 'or '
         if qry_habitat.endswith(trailing_or):
             qry_habitat = qry_habitat[:-len(trailing_or)]
+
+        if qry_habitat.endswith(trailing_and):
+            qry_habitat = qry_habitat[:-len(trailing_and)]
 
         query = "select * from fishproperties where"
         first_condition = True
