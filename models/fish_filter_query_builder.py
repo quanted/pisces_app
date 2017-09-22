@@ -110,11 +110,11 @@ class FishProperties:
                         qry_common_name = (" commonname LIKE '%%{0}%%'")
                         qry_common_name = str.format(qry_common_name, words[0])
                     elif len(words) == 2:
-                        qry_sci_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
-                        qry_sci_name = str.format(qry_sci_name, words[0], words[1])
+                        qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
+                        qry_common_name = str.format(qry_sci_name, words[0], words[1])
                     elif len(words) == 3:
-                        qry_sci_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
-                        qry_sci_name = str.format(qry_sci_name, words[0], words[1], words[2])
+                        qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
+                        qry_common_name = str.format(qry_sci_name, words[0], words[1], words[2])
 
                     #words = req_val.split('_')
                     #if len(words) == 1:
@@ -189,7 +189,7 @@ class FishProperties:
                 #e.g. caves=1
                 param = req_key.lower()
                 if (req_val == '1'):
-                    qry_habitat += str.format(" {0}='1' or ", param)
+                    qry_habitat += str.format(" {0}='1' and ", param)
 
         #Remove trailing 'or ' from qry_habitat string
         #trailing_or = 'or '
