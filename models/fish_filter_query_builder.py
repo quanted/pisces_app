@@ -136,8 +136,9 @@ class FishProperties:
                 # Can be multiple groups
                 #e.g.  grp='Black Bass' or grp='Mullet'
                 if (req_key.lower() == 'group'):
+                    words = req_val.lower()
                     words = words.replace('_', ' ')
-                    words = req_val.split(',')
+                    words = words.split(',')
                     for idx, grp in enumerate(words):
                         if idx != 0:
                             qry_group += " or "
