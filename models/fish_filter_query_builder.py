@@ -98,10 +98,10 @@ class FishProperties:
                 if (req_key.lower() == 'scientific_name'):
                     words = req_val.split('_')
                     if len(words) == 1:
-                        qry_sci_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%'")
+                        qry_sci_name = ("( genus LIKE '%%{0}%%' or species LIKE '%%{0}%%')")
                         qry_sci_name = str.format(qry_sci_name, words[0])
                     elif len(words) == 2:
-                        qry_sci_name = (" (genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or (species LIKE '%%{0}%%' and genus LIKE '%%{1}%%')")
+                        qry_sci_name = (" ((genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or (species LIKE '%%{0}%%' and genus LIKE '%%{1}%%'))")
                         qry_sci_name = str.format(qry_sci_name, words[0], words[1])
 
                 if req_key.lower() == 'common_name':
