@@ -19,7 +19,8 @@ class FishProperties:
         self.attrib['sportfishing'] = ''
         self.attrib['nongame'] = ''
         self.attrib['subsis_fish'] = ''
-        self.attrib['pollut_tol'] = ''
+        #self.attrib['pollut_tol'] = ''
+        self.attrib['tolerance'] = ''
         self.attrib['max_length'] = ''
         self.attrib['mean_length'] = ''
         self.attrib['mean_weight'] = ''
@@ -148,7 +149,8 @@ class FishProperties:
                     continue
 
                 # pollution tolerance can be: "I", "T", "M", or "U"
-                if (req_key.lower() == 'pollut_tol'):
+                #if (req_key.lower() == 'pollut_tol'):
+                if (req_key.lower() == 'tolerance'):
                     qry_pollut_tol = str.format(" pollut_tol='{0}'",req_val.upper())
                     continue
 
