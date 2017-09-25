@@ -19,7 +19,8 @@ class FishProperties:
         self.attrib['sportfishing'] = ''
         self.attrib['nongame'] = ''
         self.attrib['subsis_fish'] = ''
-        self.attrib['pollut_tol'] = ''
+        #self.attrib['pollut_tol'] = ''
+        self.attrib['tolerance'] = ''
         self.attrib['max_length'] = ''
         self.attrib['mean_length'] = ''
         self.attrib['mean_weight'] = ''
@@ -89,6 +90,7 @@ class FishProperties:
 
         #Used in a couple of places to remove a trailing 'or '
         trailing_or = 'or '
+        trailing_and = ' and'
 
         for req_key, req_val in query_dict.items():
             # Is request param a valid query param
@@ -97,10 +99,10 @@ class FishProperties:
                 if (req_key.lower() == 'scientific_name'):
                     words = req_val.split('_')
                     if len(words) == 1:
-                        qry_sci_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%'")
+                        qry_sci_name = ("( genus LIKE '%%{0}%%' or species LIKE '%%{0}%%')")
                         qry_sci_name = str.format(qry_sci_name, words[0])
                     elif len(words) == 2:
-                        qry_sci_name = (" (genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or (species LIKE '%%{0}%%' and genus LIKE '%%{1}%%')")
+                        qry_sci_name = (" ((genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or (species LIKE '%%{0}%%' and genus LIKE '%%{1}%%'))")
                         qry_sci_name = str.format(qry_sci_name, words[0], words[1])
 
                 if req_key.lower() == 'common_name':
@@ -109,11 +111,11 @@ class FishProperties:
                         qry_common_name = (" commonname LIKE '%%{0}%%'")
                         qry_common_name = str.format(qry_common_name, words[0])
                     elif len(words) == 2:
-                        qry_sci_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
-                        qry_sci_name = str.format(qry_sci_name, words[0], words[1])
+                        qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
+                        qry_common_name = str.format(qry_sci_name, words[0], words[1])
                     elif len(words) == 3:
-                        qry_sci_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
-                        qry_sci_name = str.format(qry_sci_name, words[0], words[1], words[2])
+                        qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
+                        qry_common_name = str.format(qry_sci_name, words[0], words[1], words[2])
 
                     #words = req_val.split('_')
                     #if len(words) == 1:
@@ -135,8 +137,9 @@ class FishProperties:
                 # Can be multiple groups
                 #e.g.  grp='Black Bass' or grp='Mullet'
                 if (req_key.lower() == 'group'):
+                    words = req_val.lower()
                     words = words.replace('_', ' ')
-                    words = req_val.split(',')
+                    words = words.split(',')
                     for idx, grp in enumerate(words):
                         if idx != 0:
                             qry_group += " or "
@@ -148,7 +151,8 @@ class FishProperties:
                     continue
 
                 # pollution tolerance can be: "I", "T", "M", or "U"
-                if (req_key.lower() == 'pollut_tol'):
+                #if (req_key.lower() == 'pollut_tol'):
+                if (req_key.lower() == 'tolerance'):
                     qry_pollut_tol = str.format(" pollut_tol='{0}'",req_val.upper())
                     continue
 
@@ -186,12 +190,15 @@ class FishProperties:
                 #e.g. caves=1
                 param = req_key.lower()
                 if (req_val == '1'):
-                    qry_habitat += str.format(" {0}='1' or ", param)
+                    qry_habitat += str.format(" {0}='1' and", param)
 
         #Remove trailing 'or ' from qry_habitat string
         #trailing_or = 'or '
         if qry_habitat.endswith(trailing_or):
             qry_habitat = qry_habitat[:-len(trailing_or)]
+
+        if qry_habitat.endswith(trailing_and):
+            qry_habitat = qry_habitat[:-len(trailing_and)]
 
         query = "select * from fishproperties where"
         first_condition = True
