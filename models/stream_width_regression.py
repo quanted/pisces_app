@@ -62,4 +62,4 @@ class StreamWidthRegression:
 
         dbl_mean_width = (dbl_mean_width_fine + dbl_mean_width_course) / 2.0
 
-        return dbl_mean_width
+        return round(dbl_mean_width, 1)
