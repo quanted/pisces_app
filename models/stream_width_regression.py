@@ -45,7 +45,7 @@ class StreamWidthRegression:
         self.regions[27] = [self.xeric_fine, self.xeric_course]
 
     def calculate_stream_width(self, eco_region_id, area, precipitation, slope, elevation):
-        regress_vars = [1.0, math.log(area), math.log(precipitation), math.log(slope), elevation]
+        regress_vars = [1.0, math.log10(area), math.log10(precipitation), math.log10(slope), elevation]
         lst_regressions = self.regions[eco_region_id]
 
         stream_width_fine   = 0.0
