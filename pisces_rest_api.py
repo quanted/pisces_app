@@ -199,14 +199,14 @@ def get_stream_properties(request):
         #Multiply by 100 to go from percent
         slope = lst_stream_seg[0]['slope'] * 100
         # Multiply by 100 to go from sq km to hectare
-        drainage_area = lst_stream_seg[0]['totdasqkm'] * 100
+        drainage_area = lst_stream_seg[0]['totdasqkm']
         precip = lst_stream_seg[0]['precipvc']
         elev = lst_stream_seg[0]['mavelv']
 
     stream_width_reg = StreamWidthRegression()
     stream_width = stream_width_reg.calculate_stream_width(eco_region_gid, drainage_area, precip, slope, elev)
 
-    attributes = {'width':stream_width, 'area':drainage_area, 'slope':slope}
+    attributes = {'width':stream_width, 'area':drainage_area * 100, 'slope':slope}
 
     data = {}
     data['comid'] = comid
