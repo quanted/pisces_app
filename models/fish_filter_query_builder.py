@@ -190,7 +190,7 @@ class FishProperties:
                 #e.g. caves=1
                 param = req_key.lower()
                 if (req_val == '1'):
-                    qry_habitat += str.format(" {0}='1' and", param)
+                    qry_habitat += str.format(" {0}='1' or", param)
 
         #Remove trailing 'or ' from qry_habitat string
         #trailing_or = 'or '
