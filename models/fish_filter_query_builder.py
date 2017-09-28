@@ -138,10 +138,10 @@ class FishProperties:
                         qry_common_name = str.format(qry_common_name, words[0])
                     elif len(words) == 2:
                         qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
-                        qry_common_name = str.format(qry_sci_name, words[0], words[1])
+                        qry_common_name = str.format(qry_common_name, words[0], words[1])
                     elif len(words) == 3:
                         qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
-                        qry_common_name = str.format(qry_sci_name, words[0], words[1], words[2])
+                        qry_common_name = str.format(qry_common_name, words[0], words[1], words[2])
 
 
                 # Can be multiple groups
