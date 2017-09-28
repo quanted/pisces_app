@@ -1,26 +1,6 @@
 from .structures import CaseInsensitiveDict
 
-####################################
-# Sets containing Groupings for the various habitat and other fish properties
-beneficial_use  = {'sportfishing', 'nongame', 'subsis_fish'}
-system          = {'caves', 'springs', 'headwaters', 'creeks', 'small_riv', 'med_riv', 'lge_riv', 'lk_imp_pnd','swp_msh_by', 'coast_ocea'}
-water_pos       = {'benthic', 'surface', 'opnwtr_pelag', 'nrshre_litt'}
-substrate       = {'mud_slt_det', 'sand', 'gravel', 'rck_rub_bol', 'vegetation', 'wdyd_brush'}
-habitat_type    = {'riffles', 'run_flopool', 'pool_bckwtr'}
-water_clarity   = {'clearwater', 'turbidwater'}
-thermal_regime  = {'coldwater', 'coolwater', 'warmwater'}
-topography      = {'lowlands_lgr', 'uplands_hgr'}
-################# End Groupings
 
-######### Dictionary of grouping Sets
-categories = {'beneficial_use': beneficial_use, 'system': system, 'water_pos': water_pos,
-              'substrate': substrate, 'habitat_type': habitat_type,
-              'water_clarity': water_clarity, 'thermal_regime': thermal_regime,
-              'topography': topography}
-
-######### Dictionary of grouping lists that are specified in the query
-query_categories = {'beneficial_use': [], 'system': [], 'water_pos': [], 'substrate': [],
-                    'habitat_type': [], 'water_clarity': [], 'thermal_regime': [], 'topography': []}
 
 
 class FishProperties:
@@ -88,6 +68,29 @@ class FishProperties:
         self.attrib['uplands_hgr'] = ''
         self.attrib['locat_notes'] = ''
         self.attrib['habit_notes'] = ''
+
+        ####################################
+        # Sets containing Groupings for the various habitat and other fish properties
+        self.beneficial_use = {'sportfishing', 'nongame', 'subsis_fish'}
+        self.system         = {'caves', 'springs', 'headwaters', 'creeks', 'small_riv', 'med_riv', 'lge_riv', 'lk_imp_pnd',
+                               'swp_msh_by', 'coast_ocea'}
+        self.water_pos      = {'benthic', 'surface', 'opnwtr_pelag', 'nrshre_litt'}
+        self.substrate      = {'mud_slt_det', 'sand', 'gravel', 'rck_rub_bol', 'vegetation', 'wdyd_brush'}
+        self.habitat_type   = {'riffles', 'run_flopool', 'pool_bckwtr'}
+        self.water_clarity  = {'clearwater', 'turbidwater'}
+        self.thermal_regime = {'coldwater', 'coolwater', 'warmwater'}
+        self.topography     = {'lowlands_lgr', 'uplands_hgr'}
+        ################# End Groupings
+
+        ######### Dictionary of grouping Sets
+        self.categories = {'beneficial_use': self.beneficial_use, 'system': self.system,
+                           'water_pos': self.water_pos, 'substrate': self.substrate,
+                           'habitat_type': self.habitat_type,'water_clarity': self.water_clarity,
+                           'thermal_regime': self.thermal_regime, 'topography': self.topography}
+
+        ######### Dictionary of grouping lists that are specified in the query
+        self.query_categories = {'beneficial_use': [], 'system': [], 'water_pos': [], 'substrate': [],
+                            'habitat_type': [], 'water_clarity': [], 'thermal_regime': [], 'topography': []}
 
     def build_query(self, query_dict):
         """
@@ -201,21 +204,21 @@ class FishProperties:
 
         # The rest of the query parameters are are used if value == 1
         # e.g. caves=1, springs=1, headwaters=1
-        for cat in categories:
-            intersect = set_keys & categories[cat]
+        for cat in self.categories:
+            intersect = set_keys & self.categories[cat]
             if len(intersect) > 0:
                 print(cat)
                 print(intersect)
                 for param in intersect:
                     val = query_dict[param]
                     if (val == '1'):
-                        query_categories[cat].append(param)
+                        self.query_categories[cat].append(param)
 
         qry_habitat = ''
         query_cat = ''
-        for category in query_categories:
+        for category in self.query_categories:
             query_cat = ''
-            for val in query_categories[category]:
+            for val in self.query_categories[category]:
                 query_cat += str.format(" {0}='1' or", val)
 
             if query_cat.endswith(trailing_or):
