@@ -153,7 +153,12 @@ class FishProperties:
                 # pollution tolerance can be: "I", "T", "M", or "U"
                 #if (req_key.lower() == 'pollut_tol'):
                 if (req_key.lower() == 'tolerance'):
-                    qry_pollut_tol = str.format(" pollut_tol='{0}'",req_val.upper())
+                    words = req_val.lower()
+                    words = words.split(',')
+                    for idx, pollut in enumerate(words):
+                        if idx != 0:
+                            qry_pollut_tol += " or "
+                            qry_pollut_tol += str.format(" lower(pollut_tol) = '{0}'", pollut)
                     continue
 
                 if (req_key.lower() == 'rarity'):
