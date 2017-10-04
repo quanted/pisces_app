@@ -171,7 +171,7 @@ class FishProperties:
                     for idx, pollut in enumerate(words):
                         if idx != 0:
                             qry_pollut_tol += " or "
-                            qry_pollut_tol += str.format(" lower(pollut_tol) = '{0}'", pollut)
+                        qry_pollut_tol += str.format(" lower(pollut_tol) = '{0}'", pollut)
                     continue
 
                 if (req_key.lower() == 'rarity'):
