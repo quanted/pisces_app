@@ -1,7 +1,10 @@
 from .structures import CaseInsensitiveDict
 
 
+
+
 class FishProperties:
+    """Fish properties class for building this convoluted query"""
     def __init__(self):
         self.attrib = CaseInsensitiveDict()
         #self.attrib['scicomname'] = ''
@@ -66,6 +69,29 @@ class FishProperties:
         self.attrib['locat_notes'] = ''
         self.attrib['habit_notes'] = ''
 
+        ####################################
+        # Sets containing Groupings for the various habitat and other fish properties
+        self.beneficial_use = {'sportfishing', 'nongame', 'subsis_fish'}
+        self.system         = {'caves', 'springs', 'headwaters', 'creeks', 'small_riv', 'med_riv', 'lge_riv', 'lk_imp_pnd',
+                               'swp_msh_by', 'coast_ocea'}
+        self.water_pos      = {'benthic', 'surface', 'opnwtr_pelag', 'nrshre_litt'}
+        self.substrate      = {'mud_slt_det', 'sand', 'gravel', 'rck_rub_bol', 'vegetation', 'wdyd_brush'}
+        self.habitat_type   = {'riffles', 'run_flopool', 'pool_bckwtr'}
+        self.water_clarity  = {'clearwater', 'turbidwater'}
+        self.thermal_regime = {'coldwater', 'coolwater', 'warmwater'}
+        self.topography     = {'lowlands_lgr', 'uplands_hgr'}
+        ################# End Groupings
+
+        ######### Dictionary of grouping Sets
+        self.categories = {'beneficial_use': self.beneficial_use, 'system': self.system,
+                           'water_pos': self.water_pos, 'substrate': self.substrate,
+                           'habitat_type': self.habitat_type,'water_clarity': self.water_clarity,
+                           'thermal_regime': self.thermal_regime, 'topography': self.topography}
+
+        ######### Dictionary of grouping lists that are specified in the query
+        self.query_categories = {'beneficial_use': [], 'system': [], 'water_pos': [], 'substrate': [],
+                            'habitat_type': [], 'water_clarity': [], 'thermal_regime': [], 'topography': []}
+
     def build_query(self, query_dict):
         """
         Build a query string for filtering fish
@@ -89,8 +115,11 @@ class FishProperties:
         qry_habitat = ''
 
         #Used in a couple of places to remove a trailing 'or '
-        trailing_or = 'or '
+        trailing_or = ' or'
         trailing_and = ' and'
+
+        #This will be used later for habitat related fields that contain 1 for true. E.g. caves=1
+        set_keys = set(query_dict.keys())
 
         for req_key, req_val in query_dict.items():
             # Is request param a valid query param
@@ -112,26 +141,10 @@ class FishProperties:
                         qry_common_name = str.format(qry_common_name, words[0])
                     elif len(words) == 2:
                         qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
-                        qry_common_name = str.format(qry_sci_name, words[0], words[1])
+                        qry_common_name = str.format(qry_common_name, words[0], words[1])
                     elif len(words) == 3:
                         qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
-                        qry_common_name = str.format(qry_sci_name, words[0], words[1], words[2])
-
-                    #words = req_val.split('_')
-                    #if len(words) == 1:
-                    #    qry_name = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
-                    #    qry_name = str.format(qry_name, words[0])
-                    #elif len(words) == 2:
-                    #   qry_name = (" (genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or commonname LIKE '%%{0} {1}%%'")
-                    #    qry_name = str.format(qry_name, words[0], words[1])
-                    #for word in words:
-                    #    qry_tmp = (" genus LIKE '%%{0}%%' or species LIKE '%%{0}%%' or commonname LIKE '%%{0}%%'")
-                    #    qry_tmp = str.format(qry_name, words)
-                    #    qry_name = qry_name + qry_tmp + " or"
-
-                    #if qry_name.endswith(trailing_or):
-                    #    qry_name = qry_name[:-len(trailing_or)]
-                    #continue
+                        qry_common_name = str.format(qry_common_name, words[0], words[1], words[2])
 
 
                 # Can be multiple groups
@@ -151,14 +164,14 @@ class FishProperties:
                     continue
 
                 # pollution tolerance can be: "I", "T", "M", or "U"
-                #if (req_key.lower() == 'pollut_tol'):
+                # if (req_key.lower() == 'pollut_tol'):
                 if (req_key.lower() == 'tolerance'):
                     words = req_val.lower()
                     words = words.split(',')
                     for idx, pollut in enumerate(words):
                         if idx != 0:
                             qry_pollut_tol += " or "
-                            qry_pollut_tol += str.format(" lower(pollut_tol) = '{0}'", pollut)
+                        qry_pollut_tol += str.format(" lower(pollut_tol) = '{0}'", pollut)
                     continue
 
                 if (req_key.lower() == 'rarity'):
@@ -191,16 +204,34 @@ class FishProperties:
                         qry_max_length = str.format(" max_length>={0} and max_length<={1}", range[0], range[1])
                     continue
 
-                #The rest of the query parameters are are used if value == 1
-                #e.g. caves=1
-                param = req_key.lower()
-                if (req_val == '1'):
-                    qry_habitat += str.format(" {0}='1' or", param)
+                if qry_habitat.endswith(trailing_and):
+                    qry_habitat = qry_habitat[:-len(trailing_and)]
 
-        #Remove trailing 'or ' from qry_habitat string
-        #trailing_or = 'or '
-        if qry_habitat.endswith(trailing_or):
-            qry_habitat = qry_habitat[:-len(trailing_or)]
+        # The rest of the query parameters are are used if value == 1
+        # e.g. caves=1, springs=1, headwaters=1
+        for cat in self.categories:
+            intersect = set_keys & self.categories[cat]
+            if len(intersect) > 0:
+                print(cat)
+                print(intersect)
+                for param in intersect:
+                    val = query_dict[param]
+                    if (val == '1'):
+                        self.query_categories[cat].append(param)
+
+        qry_habitat = ''
+        query_cat = ''
+        for category in self.query_categories:
+            query_cat = ''
+            for val in self.query_categories[category]:
+                query_cat += str.format(" {0}='1' or", val)
+
+            if query_cat.endswith(trailing_or):
+                query_cat = query_cat[:-len(trailing_or)]
+
+            if len(query_cat) > 0:
+                qry_habitat += ' (' + query_cat + ') and'
+            print(qry_habitat)
 
         if qry_habitat.endswith(trailing_and):
             qry_habitat = qry_habitat[:-len(trailing_and)]
@@ -281,4 +312,16 @@ class FishProperties:
         print(query)
 
         return query
+
+    def habitat_groups(self):
+        self.attrib['caves'] = ''
+        self.attrib['springs'] = ''
+        self.attrib['headwaters'] = ''
+        self.attrib['creeks'] = ''
+        self.attrib['small_riv'] = ''
+        self.attrib['med_riv'] = ''
+        self.attrib['lge_riv'] = ''
+        self.attrib['lk_imp_pnd'] = ''
+        self.attrib['swp_msh_by'] = ''
+        self.attrib['coast_ocea'] = ''
 
