@@ -164,7 +164,7 @@ class FishProperties:
                     continue
 
                 # pollution tolerance can be: "I", "T", "M", or "U"
-                #if (req_key.lower() == 'pollut_tol'):
+                # if (req_key.lower() == 'pollut_tol'):
                 if (req_key.lower() == 'tolerance'):
                     words = req_val.lower()
                     words = words.split(',')
