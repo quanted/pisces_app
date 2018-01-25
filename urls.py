@@ -4,7 +4,7 @@ Definition of urls for qed_pisces.
 
 from datetime import datetime
 from django.conf.urls import url
-
+from django.urls import path
 import django.contrib.auth.views
 
 from . import pisces_rest_api, views, description, watershed
@@ -13,34 +13,52 @@ from . import stream, species_explorer, algorithms, references, links_left
 
 # if settings.IS_PUBLIC:
 urlpatterns = [
-    # url(r'^$', views.pisces_landing_page),
-    #front end urls
-    url(r'^$', description.description_page, {'model': 'pisces'}),
-    url(r'^watershed$', watershed.watershed_page, {'model': 'pisces'}),
-    url(r'^stream$', stream.stream_page, {'model': 'pisces'}),
-    url(r'^species$', species_explorer.query_page, {'model': 'pisces'}),
-    url(r'^algorithms/$', algorithms.algorithm_page, {'model': 'pisces'}),
-    url(r'^references/$', references.references_page, {'model': 'pisces'}),
-    # url(r'^api$', rest.rest_page, {'model': 'pisces'}),
-    # url(r'^swag$', views.getSwaggerJsonContent)
+    # #front end urls
+    # url(r'^$', description.description_page, {'model': 'pisces'}),
+    # url(r'^watershed$', watershed.watershed_page, {'model': 'pisces'}),
+    # url(r'^stream$', stream.stream_page, {'model': 'pisces'}),
+    # url(r'^species$', species_explorer.query_page, {'model': 'pisces'}),
+    # url(r'^algorithms/$', algorithms.algorithm_page, {'model': 'pisces'}),
+    # url(r'^references/$', references.references_page, {'model': 'pisces'}),
+    # # url(r'^api$', rest.rest_page, {'model': 'pisces'}),
+    # # url(r'^swag$', views.getSwaggerJsonContent)
+    #
+    # # rest urls
+    # url(r'^rest/api/v1/fish/hucs/(?P<huc>\w+)$', pisces_rest_api.get_species_by_huc),
+    # url(r'^rest/api/v1/fish/genera/hucs/(?P<huc>\w+)$', pisces_rest_api.get_genera_by_huc),
+    # url(r'^rest/api/v1/hucs/fish/(?P<speciesid>\w+)$', pisces_rest_api.get_hucs_by_species),
+    # url(r'^rest/api/v1/fish/properties/names$', pisces_rest_api.post_fish_names_by_species),
+    # url(r'^rest/api/v1/fish/properties/names/(?P<searchstring>\w+)$', pisces_rest_api.get_fish_names_by_search_string),
+    # url(r'^rest/api/v1/fish/properties/(?P<speciesid>\w+)$', pisces_rest_api.get_fish_properties_by_species),
+    #
+    # # Example querystring
+    # # rest/api/v1/fish/properties/?commonname=mud_sunfish&native=Y&caves=1
+    # url(r'^rest/api/v1/fish/properties$', pisces_rest_api.get_species_by_filter),
+    # url(r'^rest/api/v1/stream/properties$', pisces_rest_api.get_stream_properties),
+    # url(r'^rest/api/v1/ecoregions$', pisces_rest_api.get_ecoregion_from_pt)
+
+    # front end urls
+    path('', description.description_page, {'model': 'pisces'}),
+    path('watershed/', watershed.watershed_page, {'model': 'pisces'}),
+    path('stream/', stream.stream_page, {'model': 'pisces'}),
+    path('species/', species_explorer.query_page, {'model': 'pisces'}),
+    path('algorithms/', algorithms.algorithm_page, {'model': 'pisces'}),
+    path('references/', references.references_page, {'model': 'pisces'}),
 
     # rest urls
-    url(r'^rest/api/v1/fish/hucs/(?P<huc>\w+)$', pisces_rest_api.get_species_by_huc),
-    url(r'^rest/api/v1/fish/genera/hucs/(?P<huc>\w+)$', pisces_rest_api.get_genera_by_huc),
-    url(r'^rest/api/v1/hucs/fish/(?P<speciesid>\w+)$', pisces_rest_api.get_hucs_by_species),
-    url(r'^rest/api/v1/fish/properties/names$', pisces_rest_api.post_fish_names_by_species),
-    url(r'^rest/api/v1/fish/properties/names/(?P<searchstring>\w+)$', pisces_rest_api.get_fish_names_by_search_string),
-    url(r'^rest/api/v1/fish/properties/(?P<speciesid>\w+)$', pisces_rest_api.get_fish_properties_by_species),
+    path('rest/api/v1/fish/hucs/<str:huc>/', pisces_rest_api.get_species_by_huc),
+    path('rest/api/v1/fish/genera/hucs/<str:huc>/', pisces_rest_api.get_genera_by_huc),
+    path('rest/api/v1/hucs/fish/<int:speciesid>/', pisces_rest_api.get_hucs_by_species),
+    path('rest/api/v1/fish/properties/names/', pisces_rest_api.post_fish_names_by_species),
+    path('rest/api/v1/fish/properties/names/<str:searchstring>/', pisces_rest_api.get_fish_names_by_search_string),
+    path('rest/api/v1/fish/properties/<int:speciesid>/', pisces_rest_api.get_fish_properties_by_species),
 
     # Example querystring
     # rest/api/v1/fish/properties/?commonname=mud_sunfish&native=Y&caves=1
-    url(r'^rest/api/v1/fish/properties$', pisces_rest_api.get_species_by_filter),
-    url(r'^rest/api/v1/stream/properties$', pisces_rest_api.get_stream_properties),
+    path('rest/api/v1/fish/properties/', pisces_rest_api.get_species_by_filter),
+    path('rest/api/v1/stream/properties/', pisces_rest_api.get_stream_properties),
+    path('rest/api/v1/ecoregions/', pisces_rest_api.get_ecoregion_from_pt)
 
-
-    #url(r'^rest/api/v1/fishproperties$', pisces_rest_api.get_fish_properties_by_huc),
-    #url(r'^rest/api/v1/fishranges$', pisces_rest_api.get_fish_range_by_species),
-    url(r'^rest/api/v1/ecoregions$', pisces_rest_api.get_ecoregion_from_pt)
 ]
 # else:
 #     urlpatterns = [
