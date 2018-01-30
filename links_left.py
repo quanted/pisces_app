@@ -12,7 +12,7 @@ def ordered_list(model=None, page=None):
             ])
          ),
         ('Documentation', OrderedDict([
-                ('API Documentation', '/qedinternal.epa.gov/pisces/rest'),
+                # ('API Documentation', '/qedinternal.epa.gov/pisces/rest'),
                 ('Source Code', '/github.com/quanted/qed_pisces'),
                 ('Algorithms', 'pisces/algorithms'),
                 ('References', 'pisces/references')
