@@ -84,7 +84,7 @@ def get_hucs_by_species(request, speciesid=''):
         e.g.
         https://qedinternal.epa.gov/pisces/rest/api/v1/hucs/fish/(speciesid)
     """
-
+    speciesid = str(speciesid)
     if len(speciesid) > 4:
         return JsonResponse({"error": "argument error: Species ID value provided was not valid, please provide a valid species ID."
                                       " Provided value = " + speciesid})
