@@ -30,6 +30,7 @@ def get_species_by_huc(request, huc=''):
         https://qedinternal.epa.gov/pisces/rest/api/v1/fish/hucs/(huc8)
     """
 
+    huc = str(huc)
     if len(huc) != 8:
         return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
                                       " Provided value = " + huc})
@@ -56,6 +57,7 @@ def get_genera_by_huc(request, huc=''):
         https://qedinternal.epa.gov/pisces/rest/api/v1/fish/hucs/(huc8)
     """
 
+    huc = str(huc)
     if len(huc) != 8:
         return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
                                       " Provided value = " + huc})
@@ -84,7 +86,7 @@ def get_hucs_by_species(request, speciesid=''):
         e.g.
         https://qedinternal.epa.gov/pisces/rest/api/v1/hucs/fish/(speciesid)
     """
-
+    speciesid = str(speciesid)
     if len(speciesid) > 4:
         return JsonResponse({"error": "argument error: Species ID value provided was not valid, please provide a valid species ID."
                                       " Provided value = " + speciesid})
@@ -248,7 +250,7 @@ def get_fish_properties_by_species(request, speciesid=''):
         https://qedinternal.epa.gov/pisces/rest/api/v1/fish/properties/names/search_string
     """
 
-    if len(speciesid) > 4:
+    if type(speciesid) != int:
         return JsonResponse({"error": "argument error: Species ID value provided was not valid, please provide a valid species ID."
                                       " Provided value = " + speciesid})
     # debug print
