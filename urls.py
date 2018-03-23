@@ -4,7 +4,7 @@ Definition of urls for qed_pisces.
 
 from datetime import datetime
 from django.conf.urls import url
-from django.urls import path
+# from django.urls import path
 import django.contrib.auth.views
 
 from . import pisces_rest_api, views, description, watershed
