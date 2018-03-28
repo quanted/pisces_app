@@ -250,7 +250,8 @@ def get_fish_properties_by_species(request, speciesid=''):
         https://qedinternal.epa.gov/pisces/rest/api/v1/fish/properties/names/search_string
     """
 
-    if type(speciesid) != int:
+    speciesid = str(speciesid).strip()
+    if len(speciesid) > 4:
         return JsonResponse({"error": "argument error: Species ID value provided was not valid, please provide a valid species ID."
                                       " Provided value = " + speciesid})
     # debug print
