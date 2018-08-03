@@ -197,9 +197,14 @@ def get_stream_properties(request):
     drainage_area = None
     precip = None
     elev = None
+    slope = lst_stream_seg[0]['slope']
+    if (slope < 1.001e-5) and (slope > 0):
+        slope = 1.001e-5
+
     if len(lst_stream_seg) > 0:
         #Multiply by 100 to go from percent - round to 2 digits
-        slope = round((lst_stream_seg[0]['slope'] * 100),2)
+        #slope = round((lst_stream_seg[0]['slope'] * 100),2)
+        slope = slope * 100
         # round to nearest int
         drainage_area = round(lst_stream_seg[0]['totdasqkm'])
         precip = lst_stream_seg[0]['precipvc']
