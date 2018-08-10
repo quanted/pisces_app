@@ -207,13 +207,27 @@ def get_stream_properties(request):
         slope = slope * 100
         # round to nearest int
         drainage_area = round(lst_stream_seg[0]['totdasqkm'])
+        drainage_area = drainage_area / 100.0
         precip = lst_stream_seg[0]['precipvc']
-        elev = lst_stream_seg[0]['mavelv']
+        precip = precip / 100000.0
+        #elev = lst_stream_seg[0]['mavelv']
+        elev =  (lst_stream_seg[0]['maxelevsmo'] + lst_stream_seg[0]['minelevsmo']) / 2.0
+        elev = elev / 100.0
 
     stream_width_reg = StreamWidthRegression()
     stream_width = stream_width_reg.calculate_stream_width(eco_region_gid, drainage_area, precip, slope, elev)
+    fine_width = stream_width['fine']
+    course_width = stream_width['course']
+    avg_width = (fine_width + course_width) / 2.0
 
-    attributes = {'width':stream_width, 'area':drainage_area * 100, 'slope':slope}
+    attributes = {'width':avg_width,
+                  'fine_width' : fine_width,
+                  'course_width' : course_width,
+                  'area':drainage_area, 
+                  'slope':slope, 
+                  'precipitation':precip, 
+                  'elevation': elev,
+                  'eco_region':eco_region_gid}
 
     data = {}
     data['comid'] = comid
