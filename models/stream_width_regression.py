@@ -13,7 +13,7 @@ class StreamWidthRegression:
         self.south_appalachians_course = [ 0.6053,     0.3935,     0.0000,     0.0852,     0.0000  ]
 
         self.coastal_plains_fine       = [ 0.4332,     0.2604,     0.0000,     0.0000,     0.0000  ]
-        self.coastal_plains_course     = [ 0.8927,     0.2604,     0.0000,     0.0000,     0.00557 ]
+        self.coastal_plains_course     = [ 0.8927,     0.2604,     0.0000,     0.0000,     -0.00557]
 
         self.upper_midwest_fine        = [ 0.2356,     0.4110,     2.5732,     0.0876,     0.00137 ]
         self.upper_midwest_course      = [ 0.2356,     0.4110,     0.0000,     0.0000,     0.0000  ]
