@@ -47,11 +47,20 @@ def query_genera_by_huc(huc_id):
 
     try:
 
+        #query = (
+        #    "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
+        #    "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, genera.* "
+        #    "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
+        #    "join genera on fishproperties.GenusID=genera.GenusID where fishhucs.HUC = '{0}'")
+
         query = (
             "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
-            "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, genera.* "
+            "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, "
+            "fishproperties.genusID, envelopes.cond_l, envelopes.cond_u, envelopes.ph_l, envelopes.ph_u, envelopes.width_l, envelopes.width_u, "
+            "envelopes.slope_l, envelopes.slope_u, envelopes.area_l, envelopes.area_u, envelopes.depth_l, envelopes.depth_u, "
+            "envelopes.do_l, envelopes.do_u, envelopes.tss_l, envelopes.tss_u "
             "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
-            "join genera on fishproperties.GenusID=genera.GenusID where fishhucs.HUC = '{0}'")
+            "join envelopes on fishproperties.speciesid=envelopes.speciesid where fishhucs.HUC = '{0}'")
 
         #whereClause = "fishhucs.HUC='{0}'"
 
@@ -296,7 +305,8 @@ def query_ecoregion_from_lat_lng(lat, long):
 def query_stream_segment(comid):
 
     try:
-        query = "select comid, totdasqkm, slope, precipvc, maflowv, mavelv from nhdplusv21attributes where comid = " + comid
+        #query = "select comid, totdasqkm, slope, precipvc, maflowv, mavelv from nhdplusv21attributes where comid = " + comid
+        query = "select comid, totdasqkm, slope, precipvc, maxelevsmo, minelevsmo, maflowv, mavelv from nhdplusv21attributes where comid = " + comid
         lst_stream_segments = []
         for stream_segment in Segments.objects.raw(query):
             lst_stream_segments.append(stream_segment)

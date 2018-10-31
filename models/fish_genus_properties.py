@@ -12,6 +12,7 @@ class FishGenusProperties(models.Model):
     thin_adj = models.FloatField
     rarity = models.FloatField
     huc = models.TextField(max_length=8)
+    #speciesid = models.IntegerField
     genusid = models.IntegerField
     cond_l = models.FloatField
     cond_u = models.FloatField
