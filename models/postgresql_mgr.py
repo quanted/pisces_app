@@ -59,8 +59,8 @@ def query_genera_by_huc(huc_id):
             "fishproperties.genusID, envelopes.cond_l, envelopes.cond_u, envelopes.ph_l, envelopes.ph_u, envelopes.width_l, envelopes.width_u, "
             "envelopes.slope_l, envelopes.slope_u, envelopes.area_l, envelopes.area_u, envelopes.depth_l, envelopes.depth_u, "
             "envelopes.do_l, envelopes.do_u, envelopes.tss_l, envelopes.tss_u "
-            "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
-            "join envelopes on fishproperties.speciesid=envelopes.speciesid where fishhucs.HUC = '{0}'")
+            "from fishproperties inner join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
+            "left join envelopes on fishproperties.speciesid=envelopes.speciesid where fishhucs.HUC = '{0}'")
 
         #whereClause = "fishhucs.HUC='{0}'"
 
@@ -288,7 +288,7 @@ def query_ecoregion_from_lat_lng(lat, long):
         point = str.format('POINT({0} {1})', long, lat)
         query = str.format("SELECT gid, aggregated from wsaecoregions where st_contains(geom, ST_GeomFromText('{0}', 4326))", point)
 
-        #print('Query: ' + query)
+        print('Query: ' + query)
         eco_regions = list()
         for eco_region in EcoRegions.objects.raw(query):
             eco_regions.append(eco_region)
