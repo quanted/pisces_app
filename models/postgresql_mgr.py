@@ -56,7 +56,7 @@ def query_genera_by_huc(huc_id):
         query = (
             "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
             "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, "
-            "fishproperties.genusID, envelopes.cond_l, envelopes.cond_u, envelopes.ph_l, envelopes.ph_u, envelopes.width_l, envelopes.width_u, "
+            "fishproperties.genusID, envelopes.cond_l, envelopes.cond_u, envelopes.ph_l, envelopes.ph_u, fishproperties.width_l, fishproperties.width_u, "
             "envelopes.slope_l, envelopes.slope_u, envelopes.area_l, envelopes.area_u, envelopes.depth_l, envelopes.depth_u, "
             "envelopes.do_l, envelopes.do_u, envelopes.tss_l, envelopes.tss_u "
             "from fishproperties inner join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
