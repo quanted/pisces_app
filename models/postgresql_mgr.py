@@ -1,9 +1,10 @@
-from .fish_genus_properties import FishGenusProperties
+from .fish_genus_properties import FishGenusProperties, FishGenusPropertiesV2
 from .fish_species_properties import FishSpeciesProperties
 from .fish_names import FishNames
 from .hucs import Hucs
 from .ecoregions import EcoRegions
 from .stream_segment import Segments
+
 
 def query_species_by_huc(huc_id):
     """
@@ -75,6 +76,40 @@ def query_genera_by_huc(huc_id):
 
     except Exception as inst:
         print ("Exception: " + inst.message)
+
+    return None
+
+
+def query_genera_by_huc_v2(huc_id):
+    """
+        Arg1: Value of NHDPlus 8 digit HUC ID.  Include leading zeros
+        Returns: List of genus properies as well as species IDS and associated common and scientific names
+        """
+    # If there is no huc, no reason to continue
+    if not huc_id:
+        return None
+
+    try:
+        query = (
+            "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
+            "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, "
+            "fishproperties.genusID, envelopesv2.slope_l, envelopesv2.slope_u, envelopesv2.area_l, envelopesv2.area_u, "
+            "fishproperties.width_l, fishproperties.width_u, envelopesv2.elev_l, envelopesv2.elev_u, "
+            "envelopesv2.iwi_l, envelopesv2.iwi_u, envelopesv2.bmmi_l, envelopesv2.bmmi_u "
+            "from fishproperties inner join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
+            "left join envelopesv2 on fishproperties.speciesid=envelopesv2.speciesid where fishhucs.HUC = '{0}'")
+
+        query = query.format(huc_id)
+
+        print('Query: ' + query)
+        fish_props = list()
+        for fish_prop in FishGenusPropertiesV2.objects.raw(query):
+            fish_props.append(fish_prop)
+
+        return fish_props
+
+    except Exception as inst:
+        print("Exception: " + inst)
 
     return None
 

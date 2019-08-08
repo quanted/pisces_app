@@ -5,7 +5,7 @@ import json
 
 from .models.fish_filter_query_builder import FishProperties
 from .models.postgresql_mgr import query_species_by_huc
-from .models.postgresql_mgr import query_genera_by_huc
+from .models.postgresql_mgr import query_genera_by_huc, query_genera_by_huc_v2
 from .models.postgresql_mgr import query_hucs_by_species
 from .models.postgresql_mgr import query_fish_properties_by_species
 from .models.postgresql_mgr import query_fish_names_by_search_string
@@ -19,6 +19,7 @@ from .models.stream_width_regression import StreamWidthRegression
 
 
 from .models.fish_species_properties import FishSpeciesProperties
+
 
 ###########################################################################################
 @require_GET
@@ -47,6 +48,7 @@ def get_species_by_huc(request, huc=''):
     data['species'] = lst_fish
     return JsonResponse(data)
 
+
 ###########################################################################################
 @require_GET
 def get_genera_by_huc(request, huc=''):
@@ -67,7 +69,7 @@ def get_genera_by_huc(request, huc=''):
 
     data = dict()
     data['huc'] = huc
-    lst_fish= list()
+    lst_fish = list()
     for fish in fishes:
         lst_fish.append(fish.get_attributes())
 
@@ -75,6 +77,32 @@ def get_genera_by_huc(request, huc=''):
     return JsonResponse(data)
 
 
+###########################################################################################
+@require_GET
+def get_genera_by_huc_v2(request, huc=''):
+    """
+        REST API endpoint for retrieving fish species data (species id, common name, scientific name) that
+        are found in the specified HUC 8, uses envelope_v2 table
+        e.g.
+        https://qedinternal.epa.gov/pisces/rest/api/v1/fish/hucs/(huc8)
+    """
+
+    huc = str(huc)
+    if len(huc) != 8:
+        return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
+                                      " Provided value = " + huc})
+    # debug print
+    print(huc)
+    fishes = query_genera_by_huc_v2(huc)
+
+    data = dict()
+    data['huc'] = huc
+    lst_fish = list()
+    for fish in fishes:
+        lst_fish.append(fish.get_attributes())
+
+    data['species'] = lst_fish
+    return JsonResponse(data)
 
 
 ###########################################################################################
@@ -211,7 +239,7 @@ def get_stream_properties(request):
         precip = lst_stream_seg[0]['precipvc']
         precip = precip / 100000.0
         #elev = lst_stream_seg[0]['mavelv']
-        elev =  (lst_stream_seg[0]['maxelevsmo'] + lst_stream_seg[0]['minelevsmo']) / 2.0
+        elev = (lst_stream_seg[0]['maxelevsmo'] + lst_stream_seg[0]['minelevsmo']) / 2.0
         elev = elev / 100.0
 
     stream_width_reg = StreamWidthRegression()
@@ -220,18 +248,17 @@ def get_stream_properties(request):
     course_width = stream_width['course']
     avg_width = (fine_width + course_width) / 2.0
 
-    attributes = {'width':avg_width,
-                  'fine_width' : fine_width,
-                  'course_width' : course_width,
-                  'area':drainage_area, 
-                  'slope':slope, 
-                  'precipitation':precip, 
+    attributes = {'width': avg_width,
+                  'fine_width': fine_width,
+                  'course_width': course_width,
+                  'area': drainage_area,
+                  'slope': slope,
+                  'precipitation': precip,
                   'elevation': elev,
-                  'eco_region':eco_region_gid}
-
+                  'eco_region': eco_region_gid}
     data = {}
     data['comid'] = comid
-    data['attributes']= attributes
+    data['attributes'] = attributes
     return JsonResponse(data)
 
 
