@@ -4,11 +4,11 @@ Definition of urls for qed_pisces.
 
 from datetime import datetime
 from django.conf.urls import url
-# from django.urls import path
+from django.urls import path
 import django.contrib.auth.views
 
 from . import pisces_rest_api, views, description, watershed
-from . import stream, species_explorer, algorithms, references, links_left
+from . import stream, species_explorer, algorithms, references
 
 
 urlpatterns = [
@@ -16,7 +16,8 @@ urlpatterns = [
     # front end urls
     url(r'^$', description.description_page, {'model': 'pisces'}),
     url(r'^watershed/$', watershed.watershed_page, {'model': 'pisces'}),
-    url(r'^stream/$', stream.stream_page, {'model': 'pisces'}),
+    # url(r'^stream/$', stream.stream_page, {'model': 'pisces'}),
+    url(r'^stream/$', stream.stream_page_v2, {'model': 'pisces'}),
     url(r'^species/$', species_explorer.query_page, {'model': 'pisces'}),
     url(r'^algorithms/$', algorithms.algorithm_page, {'model': 'pisces'}),
     url(r'^references/$', references.references_page, {'model': 'pisces'}),
@@ -36,7 +37,7 @@ urlpatterns = [
     # # rest/api/v1/fish/properties/?commonname=mud_sunfish&native=Y&caves=1
     url(r'^rest/api/v1/fish/properties/$', pisces_rest_api.get_species_by_filter),
     url(r'^rest/api/v1/stream/properties/$', pisces_rest_api.get_stream_properties),
-    url(r'^rest/api/v1/ecoregions/$', pisces_rest_api.get_ecoregion_from_pt)
+    url(r'^rest/api/v1/ecoregions/$', pisces_rest_api.get_ecoregion_from_pt),
 
     # ----- Django 2.0 urls ----- #
     # front end urls
@@ -60,6 +61,8 @@ urlpatterns = [
     # path('rest/api/v1/fish/properties/', pisces_rest_api.get_species_by_filter),
     # path('rest/api/v1/stream/properties/', pisces_rest_api.get_stream_properties),
     # path('rest/api/v1/ecoregions/', pisces_rest_api.get_ecoregion_from_pt)
+
+    path('rest/api/v2/fish/models/', pisces_rest_api.run_species_models)
 
 ]
 

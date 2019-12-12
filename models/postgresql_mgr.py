@@ -341,7 +341,7 @@ def query_stream_segment(comid):
 
     try:
         #query = "select comid, totdasqkm, slope, precipvc, maflowv, mavelv from nhdplusv21attributes where comid = " + comid
-        query = "select comid, totdasqkm, slope, precipvc, maxelevsmo, minelevsmo, maflowv, mavelv from nhdplusv21attributes where comid = " + comid
+        query = "select comid, totdasqkm, slope, precipvc, maxelevsmo, minelevsmo, maflowv, mavelv, bmmi, iwi, wa, elev from nhdplusv21attributes where comid = " + comid
         lst_stream_segments = []
         for stream_segment in Segments.objects.raw(query):
             lst_stream_segments.append(stream_segment)

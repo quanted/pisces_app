@@ -1,7 +1,6 @@
-from django.http import HttpRequest, HttpResponse
-from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 import json
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 
 from .models.fish_filter_query_builder import FishProperties
 from .models.postgresql_mgr import query_species_by_huc
@@ -13,12 +12,63 @@ from .models.postgresql_mgr import query_ecoregion_from_lat_lng
 from .models.postgresql_mgr import query_fish_properties_by_filter
 from .models.postgresql_mgr import query_stream_segment
 from .models.stream_width_regression import StreamWidthRegression
-
-#from .models.postgresql_mgr import query_fish_names_by_species
-#from .models.postgresql_mgr import query_fish_properties_by_species
+from .models.fish_models import PiscesModel, check_properties
 
 
-from .models.fish_species_properties import FishSpeciesProperties
+###########################################################################################
+@require_GET
+def run_species_models(request):
+    query_dict = request.GET.dict()
+
+    if 'huc' not in query_dict:
+        return JsonResponse({"error": "argument error: no HUC value provided."})
+    huc = query_dict['huc']
+    if len(huc) != 8:
+        return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
+                                      " Provided value = " + huc})
+    if 'comid' not in query_dict:
+        return JsonResponse({"error": "argument error: no COMID value provided."})
+    comid = query_dict['comid']
+    if comid is None:
+        return JsonResponse({"error": "argument error: COMID value required for running species models."})
+    if 'latitude' not in query_dict or 'longitude' not in query_dict:
+        return JsonResponse({"error": "argument error: no latitude or longitude value provided."})
+    latitude = query_dict['latitude']
+    longitude = query_dict['longitude']
+
+    stream_data = get_stream_properties_data(comid, latitude, longitude)
+    if 'bmmi' not in query_dict:
+        bmmi = stream_data['attributes']['bmmi']
+    else:
+        bmmi = query_dict['bmmi']
+
+    if 'iwi' not in query_dict:
+        iwi = stream_data['attributes']['iwi']
+    else:
+        iwi = query_dict['iwi']
+
+    wa = 1200
+    fish_data = get_genera_by_huc_v2_data(huc)
+    thresholds = ["Crit_Ave", "Crit_P1", "Crit_1SD", "Crit_P0", "Crit_2SD"]
+    data = []
+    for s in fish_data['species']:
+        id = s['species_id']
+        if check_properties(id):
+            fish = PiscesModel(id, bmmi, iwi, wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'])
+            s['probability'] = fish.probability
+            for t in thresholds:
+                s[t] = fish.get_prediction(t)
+        else:
+            s['probability'] = -9999
+            for t in thresholds:
+                s[t] = 0
+        data.append(s)
+    result = {
+        "huc": huc,
+        "stream": stream_data,
+        "species": data
+    }
+    return JsonResponse(result)
 
 
 ###########################################################################################
@@ -84,13 +134,18 @@ def get_genera_by_huc_v2(request, huc=''):
         REST API endpoint for retrieving fish species data (species id, common name, scientific name) that
         are found in the specified HUC 8, uses envelope_v2 table
         e.g.
-        https://qedinternal.epa.gov/pisces/rest/api/v1/fish/hucs/(huc8)
+        https://qedinternal.epa.gov/pisces/rest/api/v2/fish/hucs/(huc8)
     """
 
     huc = str(huc)
     if len(huc) != 8:
         return JsonResponse({"error": "argument error: HUC value provided was not valid, please provide a valid HUC8."
                                       " Provided value = " + huc})
+    data = get_genera_by_huc_v2_data(huc)
+    return JsonResponse(data)
+
+
+def get_genera_by_huc_v2_data(huc):
     # debug print
     print(huc)
     fishes = query_genera_by_huc_v2(huc)
@@ -102,8 +157,7 @@ def get_genera_by_huc_v2(request, huc=''):
         lst_fish.append(fish.get_attributes())
 
     data['species'] = lst_fish
-    return JsonResponse(data)
-
+    return data
 
 ###########################################################################################
 @require_GET
@@ -201,8 +255,11 @@ def get_stream_properties(request):
     longitude = query_dict['longitude']
     comid = query_dict['comid']
 
-    return_data = dict()
+    data = get_stream_properties_data(comid, latitude, longitude)
 
+    return JsonResponse(data)
+
+def get_stream_properties_data(comid, latitude, longitude):
     #Get the ecoregion from a lat/long
     lst_eco_region_models = query_ecoregion_from_lat_lng(latitude, longitude)
 
@@ -225,6 +282,10 @@ def get_stream_properties(request):
     drainage_area = None
     precip = None
     elev = None
+    bmmi = None
+    iwi = None
+    wa = None
+
     slope = lst_stream_seg[0]['slope']
     if (slope < 1.001e-5) and (slope > 0):
         slope = 1.001e-5
@@ -241,6 +302,9 @@ def get_stream_properties(request):
         #elev = lst_stream_seg[0]['mavelv']
         elev = (lst_stream_seg[0]['maxelevsmo'] + lst_stream_seg[0]['minelevsmo']) / 2.0
         elev = elev / 100.0
+        bmmi = lst_stream_seg[0]['bmmi']
+        iwi = lst_stream_seg[0]['iwi']
+        wa = lst_stream_seg[0]['wa']
 
     stream_width_reg = StreamWidthRegression()
     stream_width = stream_width_reg.calculate_stream_width(eco_region_gid, drainage_area, precip, slope, elev)
@@ -248,19 +312,23 @@ def get_stream_properties(request):
     course_width = stream_width['course']
     avg_width = (fine_width + course_width) / 2.0
 
-    attributes = {'width': avg_width,
-                  'fine_width': fine_width,
-                  'course_width': course_width,
-                  'area': drainage_area,
-                  'slope': slope,
-                  'precipitation': precip,
-                  'elevation': elev,
-                  'eco_region': eco_region_gid}
+    attributes = {
+        'width': avg_width,
+        'fine_width': fine_width,
+        'course_width': course_width,
+        'area': drainage_area,
+        'slope': slope,
+        'precipitation': precip,
+        'elevation': elev,
+        'eco_region': eco_region_gid,
+        'bmmi': bmmi,
+        'iwi': iwi,
+        'wa': wa
+    }
     data = {}
     data['comid'] = comid
     data['attributes'] = attributes
-    return JsonResponse(data)
-
+    return data
 
 ###########################################################################################
 @require_POST
