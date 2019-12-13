@@ -38,16 +38,19 @@ def run_species_models(request):
 
     stream_data = get_stream_properties_data(comid, latitude, longitude)
     if 'bmmi' not in query_dict:
-        bmmi = stream_data['attributes']['bmmi']
+        bmmi = float(stream_data['attributes']['bmmi'])
     else:
-        bmmi = query_dict['bmmi']
+        bmmi = float(query_dict['bmmi'])
+        stream_data['attributes']['bmmi'] = bmmi
 
     if 'iwi' not in query_dict:
-        iwi = stream_data['attributes']['iwi']
+        iwi = float(stream_data['attributes']['iwi'])
     else:
-        iwi = query_dict['iwi']
+        iwi = float(query_dict['iwi'])
+        stream_data['attributes']['iwi'] = iwi
 
-    wa = 1200
+    wa = float(stream_data['attributes']['wa'])
+
     fish_data = get_genera_by_huc_v2_data(huc)
     thresholds = ["Crit_Ave", "Crit_P1", "Crit_1SD", "Crit_P0", "Crit_2SD"]
     data = []
