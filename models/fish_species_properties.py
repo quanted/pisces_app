@@ -1,9 +1,8 @@
 from django.db import models
-from .structures import  CaseInsensitiveDict
+
 
 class FishSpeciesProperties(models.Model):
     """Model class for Fish Species Properties"""
-
     speciesid = models.IntegerField(db_column='speciesid', primary_key=True)
     genusid = models.IntegerField
     genus = models.TextField(max_length=25)
@@ -61,6 +60,22 @@ class FishSpeciesProperties(models.Model):
     uplands_hgr = models.TextField(max_length=10)
     locat_notes = models.TextField(max_length=10)
     habit_notes = models.TextField(max_length=10)
+    model = models.IntegerField
+    n_zeroes = models.IntegerField
+    n_ones = models.IntegerField
+    p_0 = models.FloatField
+    sd_0 = models.FloatField
+    p_1 = models.FloatField
+    sd_1 = models.FloatField
+    crit_p1 = models.FloatField
+    crit_1sd = models.FloatField
+    crit_ave = models.FloatField
+    crit_2sd = models.FloatField
+    crit_p0 = models.FloatField
+    ubiquity = models.FloatField
+    extent = models.FloatField
+    tolerance = models.FloatField
+    robustness = models.FloatField
 
     def get_attributes(self):
         attrib = dict()
@@ -121,4 +136,20 @@ class FishSpeciesProperties(models.Model):
         attrib['uplands_hgr'] = self.uplands_hgr
         attrib['locat_notes'] = self.locat_notes
         attrib['habit_notes'] = self.habit_notes
+        attrib["model_id"] = self.model
+        attrib["n_zeros"] = self.n_zeroes
+        attrib["n_ones"] = self.n_ones
+        attrib["p_0"] = self.p_0
+        attrib["sd_0"] = self.sd_0
+        attrib["p_1"] = self.p_1
+        attrib["sd_1"] = self.sd_1
+        attrib["crit_p1"] = self.crit_p1
+        attrib["crit_1sd"] = self.crit_1sd
+        attrib["crit_ave"] = self.crit_ave
+        attrib["crit_2sd"] = self.crit_2sd
+        attrib["crit_p0"] = self.crit_p0
+        attrib["ubiquity"] = self.ubiquity
+        attrib["extent"] = self.extent
+        attrib["tolerance"] = self.tolerance
+        attrib["robustness"] = self.robustness
         return attrib

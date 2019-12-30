@@ -1,5 +1,7 @@
-from django.views.decorators.http import require_GET, require_POST
+import os
 import json
+import pandas
+from django.views.decorators.http import require_GET, require_POST
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 
 from .models.fish_filter_query_builder import FishProperties
@@ -12,7 +14,7 @@ from .models.postgresql_mgr import query_ecoregion_from_lat_lng
 from .models.postgresql_mgr import query_fish_properties_by_filter
 from .models.postgresql_mgr import query_stream_segment
 from .models.stream_width_regression import StreamWidthRegression
-from .models.fish_models import PiscesModel, check_properties
+from .models.fish_models import PiscesModel
 
 
 ###########################################################################################
@@ -56,8 +58,8 @@ def run_species_models(request):
     data = []
     for s in fish_data['species']:
         id = s['species_id']
-        if check_properties(id):
-            fish = PiscesModel(id, bmmi, iwi, wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'])
+        if s["model_id"]:
+            fish = PiscesModel(id, s, bmmi, iwi, wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'])
             s['probability'] = fish.probability
             for t in thresholds:
                 s[t] = fish.get_prediction(t)
@@ -382,6 +384,7 @@ def get_fish_properties_by_species(request, speciesid=''):
         lst_props.append(fish_prop.get_attributes())
 
     data['species'] = lst_props
+
     return JsonResponse(data)
 
 
