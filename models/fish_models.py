@@ -38,9 +38,9 @@ class PiscesModel:
 
     def run_model(self, inputs):
         model = XGBClassifier()
-        model_path = os.path.abspath('C:/git/qed_kube/data/app-data/pisces/Model_Files/Species_' + self.properties["model_id"])
+        model_path = os.path.abspath('C:/git/qed_kube/data/app-data/pisces/Model_Files/Species_' + str(self.properties["model"]))
         if not os.path.exists(model_path):
-            model_path = os.path.abspath('./pisces_app/models/Model_Files/Species_' + self.properties["model_id"])
+            model_path = os.path.abspath('./pisces_app/models/Model_Files/Species_' + str(self.properties["model"]))
         model.load_model(model_path)
         pred = float(model.predict_proba(inputs)[:, 1])
         self.probability = round(100 * pred, 2)

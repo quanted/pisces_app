@@ -58,7 +58,7 @@ def run_species_models(request):
     data = []
     for s in fish_data['species']:
         id = s['species_id']
-        if s["model_id"]:
+        if s["model"]:
             fish = PiscesModel(id, s, bmmi, iwi, wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'])
             s['probability'] = fish.probability
             for t in thresholds:

@@ -92,6 +92,7 @@ def query_genera_by_huc_v2(huc_id):
     try:
         query = (
             "select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
+            "fishproperties.model, fishproperties.crit_p1, fishproperties.crit_p0, fishproperties.crit_ave, fishproperties.crit_1sd, fishproperties.crit_2sd,"
             "fishproperties.mean_weight, fishproperties.thinning, fishproperties.thin_adj, fishproperties.rarity, fishhucs.HUC, "
             "fishproperties.genusID, envelopesv2.slope_l, envelopesv2.slope_u, envelopesv2.area_l, envelopesv2.area_u, "
             "fishproperties.width_l, fishproperties.width_u, envelopesv2.elev_l, envelopesv2.elev_u, "

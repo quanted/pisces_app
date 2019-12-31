@@ -80,12 +80,18 @@ class FishGenusPropertiesV2(models.Model):
     slope_u = models.FloatField
     area_l = models.FloatField
     area_u = models.FloatField
-    elev = models.FloatField
+    elev_l = models.FloatField
     elev_u = models.FloatField
     iwi_l = models.FloatField
     iwi_u = models.FloatField
     bmmi_l = models.FloatField
     bmmi_u = models.FloatField
+    model = models.IntegerField
+    crit_p0 = models.FloatField
+    crit_p1 = models.FloatField
+    crit_ave = models.FloatField
+    crit_1sd = models.FloatField
+    crit_2sd = models.FloatField
 
     def get_attributes(self):
         attrib = dict()
@@ -109,4 +115,10 @@ class FishGenusPropertiesV2(models.Model):
         attrib['iwi_u'] = self.iwi_u
         attrib['bmmi_l'] = self.bmmi_l
         attrib['bmmi_u'] = self.bmmi_u
+        attrib['model'] = self.model
+        attrib['crit_p0'] = self.crit_p0
+        attrib['crit_p1'] = self.crit_p1
+        attrib['crit_ave'] = self.crit_ave
+        attrib['crit_1sd'] = self.crit_1sd
+        attrib['crit_2sd'] = self.crit_2sd
         return attrib
