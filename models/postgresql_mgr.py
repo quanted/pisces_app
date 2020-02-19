@@ -1,4 +1,4 @@
-from .fish_genus_properties import FishGenusProperties, FishGenusPropertiesV2
+from .fish_genus_properties import FishGenusProperties, FishGenusPropertiesV2, FishGenusPropertiesV3
 from .fish_species_properties import FishSpeciesProperties
 from .fish_names import FishNames
 from .hucs import Hucs
@@ -353,4 +353,47 @@ def query_stream_segment(comid):
         print("Exception: " + inst)
         pass
 
+    return None
+
+
+def query_fish_by_attributes_v3(wa, ele, slope, iwi, bmmi):
+    """
+    Query the PostGIS database envelopesV3 base upon stream attributes.
+    :param wa: Stream watershed area
+    :param ele: Stream elevation
+    :param slope: Stream slope
+    :param iwi: Stream watershed index
+    :param bmmi: Some other index
+    :return: List of speciesIDs where the stream attributes fall between the upper and lower bounds.
+    """
+    q = "select speciesid from envelopesv3 where "
+    q0 = False
+    if wa != -9999:
+        q0 = True
+        q += "wa_l < {} and wa_u > {} and ".format(wa, wa)
+    if ele != -9999:
+        q0 = True
+        q += "elev_l < {} and elev_u > {} and ".format(ele, ele)
+    if slope != -9999:
+        q0 = True
+        q += "slope_l < {} and slope_u > {} and ".format(slope / 100, slope / 100)
+    if iwi != -9999:
+        q0 = True
+        q += "iwi_l < {} and iwi_u > {} and ".format(iwi, iwi)
+    if bmmi != -9999:
+        q0 = True
+        q += "bmmi_l < {} and bmmi_u > {} and ".format(bmmi, bmmi)
+    if q0:
+        q = q[:-4]
+    try:
+        query = (q)
+
+        print('Query: ' + query)
+        fish_props = list()
+        for fish_prop in FishGenusPropertiesV3.objects.raw(query):
+            fish_props.append(fish_prop.speciesid)
+        return fish_props
+
+    except Exception as inst:
+        print("Exception: " + inst)
     return None

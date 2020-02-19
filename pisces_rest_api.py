@@ -13,6 +13,7 @@ from .models.postgresql_mgr import query_fish_names_by_search_string
 from .models.postgresql_mgr import query_ecoregion_from_lat_lng
 from .models.postgresql_mgr import query_fish_properties_by_filter
 from .models.postgresql_mgr import query_stream_segment
+from .models.postgresql_mgr import query_fish_by_attributes_v3
 from .models.stream_width_regression import StreamWidthRegression
 from .models.fish_models import PiscesModel
 
@@ -56,9 +57,11 @@ def run_species_models(request):
     fish_data = get_genera_by_huc_v2_data(huc)
     thresholds = ["Crit_Ave", "Crit_P1", "Crit_1SD", "Crit_P0", "Crit_2SD"]
     data = []
+    fish_envelopes = query_fish_by_attributes_v3(wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'], iwi, bmmi)
+    excluded = []
     for s in fish_data['species']:
         id = s['species_id']
-        if s["model"]:
+        if s["model"] and id in fish_envelopes:
             fish = PiscesModel(id, s, bmmi, iwi, wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'])
             s['probability'] = fish.probability
             for t in thresholds:
@@ -67,7 +70,10 @@ def run_species_models(request):
             s['probability'] = -9999
             for t in thresholds:
                 s[t] = 0
+        if s["model"] and id not in fish_envelopes:
+            excluded.append(id)
         data.append(s)
+    print("{} fish species excluded due to filter: {}".format(len(excluded), excluded))
     result = {
         "huc": huc,
         "stream": stream_data,

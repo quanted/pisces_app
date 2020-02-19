@@ -122,3 +122,35 @@ class FishGenusPropertiesV2(models.Model):
         attrib['crit_1sd'] = self.crit_1sd
         attrib['crit_2sd'] = self.crit_2sd
         return attrib
+
+
+class FishGenusPropertiesV3(models.Model):
+    """Model class for Fish EnvelopesV3"""
+    speciesid = models.IntegerField(db_column='speciesid', primary_key=True)
+    modelid = models.IntegerField
+    slope_l = models.FloatField
+    slope_u = models.FloatField
+    elev_l = models.FloatField
+    elev_u = models.FloatField
+    iwi_l = models.FloatField
+    iwi_u = models.FloatField
+    bmmi_l = models.FloatField
+    bmmi_u = models.FloatField
+    wa_l = models.IntegerField
+    wa_u = models.FloatField
+
+    def get_attributes(self):
+        attrib = dict()
+        attrib['species_id'] = self.speciesid
+        attrib['modelid'] = self.modelid
+        attrib['slope_l'] = self.slope_l
+        attrib['slope_u'] = self.slope_u
+        attrib['wa_l'] = self.wa_l
+        attrib['wa_u'] = self.wa_u
+        attrib['elev_l'] = self.elev_l
+        attrib['elev_u'] = self.elev_u
+        attrib['iwi_l'] = self.iwi_l
+        attrib['iwi_u'] = self.iwi_u
+        attrib['bmmi_l'] = self.bmmi_l
+        attrib['bmmi_u'] = self.bmmi_u
+        return attrib
