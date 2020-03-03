@@ -366,7 +366,7 @@ def query_fish_by_attributes_v3(wa, ele, slope, iwi, bmmi):
     :param bmmi: Some other index
     :return: List of speciesIDs where the stream attributes fall between the upper and lower bounds.
     """
-    q = "select speciesid from envelopesv3 where "
+    q = "select speciesid from envelopesv4 where "
     q0 = False
     if wa != -9999:
         q0 = True
