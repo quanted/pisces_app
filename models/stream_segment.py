@@ -10,15 +10,23 @@ class Segments(models.Model):
     precipvc = models.FloatField
     maflowv = models.FloatField
     mavelv = models.FloatField
+    bmmi = models.FloatField
+    iwi = models.FloatField
+    wa = models.FloatField
+    elev = models.FloatField
 
     def get_attributes(self):
         attrib = dict()
         attrib['comid'] = self.comid
         attrib['totdasqkm'] = self.totdasqkm
-        attrib['maxelevsmo']= self.maxelevsmo
+        attrib['maxelevsmo'] = self.maxelevsmo
         attrib['minelevsmo'] = self.minelevsmo
         attrib['slope'] = self.slope
         attrib['precipvc'] = self.precipvc
         attrib['maflowv'] = self.maflowv
         attrib['mavelv'] = self.mavelv
+        attrib['bmmi'] = self.bmmi
+        attrib['iwi'] = self.iwi
+        attrib['wa'] = self.wa
+        attrib['elev'] = self.elev
         return attrib

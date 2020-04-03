@@ -22,11 +22,13 @@ class FishProperties:
         self.attrib['sportfishing'] = ''
         self.attrib['nongame'] = ''
         self.attrib['subsis_fish'] = ''
-        #self.attrib['pollut_tol'] = ''
-        self.attrib['tolerance'] = ''
         self.attrib['max_length'] = ''
         self.attrib['mean_length'] = ''
         self.attrib['mean_weight'] = ''
+        self.attrib['tolerance'] = ''
+        self.attrib['extent'] = ''
+        self.attrib['ubiquity'] = ''
+        self.attrib['robustness'] = ''
         self.attrib['thinning'] = ''
         self.attrib['thin_adj'] = ''
         self.attrib['max_age'] = ''
@@ -113,6 +115,10 @@ class FishProperties:
         qry_mean_length = ''
         qry_max_length = ''
         qry_habitat = ''
+        qry_ubiquity = ''
+        qry_extent = ''
+        qry_tolerance = ''
+        qry_robustness = ''
 
         #Used in a couple of places to remove a trailing 'or '
         trailing_or = ' or'
@@ -128,22 +134,22 @@ class FishProperties:
                 if (req_key.lower() == 'scientific_name'):
                     words = req_val.split('_')
                     if len(words) == 1:
-                        qry_sci_name = ("( genus LIKE '%%{0}%%' or species LIKE '%%{0}%%')")
+                        qry_sci_name = ("( genus LIKE INITCAP('%%{0}%%') or species LIKE LOWER('%%{0}%%'))")
                         qry_sci_name = str.format(qry_sci_name, words[0])
                     elif len(words) == 2:
-                        qry_sci_name = (" ((genus LIKE '%%{0}%%' and species LIKE '%%{1}%%') or (species LIKE '%%{0}%%' and genus LIKE '%%{1}%%'))")
+                        qry_sci_name = (" ((genus LIKE INITCAP('%%{0}%%') and species LIKE LOWER('%%{1}%%')) or (species LIKE LOWER('%%{0}%%') and genus LIKE INITCAP('%%{1}%%')))")
                         qry_sci_name = str.format(qry_sci_name, words[0], words[1])
 
                 if req_key.lower() == 'common_name':
                     words = req_val.split('_')
                     if len(words) == 1:
-                        qry_common_name = (" commonname LIKE '%%{0}%%'")
+                        qry_common_name = (" commonname LIKE INITCAP('%%{0}%%')")
                         qry_common_name = str.format(qry_common_name, words[0])
                     elif len(words) == 2:
-                        qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%')")
+                        qry_common_name = (" (commonname LIKE INITCAP('%%{0}%%') and commonname LIKE INITCAP('%%{1}%%'))")
                         qry_common_name = str.format(qry_common_name, words[0], words[1])
                     elif len(words) == 3:
-                        qry_common_name = (" (commonname LIKE '%%{0}%%' and commonname LIKE '%%{1}%%' and commonname LIKE '%%{2}%%')")
+                        qry_common_name = (" (commonname LIKE INITCAP('%%{0}%%') and commonname LIKE INITCAP('%%{1}%%') and commonname LIKE INITCAP('%%{2}%%'))")
                         qry_common_name = str.format(qry_common_name, words[0], words[1], words[2])
 
 
@@ -165,14 +171,14 @@ class FishProperties:
 
                 # pollution tolerance can be: "I", "T", "M", or "U"
                 # if (req_key.lower() == 'pollut_tol'):
-                if (req_key.lower() == 'tolerance'):
-                    words = req_val.lower()
-                    words = words.split(',')
-                    for idx, pollut in enumerate(words):
-                        if idx != 0:
-                            qry_pollut_tol += " or "
-                        qry_pollut_tol += str.format(" lower(pollut_tol) = '{0}'", pollut)
-                    continue
+                # if (req_key.lower() == 'tolerance'):
+                #     words = req_val.lower()
+                #     words = words.split(',')
+                #     for idx, pollut in enumerate(words):
+                #         if idx != 0:
+                #             qry_pollut_tol += " or "
+                #         qry_pollut_tol += str.format(" lower(pollut_tol) = '{0}'", pollut)
+                #     continue
 
                 if (req_key.lower() == 'rarity'):
                     range = req_val.split('_')
@@ -202,6 +208,34 @@ class FishProperties:
                     range = req_val.split('_')
                     if len(range) == 2:
                         qry_max_length = str.format(" max_length>={0} and max_length<={1}", range[0], range[1])
+                    continue
+
+                ubiquity_range = [0, 75]
+                if (req_key.lower() == 'ubiquity'):
+                    range = req_val.split('_')
+                    if len(range) == 2 and (int(range[0]) != ubiquity_range[0] or int(range[1]) != ubiquity_range[1]):
+                        qry_ubiquity = str.format(" ubiquity>={0} and ubiquity<={1}", range[0], range[1])
+                    continue
+
+                extent_range = [0, 77]
+                if (req_key.lower() == 'extent'):
+                    range = req_val.split('_')
+                    if len(range) == 2 and (int(range[0]) != extent_range[0] or int(range[1]) != extent_range[1]):
+                        qry_extent = str.format(" extent>={0} and extent<={1}", range[0], range[1])
+                    continue
+
+                tolerance_range = [0, 94]
+                if (req_key.lower() == 'tolerance'):
+                    range = req_val.split('_')
+                    if len(range) == 2 and (int(range[0]) != tolerance_range[0] or int(range[1]) != tolerance_range[1]):
+                        qry_tolerance = str.format(" tolerance>={0} and tolerance<={1}", range[0], range[1])
+                    continue
+
+                robustness_range = [0, 47]
+                if (req_key.lower() == 'robustness'):
+                    range = req_val.split('_')
+                    if len(range) == 2 and (int(range[0]) != robustness_range[0] or int(range[1]) != robustness_range[1]):
+                        qry_robustness = str.format(" robustness>={0} and robustness<={1}", range[0], range[1])
                     continue
 
                 if qry_habitat.endswith(trailing_and):
@@ -301,6 +335,30 @@ class FishProperties:
             if not first_condition:
                 query += ' and'
             query += qry_max_length
+            first_condition = False
+
+        if qry_ubiquity != '':
+            if not first_condition:
+                query += ' and'
+            query += qry_ubiquity
+            first_condition = False
+
+        if qry_extent != '':
+            if not first_condition:
+                query += ' and'
+            query += qry_extent
+            first_condition = False
+
+        if qry_tolerance != '':
+            if not first_condition:
+                query += ' and'
+            query += qry_tolerance
+            first_condition = False
+
+        if qry_robustness != '':
+            if not first_condition:
+                query += ' and'
+            query += qry_robustness
             first_condition = False
 
         if qry_habitat != '':

@@ -13,7 +13,7 @@ class StreamWidthRegression:
         self.south_appalachians_course = [ 0.6053,     0.3935,     0.0000,     0.0852,     0.0000  ]
 
         self.coastal_plains_fine       = [ 0.4332,     0.2604,     0.0000,     0.0000,     0.0000  ]
-        self.coastal_plains_course     = [ 0.8927,     0.2604,     0.0000,     0.0000,     0.00557 ]
+        self.coastal_plains_course     = [ 0.8927,     0.2604,     0.0000,     0.0000,     -0.00557]
 
         self.upper_midwest_fine        = [ 0.2356,     0.4110,     2.5732,     0.0876,     0.00137 ]
         self.upper_midwest_course      = [ 0.2356,     0.4110,     0.0000,     0.0000,     0.0000  ]
@@ -50,7 +50,7 @@ class StreamWidthRegression:
 
         stream_width_fine   = 0.0
         stream_width_course = 0.0
-        for idx, item in enumerate(lst_regressions):
+        for idx, item in enumerate(regress_vars):
             stream_width_fine   += regress_vars[idx] * lst_regressions[0][idx]
             stream_width_course += regress_vars[idx] * lst_regressions[1][idx]
 
@@ -60,6 +60,11 @@ class StreamWidthRegression:
         dbl_bankfull_width_course = math.pow(10, stream_width_course)
         dbl_mean_width_course = dbl_bankfull_width_course * 0.75
 
-        dbl_mean_width = (dbl_mean_width_fine + dbl_mean_width_course) / 2.0
+        results = {}
+        results['fine'] = dbl_mean_width_fine
+        results['course'] = dbl_mean_width_course
 
-        return round(dbl_mean_width, 1)
+        #dbl_mean_width = (dbl_mean_width_fine + dbl_mean_width_course) / 2.0
+
+        #return round(dbl_mean_width, 1)
+        return results
