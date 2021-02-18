@@ -19,7 +19,7 @@ def stream_page(request, model='pisces', header='none'):
     """ Returns the html of the references page for pisces. """
     html = render_to_string('01pisces_epa_drupal_header.html', {})
     html += render_to_string('02epa_drupal_header_bluestripe_onesidebar.html', {})
-    html += render_to_string('03pisces_drupal_section_title.html', {})
+    html += render_to_string('03pisces_drupal_section_title.html', {"TITLE": "Piscine Stream Community Estimation System"})
     html += stream_ordered_list(model, 'streammap')
 
     html += render_to_string('04pisces_stream_text_start_index_drupal.html', {
@@ -49,7 +49,7 @@ def stream_page_v2(request, model='pisces', header='none'):
     """ Returns the html of the references page for pisces. """
     html = render_to_string('01pisces_epa_drupal_header.html', {})
     html += render_to_string('02epa_drupal_header_bluestripe_onesidebar.html', {})
-    html += render_to_string('03pisces_drupal_section_title.html', {})
+    html += render_to_string('03pisces_drupal_section_title.html', {"TITLE": "Piscine Stream Community Estimation System"})
     html += stream_ordered_list(model, 'streammap')
 
     html += render_to_string('04pisces_stream_text_start_index_drupal.html', {
@@ -74,7 +74,7 @@ def stream_ordered_list(model=None, page=None):
             ])
          ),
         ('Documentation', OrderedDict([
-                ('API Documentation', '/qedinternal.epa.gov/pisces/rest'),
+                # ('API Documentation', '/qedinternal.epa.gov/pisces/rest'),
                 ('Source Code', '/github.com/quanted/qed_pisces'),
                 ('Algorithms', 'pisces/algorithms'),
                 ('References', 'pisces/references')
