@@ -8,7 +8,7 @@ from django.urls import path
 import django.contrib.auth.views
 
 from . import pisces_rest_api, views, description, watershed
-from . import stream, species_explorer, algorithms, references
+from . import stream, species_explorer, algorithms, references, contact
 
 
 urlpatterns = [
@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^species/$', species_explorer.query_page, {'model': 'pisces'}),
     url(r'^algorithms/$', algorithms.algorithm_page, {'model': 'pisces'}),
     url(r'^references/$', references.references_page, {'model': 'pisces'}),
+    path('contact/', contact.contact_page),
+    path('contact/comment/', contact.handle_contact_post),
     # # url(r'^api$', rest.rest_page, {'model': 'pisces'}),
     # # url(r'^swag$', views.getSwaggerJsonContent)
     #
