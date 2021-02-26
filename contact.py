@@ -140,9 +140,9 @@ def contact_page(request):
         'DISCLAIMER': None
     })                                                                     # Default EPA header
     html += links_left.ordered_list(model='pisces')
-    page_text = render_to_string("04hms_contact_body.html", {}, request=request)
+    page_text = render_to_string("04pisces_contact_body.html", {}, request=request)
 
-    html += render_to_string('05hms_body_start.html', {
+    html += render_to_string('05pisces_body_start.html', {
         'TITLE': "PiSCES Contact Us",
         'DESCRIPTION': page_text
     })                                                                      # HMS Workflow main body start
