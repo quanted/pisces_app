@@ -1,4 +1,4 @@
-from xgboost import XGBClassifier
+import xgboost as xgb
 import numpy as np
 import os
 
@@ -37,11 +37,12 @@ class PiscesModel:
         return [self.wa, self.elevation, self.bmmi, self.iwi, self.slope]
 
     def run_model(self, inputs):
-        model = XGBClassifier()
+        model = xgb.XGBClassifier()
         model_path = None
-        model_path1 = os.path.abspath('C:/git/qed_kube/data/app-data/pisces/Model_Files/Species_' + str(self.properties["model"]))
-        model_path2 = os.path.abspath('./pisces_app/models/Model_Files/Species_' + str(self.properties["model"]))
-        model_path3 = os.path.abspath('/src/app-data/pisces/Model_Files/Species_' + str(self.properties["model"]))
+        model_name = f"Model_{self.properties['model']}.RData"
+        model_path1 = os.path.abspath('C:/git/qed_kube/data/app-data/pisces/Model_Files/' + model_name)
+        model_path2 = os.path.abspath('./pisces_app/models/Model_Files/' + model_name)
+        model_path3 = os.path.abspath('/src/app-data/pisces/Model_Files/' + model_name)
         if os.path.exists(model_path1):
             model_path = model_path1
         elif os.path.exists(model_path2):
