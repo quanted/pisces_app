@@ -1,0 +1,37 @@
+<!--start 03pisces_links_left-->
+<div class="region-sidebar-first region-sidebar">
+    <div id="block-og-menu-og-single-menu-block" class="block block-og-menu  block-og-menu-og-single-menu-block">
+        <h2 class="element-invisible">PiSCES Model Information</h2>
+        <ul class="menu">
+            {% for key, value in LINK_DICT.items %}
+                <h3 class="headerbar">{{ key|safe }}</h3>
+                {% for valueKey, valueValue in value.items %}
+                    <li class="menu-item{% if forloop.last %} menu-item-last{% endif %}"><a href="/{{ valueValue }}"
+                                                                                            id="{{ valueValue }}"
+                                                                                            class="menu-link{% if MODEL == valueValue %} active-trail active{% endif %}"
+                                                                                            title="{{ valueKey|safe }}">{{ valueKey|safe }}</a>
+                        {% if MODEL == valueValue %}
+                            <ul class="menu">
+
+                                <li class="menu-item"><a href="/{{ MODEL }}/watershed"
+                                                         title="{{ valueKey|safe }} Distribution Explorer"
+                                                         class="menu-link{% if PAGE == "map" %} active-trail active{% endif %}">Distribution
+                                    Explorer</a></li>
+                                <li class="menu-item"><a href="/{{ MODEL }}/stream"
+                                                         title="{{ valueKey|safe }} Stream Assemblage Predictor"
+                                                         class="menu-link{% if PAGE == "run_model" %} active-trail active{% endif %}">Assemblage
+                                    Predictor</a></li>
+                                <li class="menu-item"><a href="/{{ MODEL }}/species"
+                                                         title="{{ valueKey|safe }} Database Explorer"
+                                                         class="menu-link{% if PAGE == "map" %} active-trail active{% endif %}">Database
+                                    Explorer</a></li>
+
+                                {#            <li class="menu-item"><a href="/{{ MODEL }}/algorithms" title="{{ valueKey|safe }} Algorithms" class="menu-link{% if PAGE == "algorithms" %} active-trail active{% endif %}">Algorithms</a></li>#}
+                                {#            <li class="menu-item"><a href="/{{ MODEL }}/references" title="{{ valueKey|safe }} References" class="menu-link{% if PAGE == "references" %} active-trail active{% endif %}">References</a></li>#}
+
+                            </ul>{% endif %}
+                    </li>{% endfor %}
+            {% endfor %}</ul>
+    </div>
+</div>
+<!--end 03pisces_links_left-->

@@ -1,0 +1,114 @@
+<script>
+    $(document).ready(function () {
+        closeNav();
+        document.getElementById("cnav").style.display = 'block';
+    });
+
+    function openNav() {
+        document.getElementById("nOpen").style.display = 'none';
+        document.getElementById("cnav").style.borderRightStyle = "solid";
+        document.getElementById("cnav").style.borderRightWidth = "1px";
+        document.getElementById("cnav").style.width = "190px";
+        document.getElementById("cnav").style.zIndex = "10";
+
+    }
+
+    function closeNav() {
+        document.getElementById("cnav").style.width = "0";
+        document.getElementById("nOpen").style.display = 'block';
+        document.getElementById("cnav").style.borderRightStyle = "none";
+        document.getElementById("nOpen").style.zIndex = '10';
+
+    }
+</script>
+
+<style>
+
+    .sidenav {
+    {#        height: 100%;#} width: 195px;
+        position: absolute;
+        z-index: 9999 !important;
+    {#        top: 0;#} overflow-x: hidden;
+        transition: 0.4s;
+    {#        padding: 0px 0px 10px 0px;#} background-color: white;
+        border-right-style: solid;
+        border-right-width: 1px;
+        white-space: nowrap;
+    {#        margin: 2.5% 0 0 0;#}
+    }
+
+    .sidenav a {
+    {#        padding: 8px 8px 8px 32px;#}{#        text-decoration: none;#}{#        font-size: 25px;#} color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidenav a:hover, .offcanvas a:focus {
+        color: #f1f1f1;
+    }
+
+    .sidenav .closebtn {
+        position: absolute;
+        top: -5px;
+    {#        right: 25px;#} left: 85%;
+        font-size: 25px;
+    {#        margin-left: 85%;#}
+    }
+
+    @media screen and (max-height: 450px) {
+        .sidenav {
+            padding-top: 15px;
+
+        }
+    }
+
+    .side-nav-div div * {
+        position: relative;
+        z-index: 10;
+    }
+
+</style>
+
+<!--start 03pisces_links_left-->
+<div class="region-sidebar-first region-sidebar side-nav-div">
+    <div id="nOpen" style="position:absolute;">
+        <span style="font-size:30px;cursor:pointer" onclick="openNav()" title="Open Menu">&#9776;</span>
+    </div>
+    <div id="cnav" class="sidenav" style="display:none;">
+        <div id="block-og-menu-og-single-menu-block" class="block block-og-menu  block-og-menu-og-single-menu-block">
+            <h2 class="element-invisible">PiSCES Model Information</h2>
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()" title="Close Menu"
+               style="text-decoration:none; z-index:25;">&times;</a>
+
+            <ul class="menu">
+                {% for key, value in LINK_DICT.items %}
+                    <h3 class="headerbar">{{ key|safe }}</h3>
+                    {% for valueKey, valueValue in value.items %}
+                        <li class="menu-item{% if forloop.last %} menu-item-last{% endif %}"><a href="/{{ valueValue }}"
+                                                                                                id="{{ valueValue }}"
+                                                                                                class="menu-link{% if MODEL == valueValue %} active-trail active{% endif %}"
+                                                                                                title="{{ valueKey|safe }}">{{ valueKey|safe }}</a>
+                            {% if MODEL == valueValue %}
+                                <ul class="menu">
+                                    <li class="menu-item"><a href="/{{ MODEL }}/watershed"
+                                                             title="{{ valueKey|safe }} Distribution Explorer"
+                                                             class="menu-link{% if PAGE == "map" %} active-trail active{% endif %}">Distribution
+                                        Explorer</a></li>
+                                    <li class="menu-item"><a href="/{{ MODEL }}/stream"
+                                                             title="{{ valueKey|safe }} Stream Assemblage Predictor"
+                                                             class="menu-link{% if PAGE == "run_model" %} active-trail active{% endif %}">Assemblage
+                                        Predictor</a></li>
+                                    <li class="menu-item"><a href="/{{ MODEL }}/species"
+                                                             title="{{ valueKey|safe }} Database Explorer"
+                                                             class="menu-link{% if PAGE == "map" %} active-trail active{% endif %}">Database
+                                        Explorer</a></li>
+                                    {#            <li class="menu-item"><a href="/{{ MODEL }}/algorithms" title="{{ valueKey|safe }} Algorithms" class="menu-link{% if PAGE == "algorithms" %} active-trail active{% endif %}">Algorithms</a></li>#}
+                                    {#            <li class="menu-item"><a href="/{{ MODEL }}/references" title="{{ valueKey|safe }} References" class="menu-link{% if PAGE == "references" %} active-trail active{% endif %}">References</a></li>#}
+
+                                </ul>{% endif %}
+                        </li>{% endfor %}
+                {% endfor %}</ul>
+        </div>
+    </div>
+</div>
+<!--end 03pisces_links_left-->

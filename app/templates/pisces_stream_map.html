@@ -1,0 +1,2472 @@
+<head>
+{% load static %}
+    <!-- jquery -->
+    <script src="{% static 'scripts/jquery-3.2.1.min.js' %}"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="{% static 'scripts/jquery-ui.js' %}"></script>
+
+    <!-- datatables import -->
+    <link rel="stylesheet"
+          href="https://www.epa.gov/sites/all/libraries/js/datatables/media/css/jquery.dataTables.min.css">
+    <script src="https://www.epa.gov/sites/all/libraries/js/datatables/media/js/jquery.dataTables.min.js"></script>
+
+    <!-- leaflet import -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/leaflet.css' %}"/>
+    <script src="{% static 'scripts/leaflet.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.1/esri-leaflet.js"></script>
+
+    <!-- local js -->
+    <script src="{% static 'scripts/waterslayer.js' %}"></script>
+    <script src="{% static 'scripts/pisces_datatable.js' %}"></script>
+    <script src="{% static 'scripts/huc250k_4326_sp.js' %}"></script>
+
+    <style>
+        #map {
+            width: 100%;
+            height: 650px;
+        }
+
+        #mapDiv {
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        #streamData {
+            padding: 10px;
+            width: 100%;
+        }
+
+        {#datatables font size#}
+        th {
+            font-size: 12px;
+            border: none !important;
+            text-align: center !important;
+        }
+
+        td {
+            font-size: 11px;
+        }
+
+        .table {
+            border-bottom: 0 !important;
+        }
+
+        .region-highlighted {
+            margin: 0 0 0 0 !important;
+        }
+
+        table.dataTable.display tbody tr.odd {
+            background-color: lightgray;
+        }
+
+        table.dataTable.display tbody tr.odd > .sorting_1 {
+            background-color: lightgray;
+        }
+
+        #fishTable {
+            table-layout: fixed;
+        }
+
+        #fishTable tr *, td * {
+            border: 0 !important;
+            height: 15px !important;
+            padding: 4px !important;
+            text-align: center !important;
+            font-size: 10px;
+            line-height: 0px !important;
+        }
+
+        #fishTable th * {
+            border: 0 !important;
+            border-bottom: solid;
+            border-bottom-width: 1px;
+        }
+
+        #fishTable > tbody > tr:hover {
+            cursor: default;
+            background-color: rgba(160, 160, 160, 1.0) !important;
+        }
+
+        {#        #fishTable > tbody > tr:hover > .sorting_1 {#}
+        {#            cursor: default;#}
+        {#            background-color: rgba(160, 160, 160, 1.0) !important;#}
+        {#        }#}
+
+        #fishTable > tbody > tr:hover > td {
+            background-color: rgba(160, 160, 160, 1.0) !important;
+        }
+
+        #filteredFishTable tr *, td * {
+            border: 0 !important;
+            height: 15px !important;
+            padding: 4px !important;
+            text-align: center !important;
+            font-size: 10px;
+            line-height: 0px !important;
+        }
+
+        #filteredFishTable th * {
+            border: 0 !important;
+            border-bottom: solid;
+            border-bottom-width: 1px;
+        }
+
+        #filteredFishTable > tbody > tr:hover {
+            cursor: default;
+            background-color: rgba(160, 160, 160, 1.0) !important;
+        }
+
+        {#        #calc_table > tbody > tr:hover {#}
+        {#            cursor: default;#}
+        {#            background-color: rgba(160, 160, 160, 1.0) !important;#}
+        {#        }#}
+
+        #calc_table {
+            float: left;
+            margin: 0 3px;
+            table-layout: auto;
+            width: 100%;
+        }
+
+        #calc_table tr *, td * {
+            border: 0 !important;
+            height: 15px !important;
+            padding: 4px !important;
+            text-align: center !important;
+            font-size: 10px;
+            line-height: 0px !important;
+        }
+
+        #calc_table th * {
+            border: 0 !important;
+            border-bottom: solid;
+            border-bottom-width: 1px;
+        }
+
+        #calc_table_wrapper {
+            display: inline-block;
+            width: 65%;
+            float: left;
+        }
+
+        .box > .pane-content {
+            border-bottom-width: 1px !important;
+        }
+
+        {#remove all EPA css transitions for leaflet map#}
+        div.mapNoTransition * {
+            -o-transition-property: none !important;
+            -moz-transition-property: none !important;
+            -ms-transition-property: none !important;
+            -webkit-transition-property: none !important;
+            transition-property: none !important;
+            transition: none !important;
+        }
+
+        .stream_info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        #stream_info h5 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+
+        #stream_info_table table {
+            width: 100%;
+        }
+
+        #stream_info_table td {
+            font-size: 9px;
+            border: none !important;
+            background: rgba(255, 255, 255, 0.0);
+            padding: 2px 3px !important;
+        }
+
+        {# Filter Buttons #}
+        .filterButton {
+            width: 100% !important;
+            height: 25px !important;
+            color: black;
+            text-align: center !important;
+            text-decoration: none !important;
+            display: inline-block !important;
+            font-size: 12px !important;
+            border-radius: 12px !important;
+            margin: 5px 0 !important;
+            white-space: nowrap !important;
+            padding: 0 !important;
+            box-shadow: inset 0px 1px 0px #2ab7ec, 0px 1px 0px 0px #07526e, 0px 4px 4px #999 !important;
+        }
+
+        .filterButton:hover {
+            box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .filterApplyButton {
+            box-shadow: 0px 2px 2px black !important;
+            background-color: #EEEEEE !important;
+            color: black !important;
+            vertical-align: middle !important;
+        }
+
+        .filterApplyButton:hover {
+            background-color: #D6D6D6 !important;
+        }
+
+        .fish_filter {
+            border-radius: 4px;
+            padding: 2px 4px 4px 4px;
+            background-color: transparent;
+            width: 12%;
+            margin: 1px 1px;
+            display: inline-block;
+        }
+
+        .fish_filter_apply {
+            width: 8%;
+            margin: 1px 1px;
+            display: inline-block;
+        }
+
+        #filter_field {
+            font-size: 10px;
+            text-align: center;
+        }
+
+        #filter_field_left {
+            width: 50%;
+            float: left;
+            font-size: 10px;
+        }
+
+        #filter_field_right {
+            width: 50%;
+            float: right;
+            font-size: 10px;
+        }
+
+        tr.filteredInFishTable td {
+            background-color: #86C1FF !important;
+        }
+
+        {# Accordion css #}
+        button.accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 10px 18px;
+            width: 100%;
+            border: none;
+            outline: none;
+            margin: 0 !important;
+            text-align: center;
+        }
+
+        button.accordion.active, button.accordion:hover {
+            background-color: #86C1FF;
+        }
+
+        div.filterTitle {
+            background-color: #86C1FF;
+            color: black;
+            font-weight: bold;
+        {#            cursor: pointer;#} padding: 7px;
+            width: 100%;
+            border: none;
+            outline: none;
+            margin: 0 !important;
+            text-align: center;
+            height: 35px;
+        }
+
+        div.panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+        {#            overflow: hidden;#} text-align: center;
+            transition: max-height 0.2s ease-out;
+            margin-bottom: 75px;
+        }
+
+        button.accordion:after {
+            content: '\02795'; /* Unicode character for "plus" sign (+) */
+            font-size: 13px;
+            color: #777;
+            float: right;
+            margin-left: 5px;
+        }
+
+        button.accordion.active:after {
+            content: "\2796"; /* Unicode character for "minus" sign (-) */
+        }
+
+        td.details-control {
+            background: url("{% static 'images/details_open.png'%}") no-repeat center center;
+            cursor: pointer;
+        }
+
+        tr.shown td.details-control {
+            background: url("{% static 'images/details_close.png'%}") no-repeat center center;
+        }
+
+        div.filtering {
+            background-color: #86C1FF;
+        }
+
+        input[type="checkbox"]:checked + label::before {
+            display: none;
+        }
+
+        input[type="checkbox"] + label::before {
+            display: none;
+        }
+
+        .huc_calc_toggle {
+            position: absolute;
+            left: 46%;
+            height: 24px;
+            float: left;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .huc_calc_toggle-checkbox, .huc_calc_toggle-checkbox {
+            display: none;
+        }
+
+        .huc_calc_toggle-label {
+            display: block;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 6px;
+            width: 120px;
+            box-shadow: 0px 2px 2px black;
+            margin-left: 10px;
+        }
+
+        .huc_calc_toggle-inner {
+            display: block;
+            width: 200%;
+            margin-left: -100%;
+            transition: margin 0.3s ease-in 0s;
+        }
+
+        .huc_calc_toggle-inner:before, .huc_calc_toggle-inner:after {
+            display: block;
+            float: left;
+            width: 50%;
+            height: 24px;
+            padding: 0;
+            line-height: 24px;
+            font-size: 12px;
+            color: white;
+            font-family: Trebuchet, Arial, sans-serif;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        .huc_calc_toggle-inner:before {
+            content: "Display Calculator";
+            background-color: #EEEEEE;
+            text-align: center;
+            color: black;
+        }
+
+        .huc_calc_toggle-inner:after {
+            content: "Hide Calculator";
+            background-color: #86C1FF;
+            text-align: center;
+            color: black;
+        }
+
+        .huc_calc_toggle-switch {
+            display: block;
+            width: 13px;
+            margin: 5.5px;
+            background: #FFFFFF;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 72px;
+            border: 2px solid #75A6D9;
+            border-radius: 6px;
+            transition: all 0.3s ease-in 0s;
+        }
+
+        .huc_calc_toggle-checkbox:checked + .huc_calc_toggle-label .huc_calc_toggle-inner {
+            margin-left: 0;
+        }
+
+        .huc_calc_toggle-checkbox:checked + .huc_calc_toggle-label .huc_calc_toggle-switch {
+            right: 0px;
+        }
+
+        div.ui-slider-horizontal {
+            height: 0.3em !important;
+        }
+
+        span.ui-slider-handle {
+            width: 0.8em !important;
+            height: 0.8em !important;
+        }
+
+        div #hucFish {
+            width: 45%;
+            margin: 0 0px 0 5%;
+            display: inline-block;
+            float: left;
+        }
+
+        div #abundance_calc {
+            width: 45%;
+            margin: 0 5% 0 0px;
+            display: inline-block;
+            float: right;
+        }
+
+        input.biomass_button {
+            margin-top: 45px !important;
+            padding: 8px 16px !important;
+            font-size: 14px;
+            box-shadow: 0px 2px 2px black !important;
+            background-color: #EEEEEE !important;
+            color: black !important;
+        }
+
+        input.biomass_button:hover, input.biomass_reset_button:hover, input.save_to_csv_button:hover {
+            background-color: #D6D6D6 !important;
+        }
+
+        input.biomass_reset_button {
+            padding: 8px 16px !important;
+            font-size: 14px;
+            box-shadow: 0px 2px 2px black !important;
+            background-color: #EEEEEE !important;
+            color: black !important;
+        {#            margin: 0 0 5px 0 !important;#} margin-bottom: 8em;
+        }
+
+        input.save_to_csv_button {
+            font-size: 12px;
+            box-shadow: 0px 2px 2px black !important;
+            background-color: #EEEEEE !important;
+            color: black;
+            margin: 15px 0;
+        }
+
+        {#    Loader    #}
+        #loader {
+            position: sticky;
+            left: 50%;
+            top: 50%;
+            z-index: 9999;
+            margin: -75px 0 0 -75px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 100px;
+            height: 100px;
+            -webkit-animation: spin 1s linear infinite;
+            -moz-animation: spin 1s linear infinite;
+            -o-animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite;
+            transition: 0.5s ease-in-out;
+        }
+
+        #loader_background {
+            background-color: rgba(255, 255, 255, 0.5);
+            z-index: 9998;
+            position: absolute;
+            height: 88%;
+            width: 100%;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #calc_table input {
+            padding: 0;
+            font: inherit;
+            width: 75%;
+            display: inline;
+            background: #98DED9;
+        }
+
+        #filteredFishTable_wrapper * {
+            overflow-x: hidden !important;
+        }
+
+        .dataTables_scrollHeadInner div {
+            width: 100% !important;
+        }
+
+        div.dataTables_scrollBody {
+            overflow-x: hidden !important;
+        }
+
+        .select-checkbox > input {
+            left: 0 !important;
+            position: relative !important;
+        }
+
+        .removed_fish * {
+            background-color: rgba(100, 100, 100, 0.8) !important;
+        }
+
+        .cell-edited {
+            background-color: rgba(11, 144, 225, 0.5);
+        }
+
+        {#        HUC/Stream search toggle        #}
+        .streamSearch {
+            position: relative;
+            float: right;
+            margin: 10px 10px 0 10px;
+            display: inline-flex;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .streamSearch-checkbox {
+            display: none;
+        }
+
+        .streamSearch-label {
+            display: block;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid #E3E3E3;
+            border-radius: 36px;
+            width: 135px;
+            height: 30px;
+            margin: 7px 8px 0 0;
+        }
+
+        .streamSearch-inner {
+            display: block;
+            width: 200%;
+            margin-left: -100%;
+            transition: margin 0.3s ease-in 0s;
+        }
+
+        .streamSearch-inner:before, .streamSearch-inner:after {
+            display: block;
+            float: left;
+            width: 50%;
+            height: 36px;
+            padding: 0;
+            line-height: 26px;
+            font-size: 12px;
+            color: white;
+            font-family: Trebuchet, Arial, sans-serif;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        .streamSearch-inner:before {
+            content: "Search HUCs";
+            padding-left: 10px;
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+
+        .streamSearch-inner:after {
+            content: "Stream Lat/Lon";
+            padding-right: 10px;
+            background-color: #FFFFFF;
+            color: #000000;
+            text-align: right;
+        }
+
+        .streamSearch-switch {
+            display: block;
+            width: 20px;
+            margin: 4px;
+            background: #A1A1A1;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 102px;
+            border: 2px solid #E3E3E3;
+            border-radius: 36px;
+            transition: all 0.3s ease-in 0s;
+        }
+
+        .streamSearch-checkbox:checked + .streamSearch-label .streamSearch-inner {
+            margin-left: 0;
+        }
+
+        .streamSearch-checkbox:checked + .streamSearch-label .streamSearch-switch {
+            right: 0px;
+            background-color: #27A1CA;
+        }
+
+        .streamSearchForm {
+            display: inline-block;
+            float: right;
+            margin: 1px 1px;
+            max-height: 620px;
+            position: relative;
+        }
+
+        .streamSearchValue {
+            font-size: 12px;
+            float: left;
+            display: inline-block;
+            width: 75%;
+            height: 22px;
+            padding-left: 5px;
+            margin-top: 10px
+        }
+
+        input.fishSearchButton {
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB2aWV3Qm94PSIwIDAgMjg5LjEyMjIyIDI4OC4yOTYwOCIgaGVpZ2h0PSIxMnB4IiB3aWR0aD0iMTJweCI+DQo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjYzLjQzMTIsLTM4OS42MzEyNCkiPg0KPHBhdGggc3Ryb2tlLXdpZHRoPSI5Ljc1NjE3MzEzIiBmaWxsPSIjRkZGIiBkPSJNMjk1LjkzODk5LDQyMi4wODZjLTQzLjI3Mjk5LDQzLjI3Mi00My4zNzg5OSwxMTQuMTU5LTAuMTA1OTgsMTU3LjQzMjAxLDM2LjY2Mjk5LDM2LjY2MzAyLDkzLjIwMTk5LDQyLjI1LDEzNS45MjA5OSwxNi43NjU5OWw3Ni4zNDM5OSw3NC4yMzQ5OGMxMC41MDY5OSwxMC4xOTgsMjcuMDg0OTksOS44MjEwNSwzNy4xMTY5Ny0wLjg0Mzk5LDEwLjAzMzAyLTEwLjY2NDk4LDkuNzcwMDItMjcuNDQ1OTktMC43Mzc5Ny0zNy42NDM5OGwtNzUuMTgyOTgtNzIuODY0MDJjMjYuMzYwOTktNDIuODQ2OTgsMjEuMDA3OTktMTAwLjA0NDk4LTE2LjAyODAyLTEzNy4wODA5OS00My4yNzI5OC00My4yNzMwMS0xMTQuMDU0OTktNDMuMjczMDEtMTU3LjMyNywwem0zMS43Mzg5OSwzMS43MzkwMWMyNi4xMDIwMi0yNi4xMDIwMiw2Ny43NDYwMy0yNi4xMDIwMiw5My44NDgwMiwwLDI2LjEwMTk5LDI2LjEwMTk5LDI2LjEwMTk5LDY3Ljc0NTk4LDAsOTMuODQ3OTYtMjYuMTAxOTksMjYuMTAyMDYtNjcuNzQ2LDI2LjEwMjA2LTkzLjg0ODAyLDAtMjYuMTAxOTktMjYuMTAxOTktMjYuMTAxOTktNjcuNzQ1OTcsMC05My44NDc5NnoiLz4NCjwvZz4NCjwvc3ZnPg==");
+            background-color: #02bfe7;
+            background-repeat: no-repeat;
+            background-size: 10px 10px;
+            background-position: 50%;
+            border-color: #02bfe7;
+            float: left;
+            display: inline-block;
+            width: 10px;
+            height: 22px;
+            margin-left: 0 !important;
+            border-radius: 0 3px 3px 0 !important;
+            margin-top: 10px;
+        }
+
+        #searchError {
+            font-weight: bold;
+            font-size: 12px;
+            color: red;
+            position: absolute;
+            margin: 40px 0 0;
+            padding: 0 0 0 150px;
+        }
+
+        .leaflet-bar {
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65) !important;
+            border-radius: 0px !important;
+            border-bottom-left-radius: 5px !important;
+            border-bottom-right-radius: 5px !important;
+        }
+
+        .box > .pane-content > :last-child {
+            padding: 5px;
+        }
+
+        #rarity_value {
+            border: 0;
+            color: black;
+            font-weight: bold;
+            font-size: 10px;
+            text-align: center;
+            background-color: transparent;
+            height: 10px;
+            vertical-align: super;
+        }
+
+        #rarity_range {
+            width: 75%;
+            margin: -7px 0 3px 15%;
+        }
+
+        #biomass_weight_field {
+            font-size: 12px;
+            margin-bottom: 5px;
+            margin-left: 3px;
+        }
+
+        #biomass_count_field {
+            font-size: 12px;
+            margin-left: 16px;
+        }
+
+        #fish_assemblage_estimator {
+            width: 45%;
+            margin: 0px 5% 0px 0px;
+            display: none;
+            float: right;
+            left: 0;
+        }
+
+        #filteredFishTable {
+            padding: 0 2px;
+            margin: 0 2px;
+            table-layout: fixed;
+        }
+
+        #error_msg {
+            margin-left: 50px;
+            font-weight: bold;
+            color: red;
+        }
+
+        .streamChem {
+            background-color: #08520F !important;
+            box-shadow: inset 0px 1px 0px #067D33, 0px 1px 0px 0px #0A6612, 0px 4px 4px #999 !important;
+        }
+
+        .fishRarity {
+            background-color: #663E21 !important;
+            box-shadow: inset 0px 1px 0px #875C24, 0px 1px 0px 0px #704424, 0px 4px 4px #999 !important;
+        }
+
+    </style>
+
+    <script>
+
+        var selectedHuc;
+        var calc;
+        var removedFishList = [];
+        var addedFishList = [];
+
+        $(document).ready(function () {
+
+            $('#fishTable').closest('div').hide();
+            $('#filteredFishTable').closest('div').hide();
+            $('#abundance_calc').closest('div').hide();
+            $('#fish_filters').closest('div').hide();
+            $('#huc_calc_toggle').closest('div').hide();
+
+            $('#selectHUC').on('change', function () {
+                selectHUCs(this.value);
+            });
+
+            {#            $('#accordion').on('click', expandFilter());#}
+
+            // Applies filter on click.
+            $(document).on("click", ".filterButton", (function (event) {
+                var input = $(this).closest('div');
+                toggleFilter(input);
+                setTimeout(applyFilters, 10);
+            }));
+
+            // Applies filters using filter_apply button. NOT IN USE
+            $(document).on('click', '#filter_apply', function (event) {
+                startLoad();
+                setTimeout(applyFilters, 10);
+            });
+
+            // Deselects filter on change
+            $('#filter_field').keyup(function (event) {
+                var input = $(this).closest('div');
+                $(input).removeClass('filtering');
+                setTimeout(applyFilters, 10);
+            });
+
+            // Deselects range filter if change to range.
+            $('#rarity_range').on("click", function (event) {
+                var input = this.parentNode;
+                $(input).removeClass('filtering');
+                setTimeout(applyFilters, 10);
+            });
+
+            // Displays fish details on fishTable.
+            $('#fishTable').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var row = $('#fishTable').DataTable().row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // Open this row
+                    row.child(formatDetails(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
+
+            // Toggle calculator butotn
+            $('#in_huc_calc_toggle').on('click', function () {
+                calc = this;
+                setTimeout(toggleCalculator, 100);
+            });
+
+            // Entering value in biomass weight field.
+            $('#biomass_weight_field').keyup(function () {
+                $('#biomass_count_field').val("");
+            });
+
+            // Entering value in biomass count field.
+            $('#biomass_count_field').keyup(function () {
+                $('#biomass_weight_field').val("");
+            });
+
+            // Calculate abundance for assemblage
+            $('#biomass_submit').on('click', function () {
+                startLoad();
+                setTimeout(startCalculation, 1000);
+            });
+
+            // Reset calc_table values.
+            $('#biomass_reset').on('click', function () {
+                $('#biomass_weight_field').val("");
+                $('#biomass_count_field').val("");
+                var filteredData = $('#filteredFishTable').DataTable().data();
+                populateCalcTable(filteredData);
+            });
+
+            // Save abundance calculation and assemblage to csv.
+            $('#save_to_csv').on('click', function () {
+                setTimeout(saveToCSV, 100);
+            });
+
+            // Click on calc_table to enable editing.
+            $('#calc_table').on('click', 'td', function (e) {
+                var v = this.innerHTML;
+                if (!v.includes('<input') && ($(this).index() === 0 || $(this).index() === 2)) {
+                    this.innerHTML = "<input id='tblCell' class='tblCellEdit' onfocus='this.value = this.value;' type='text' value='" + v + "'/>";
+                }
+                document.getElementById('tblCell').focus();
+            });
+
+            // Stopped editing editable calc_table values.
+            $('#calc_table').on('blur', 'td', function (e) {
+                var v = this.childNodes[0].value;
+                var row = $('#calc_table').DataTable().row($(this).closest('tr')).data();
+                var orig;
+                $('#filteredFishTable').DataTable().rows().every(function (rI, tL, rL) {
+                    var r = this.data();
+                    if (row["species_id"] === r["species_id"]) {
+                        orig = r;
+                    }
+                });
+                if (orig["thinning"] === Number(v) || orig["mean_weight"] === Number(v)) {
+                    $(this).removeClass("cell-edited");
+                }
+                else {
+                    $(this).addClass("cell-edited");
+                }
+                $('#calc_table').DataTable().cell(this).data(v).draw();
+            });
+
+            // Add/remove fish from assemblage.
+            $('#fishTable').on('click', 'td.select-checkbox', function () {
+                //startLoad();
+                var tr = $(this).closest('tr');
+                var row = $('#fishTable').DataTable().row(tr).data();
+                if (this.children[0].checked) {
+                    $(this).parent().removeClass('removed_fish');
+                    removedFishList.splice(removedFishList.indexOf(row["species_id"]), 1);
+                    addedFishList.push(row["species_id"]);
+                }
+                else {
+                    $(this).parent().addClass('removed_fish');
+                    removedFishList.push(row["species_id"]);
+                    addedFishList.splice(addedFishList.indexOf(row["species_id"]), 1);
+                }
+                setTimeout(applyFilters, 10);
+            });
+
+            $('#streamSearchSwitch').on('click', function () {
+                if ($('#streamSearchSwitch').hasClass('coordSearch')) {
+                    $('#streamSearchSwitch').addClass('hucSearch');
+                    $('#streamSearchSwitch').removeClass('coordSearch');
+                    document.getElementById('streamSearchValue').placeholder = 'HUC 8 ID';
+                    document.getElementById('streamSearchValue').value = "";
+                    document.getElementById('streamSearchValue').title = "Search for specific HUC8 by HUC ID";
+                }
+                else {
+                    $('#streamSearchSwitch').removeClass('hucSearch');
+                    $('#streamSearchSwitch').addClass('coordSearch');
+                    document.getElementById('streamSearchValue').placeholder = 'Lat, Lon';
+                    document.getElementById('streamSearchValue').value = "";
+                    document.getElementById('streamSearchValue').title = "Search for specific stream segment by lat,lon values";
+                }
+            });
+
+            $('.fishSearchButton').on('click', function () {
+                document.getElementById('searchError').innerHTML = "";
+                if ($('#streamSearchSwitch').hasClass('coordSearch')) {
+                    var latLon = document.getElementById('streamSearchValue').value;
+                    var llA = latLon.split(',');
+                    if (isNaN(llA[0]) || isNaN(llA[1])) {
+                        document.getElementById('searchError').innerHTML = "Invalid lat/long values";
+                    }
+                    else {
+                        selectStreamFromCoord(llA[0], llA[1]);
+                    }
+                    return false;
+                }
+                else {
+                    var hucID = document.getElementById('streamSearchValue').value;
+                    if (hucID.length !== 8 || isNaN(hucID)) {
+                        document.getElementById('searchError').innerHTML = "Invalid HUC ID";
+                    }
+                    else {
+                        var huc8 = getStreamHuc(hucID);
+                        var huc8geom;
+                        if (huc8[0][0] < 0) {
+                            huc8geom = huc8.map(function (c) {
+                                return c.reverse();
+                            });
+                        }
+                        else {
+                            huc8geom = huc8;
+                        }
+
+                        if (map.hasLayer(selectedStream) || map.hasLayer(streamHuc)) {
+                            map.removeLayer(selectedStream);
+                            map.removeLayer(streamHuc);
+                        }
+
+                        streamHuc = L.polygon(huc8geom, {
+                            color: 'white',
+                            weight: 2,
+                            opacity: 0.9,
+                            fillColor: '#9ecae1',
+                            fillOpacity: 0.3
+                        }).addTo(map);
+                        map.fitBounds(streamHuc.getBounds());
+                    }
+                    return false;
+                }
+            });
+
+            $('#filteredFishTable').on("mouseenter", "tr", function () {
+                var index = this.rowIndex;
+                $('#calc_table tr:nth-child(' + index + ')').css("background-color", "rgba(160, 160, 160, 1.0)");
+            });
+            $('#filteredFishTable').on("mouseleave", "tr", function () {
+                var index = this.rowIndex;
+                var background;
+
+                if (index % 2 === 0)
+                    background = "white";
+                else {
+                    background = "lightgray";
+                }
+                $('#calc_table tr:nth-child(' + index + ')').css("background-color", background);
+            });
+        });
+
+        function saveToCSV() {
+            var calc_table = $('#calc_table').DataTable().rows({order: 'index'}).data();
+
+            var csv_data = "";
+            calc_table.map(function (r, i) {
+                csv_data += r["genus"] + " " + r["species"] + ", " + r["common_name"] + ", " + r["thinning"] + ", " + r["thin_adj"] +
+                    ", " + r["mean_weight"] + ", " + r["biomass"] + ", " + r["count"] + "\n";
+            });
+            var header = "scientific name, common name, thinning coefficient, thinning adjustment, mean weight(g), biomass(kg), count\n";
+
+            var d = new Date();
+            var metadata_header = "\nmetadata\nsource, com id, huc id, rarity, stream depth (cm), stream width (m), drainage area (ha)," +
+                " slope (%), tss (mg/l), pH (SU), conductivity (uS/cm^2), dissolved oxygen (%), total biomass (kg), total count, date retrieved\n";
+            var metadata = "EPA Pisces Fish Assemblage Calculator, " + $('#comid').html() + ", " + $('#huc8').html() +
+                ", " + $('#rarity_value').val() + ", " + $('.depth_value').val() + ", " + $('.width_value').val() +
+                ", " + $('.area_value').val() + ", " + $('.slope_value').val() + ", " + $('.tss_value').val() +
+                ", " + $('.ph_value').val() + ", " + $('.cond_value').val() + ", " + $('.do_value').val() +
+                ", " + $('#biomass_weight_field').val() + ", " + $('#biomass_count_field').val() + ", " + d.toISOString() + "\n";
+
+            var file_name = $('#comid').html() + "_epa_fish_assemblage";
+
+            var pom = document.createElement('a');
+            pom.setAttribute('href', 'data:data:text/csv;charset=utf-8,' + encodeURIComponent(header + csv_data + metadata_header + metadata));
+            pom.setAttribute('download', file_name + '.csv');
+            if (document.createEvent) {
+                var event = document.createEvent('MouseEvents');
+                event.initEvent('click', true, true);
+                pom.dispatchEvent(event);
+            }
+            else {
+                pom.click();
+            }
+        }
+
+        function toggleCalculator() {
+            var button = $(calc).closest('div');
+            if (!button[0].classList.contains("calculator")) {
+                button.removeClass("fishHucTable");
+                button.addClass("calculator");
+                document.getElementById('fish_assemblage_estimator').style.float = 'left';
+                document.getElementById('fish_assemblage_estimator').style.margin = '0px 0px 0px 5%';
+
+                $('#hucFish').closest('div').hide();
+                $('#abundance_calc').closest('div').show();
+            }
+            else {
+                button.removeClass("calculator");
+                button.addClass("fishHucTable");
+                document.getElementById('fish_assemblage_estimator').style.float = 'right';
+                document.getElementById('fish_assemblage_estimator').style.margin = '0px 5% 0px 0px';
+
+                $('#abundance_calc').closest('div').hide();
+                $('#hucFish').closest('div').show();
+            }
+        }
+
+        function resetFilters() {
+            var filters = $("#assemblage_filters").find(".filtering");
+            filters.map(function (f) {
+                $(this).removeClass('filtering');
+            });
+        }
+
+        function toggleFilter(input) {
+            if (input.hasClass("filtering")) {
+                input.removeClass('filtering');
+            }
+            else {
+                input.addClass('filtering');
+            }
+        }
+
+        function applyFilters() {
+            $('#biomass_weight_field').val("");
+            $('#biomass_count_field').val("");
+            var fishTable = $('#fishTable').DataTable();
+            var filters = $("#assemblage_filters").find(".filtering");
+            fishTable.rows().nodes().to$().removeClass('filteredInFishTable');
+
+            // Creates list of species_id for all fish in fishTable.
+            var inTable = fishTable.rows().data().map(function (i, r) {
+                return i["species_id"];
+            });
+            var notInTable = [];
+            filters.map(function (index) {
+                // In the html input tag for each filter the name includes two numbers, or one for rarity, which indicate the index of the column in fishTable.
+                var filterName = filters[index].firstElementChild.name.split('_');
+                {##}
+                {#if (filterName[0] === "rarity") {#}
+                {#    notInTable = notInTable.concat(filterRarity(Number(filterName[1])));#}
+                {#else {#}
+                {#    notInTable = notInTable.concat(filterDataTable(Number(filterName[1]), Number(filterName[2]), filterName[0] + '_value'));#}
+                notInTable = notInTable.concat(filterDataTable(Number(filterName[1]), Number(filterName[2]), filterName[0] + '_value'));
+
+            });
+            // Merges array of indexes from fish removed from assemblage by the filter and manual removal. Sorts numerically ascending.
+            notInTable = notInTable.concat(removedFishList).sort(function (a, b) {
+                return a - b
+            });
+            // Removes duplicates from merged table.
+            notInTable = notInTable.filter(function (elem, index, self) {
+                return index === self.indexOf(elem);
+            });
+
+            // Removes fish from inTable list if they are present in notInTable list
+            notInTable.map(function (i) {
+                if (inTable.indexOf(i) !== -1) {
+                    inTable.splice(inTable.indexOf(i), 1);
+                }
+            });
+
+            // Add fish from addedFishList
+            addedFishList.map(function (i){
+                if (inTable.indexOf(i) === -1){
+                    inTable.push(i);
+                }
+            });
+
+            $('#filteredFishTable').DataTable().clear().draw();
+            $('#calc_table').DataTable().clear().draw();
+            fishTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                var fRow = JSON.parse(JSON.stringify(this.data()));
+                var cRow = JSON.parse(JSON.stringify(this.data()));
+                if (inTable.indexOf(fRow["species_id"]) >= 0) {
+                    $('#filteredFishTable').DataTable().row.add(fRow).draw();
+                    $('#calc_table').DataTable().row.add(cRow).draw();
+                }
+            });
+
+            // Iterates through rows of fishTable and adds highlighting class to each row in assemblage.
+            if (filters.length !== 0) {
+                fishTable.rows({order: 'index'}).data().filter(function (value, index) {
+                    var id = value["species_id"];
+                    if (inTable.indexOf(id) >= 0) {
+                        if (removedFishList.indexOf(id) >= 0 && addedFishList.indexOf(id) === -1) {
+                            fishTable.row(index).nodes().to$().addClass('filteredInFishTable-removed');
+                        }
+                        else {
+                            var row = fishTable.row(index).node();
+                            $('input[type="checkbox"]', row).prop("checked", true);
+                            fishTable.row(index).nodes().to$().addClass('filteredInFishTable');
+                        }
+                    }
+                    else{
+                        var row = fishTable.row(index).node();
+                        $('input[type="checkbox"]', row).prop("checked", false);
+                    }
+                });
+            }
+            endLoad();
+        }
+
+        function filterRarity(columnN) {
+            var fishTable = $('#fishTable').DataTable();
+            var rarityRange = $('#rarity_value').val().split(' - ');
+            var min = parseInt(rarityRange[0]);
+            var max = parseInt(rarityRange[1]);
+            var notInTable = [];
+            var filterTable = fishTable.column(columnN, {order: 'index'}).data().filter(function (value, index) {
+                if ((value >= min && value <= max) || value === null || isNaN(value)) {
+                    return true;
+                }
+                else {
+                    var id = fishTable.rows(index).data()[0]["species_id"];
+                    if (notInTable.indexOf(id) === -1) {
+                        notInTable.push(id);
+                    }
+                    return false;
+                }
+            });
+            return notInTable;
+        }
+
+        function filterDataTable(minColumn, maxColumn, compareValueName) {
+            var fishTable = $('#fishTable').DataTable();
+            var cValue = parseFloat(document.getElementsByClassName(compareValueName)[0].value);
+            var notInTable = [];
+            var filterTable = fishTable.column(minColumn, {order: 'index'}).data().filter(function (value, index) {
+                {#if (Number(value) < Number(cValue) || isNaN(cValue) || value === null) {#}
+                if (Number(value) < Number(cValue)) {
+                    return true;
+                }
+                else {
+                    var id = fishTable.rows(index).data()[0]["species_id"];
+                    if (notInTable.indexOf(id) === -1) {
+                        notInTable.push(id);
+                    }
+                    return false;
+                }
+            });
+            var filterTable2 = fishTable.column(maxColumn, {order: 'index'}).data().filter(function (value, index) {
+                {#if (Number(value) > Number(cValue) || isNaN(cValue) || value === null) {#}
+                if (Number(value) > Number(cValue)) {
+                    return true;
+                }
+                else {
+                    var id = fishTable.rows(index).data()[0]["species_id"];
+                    if (notInTable.indexOf(id) === -1) {
+                        notInTable.push(id);
+                    }
+                    else {
+                        notInTable.splice(notInTable.indexOf(id), 1);
+                    }
+                    return false;
+                }
+            });
+            return notInTable;
+        }
+
+        function formatDetails(details) {
+            if (details['slope_l'] === null){
+                return '<p style="line-height:15px !important; display: initial;">Mean Weight (g): ' + details["mean_weight"] + '<br>' +
+                    'Rarity: ' + details["rarity"] + '<br>' + 'No envelope data available.</p>'
+            }
+            return '<p style="line-height:15px !important; display: initial;">Mean Weight (g): ' + details["mean_weight"] + '<br>' +
+                'Rarity: ' + details["rarity"] + '<br>' +
+                'Stream Area Range (ha): (' + details["area_l"] + ' - ' + details["area_u"] + ')<br>' +
+                'Stream Slope Range (%): (' + details["slope_l"] + ' - ' + details["slope_u"] + ')<br>' +
+                'Elevation Range (m): (' + details["elev_l"] + ' - ' + details["elev_u"] + ')<br>' +
+                'Index of Watershed Integrity Range: (' + details["iwi_l"] + ' - ' + details["iwi_u"] + ')<br>' +
+                'Benthic Invertebrate Index Range: (' + details["bmmi_l"] + ' - ' + details["bmmi_u"] + ')<br></p>';
+            {#return '<p style="line-height:15px !important; display: initial;">Mean Weight (g): ' + details["mean_weight"] + '<br>' +#}
+            {#    'Rarity: ' + details["rarity"] + '<br>' +#}
+            {#    'Stream Depth Range (cm): (' + details["depth_l"] + ' - ' + details["depth_u"] + ')<br>' +#}
+            {#    'Stream Width Range (m): (' + details["width_l"] + ' - ' + details["width_u"] + ')<br>' +#}
+            {#    'Stream Area Range (ha): (' + details["area_l"] + ' - ' + details["area_u"] + ')<br>' +#}
+            {#    'Stream Slope Range (%): (' + details["slope_l"] + ' - ' + details["slope_u"] + ')<br>' +#}
+            {#    'Stream TSS Range (mg/l): (' + details["tss_l"] + ' - ' + details["tss_u"] + ')<br>' +#}
+            {#    'Stream pH Range: (' + details["ph_l"] + ' - ' + details["ph_u"] + ')<br>' +#}
+            {#    'Stream Conductivity Range (uS/cm2): (' + details["cond_l"] + ' - ' + details["cond_u"] + ')<br>' +#}
+            {#    'Stream Dissolved Oxygen Range (% sat): (' + details["do_l"] + ' - ' + details["do_u"] + ')<br></p>';#}
+        }
+
+        function selectStreamFromCoord(lat, lon) {
+            document.getElementById('table-focus').focus();
+            $('#latVal').html(lat);
+            $('#lngVal').html(lon);
+            setTimeout(getStreamData, 10);
+            resetFilters();
+        }
+
+        function onStreamMapClick(e) {
+            startLoad();
+            $(".area_value").val("");
+            $(".slope_value").val("");
+            $(".elevation_value").val("");
+            $(".iwi_value").val("");
+            $(".bmmi_value").val("");
+            $('#latVal').html(Number(e.latlng.lat).toFixed(6));
+            $('#lngVal').html(Number(e.latlng.lng).toFixed(6));
+            setTimeout(getStreamData, 10);
+            resetFilters();
+        }
+
+        function getStreamData() {
+            if ($(document.getElementById('huc_calc_toggle')).hasClass("calculator")) {
+                $('#in_huc_calc_toggle').trigger("click");
+            }
+            var lat = $('#latVal').html();
+            var lng = $('#lngVal').html();
+            var url = "https://ofmpub.epa.gov/waters10/PointIndexing.Service";
+            var latitude = lat.toString();
+            var longitude = lng.toString();
+            ptIndexParams = {
+                'pGeometry': 'POINT(' + longitude + ' ' + latitude + ')'
+                , 'pGeometryMod': 'WKT,SRSNAME=urn:ogc:def:crs:OGC::CRS84'
+                , 'pPointIndexingMethod': 'DISTANCE'
+                , 'pPointIndexingMaxDist': 25
+                , 'pOutputPathFlag': 'TRUE'
+                , 'pReturnFlowlineGeomFlag': 'TRUE'
+                , 'optOutCS': 'SRSNAME=urn:ogc:def:crs:OGC::CRS84'
+                , 'optOutPrettyPrint': 0
+            };
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                jsonp: true,
+                data: ptIndexParams,
+                async: false,
+                success: function (data, status, jqXHR) {
+                    var streamData = data;
+                    if(!typeof(data) === "object") {
+                        streamData = JSON.parse(data);
+                    }
+                    var huc8ID = streamData.output.ary_flowlines[0].wbd_huc12.substring(0, 8);
+                    $('#comid').html(streamData.output.ary_flowlines[0].comid);
+                    $('#huc8').html(huc8ID);
+                    $('#streamMapInfo').html("<strong>Stream Segment Selected: </strong><a href='https://watersgeo.epa.gov/watershedreport/?comid=" +
+                        streamData.output.ary_flowlines[0].comid + "' title='Get more information on this stream segment.' target='_blank'>" + streamData.output.ary_flowlines[0].comid + "</a>");
+                    addStreamSeg(streamData);
+                    getStreamProperties();
+                    getFishData();
+                    endLoad();
+                    return data;
+                },
+                error: function (jqXHR, status) {
+                    $('#comId').html("Error attempting to get river data.");
+                    endLoad();
+                    return null;
+                }
+            });
+        }
+
+        function getStreamProperties() {
+            var lat = $('#latVal').html();
+            var lng = $('#lngVal').html();
+            var comid = $('#comid').html();
+            $.ajax({
+                type: "GET",
+                url: "/pisces/rest/api/v1/stream/properties?comid=" + comid + "&latitude=" + lat + "&longitude=" + lng,
+                crossDomain: true,
+                success: function (data, status, jqXHR) {
+                    $(".area_value").val(Number(data["attributes"]["area"]).toFixed(3));
+                    $(".slope_value").val(Number(data["attributes"]["slope"]).toFixed(3));
+                    $(".elevation_value").val(Number(data["attributes"]["elevation"]).toFixed(3));
+                    $(".iwi_value").val(Number(data["attributes"]["iwi"]).toFixed(3));
+                    $(".bmmi_value").val(Number(data["attributes"]["bmmi"]).toFixed(3));
+                    setTimeout(activateFilters, 300);
+                },
+                error: function (jqXHR, status, errorThrown) {
+                    console.log(errorThrown);
+                }
+            });
+        }
+
+        function activateFilters(){
+            $('#slope_filter').trigger("click");
+            $('#area_filter').trigger("click");
+            $('#elevation_filter').trigger("click");
+            $('#iwi_filter').trigger("click");
+            $('#bmmi_filter').trigger("click");
+        }
+
+        function getFishData() {
+            var huc8 = selectedHuc;
+            $.ajax({
+                type: "GET",
+                url: "/pisces/rest/api/v2/fish/genera/hucs/" + huc8,
+                crossDomain: true,
+                success: function (data, status, jqXHR) {
+                    removedFishList = [];
+                    addedFishList = [];
+                    $('#fish_filters').closest('div').show();
+                    $('#envelope_toggle').closest('div').show();
+                    $('#huc_calc_toggle').closest('div').show();
+                    populateFishTableV2(data["species"]);
+                    var fishTableData = $('#fishTable').DataTable().rows().data();
+                    populateFilteredFishTableV2(fishTableData);
+                    populateCalcTable(fishTableData);
+                },
+                error: function (jqXHR, status, errorThrown) {
+                    console.log("ERROR: ajax call failed. " + status);
+                    $('#error_msg').html("Error: failed to get fish data for the selected huc.");
+                    return null;
+                }
+            });
+        }
+
+        function populateFishTable(data) {
+            $('#fishTable').DataTable().destroy();
+            $('#fishTable').empty();
+            var config = {
+                data: data,
+                "columns": [
+                    {
+                        "class": "details-control",
+                        "orderable": false,
+                        "data": null,
+                        "defaultContent": "",
+                        title: "Info"
+                    },
+                    {
+                        title: "Add/Remove",
+                        name: "add_remove"
+                    },
+                    {
+                        data: "common_name",
+                        title: "Common Name",
+                        name: "common_name"
+                    },
+                    {
+                        data: "species",
+                        title: "Scientific Name",
+                        name: "scientific_name"
+                    },
+                    {
+                        data: "genus",
+                        title: "Genus",
+                        name: "genus"
+                    },
+                    {
+                        data: "genusID",
+                        title: "Genus Id",
+                        name: "genus_id"
+                    },
+                    {
+                        data: "species_id",
+                        title: "Species Id",
+                        name: "species_id"
+
+                    },
+                    {
+                        data: "mean_weight",
+                        title: "Mean Weight",
+                        name: "mean_weight"
+                    },
+                    {
+                        data: "depth_l",
+                        title: "Depth Lower",
+                        name: "depth_lower"
+                    },
+                    {
+                        data: "depth_u",
+                        title: "Depth Upper",
+                        name: "depth_upper"
+                    },
+                    {
+                        data: "width_l",
+                        title: "Width Lower",
+                        name: "width_lower"
+                    },
+                    {
+                        data: "width_u",
+                        title: "Width Upper",
+                        name: "width_upper"
+                    },
+                    {
+                        data: "area_l",
+                        title: "Area Lower",
+                        name: "area_lower"
+                    },
+                    {
+                        data: "area_u",
+                        title: "Area Upper",
+                        name: "area_upper"
+                    },
+                    {
+                        data: "tss_l",
+                        title: "TSS Lower",
+                        name: "tss_lower"
+                    },
+                    {
+                        data: "tss_u",
+                        title: "TSS Upper",
+                        name: "tss_upper"
+                    },
+                    {
+                        data: "slope_l",
+                        title: "Slope Lower",
+                        name: "slope_lower"
+                    },
+                    {
+                        data: "slope_u",
+                        title: "Slope Upper",
+                        name: "slope_upper"
+                    },
+                    {
+                        data: "ph_l",
+                        title: "pH Lower",
+                        name: "ph_lower"
+                    },
+                    {
+                        data: "ph_u",
+                        title: "pH Upper",
+                        name: "ph_upper"
+                    },
+                    {
+                        data: "cond_l",
+                        title: "Conductivity Lower",
+                        name: "conduct_lower"
+                    },
+                    {
+                        data: "cond_u",
+                        title: "Conductivity Upper",
+                        name: "conduct_upper"
+                    },
+                    {
+                        data: "do_l",
+                        title: "Dissolved Oxygen Lower",
+                        name: "do_lower"
+                    },
+                    {
+                        data: "do_u",
+                        title: "Dissolved Oxygen Upper",
+                        name: "do_upper"
+                    },
+                    {
+                        data: "rarity",
+                        title: "Rarity",
+                        name: "rarity"
+                    },
+                    {
+                        data: "thinning",
+                        title: "&beta;",
+                        name: "beta"
+                    },
+                    {
+                        data: "thin_adj",
+                        title: "&Delta;",
+                        name: "delta"
+                    },
+                    {
+
+                    }
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row["genus"] + " " + data;
+                        },
+                        "targets": 3
+                    },
+                    {
+                        width: 50, targets: [0, 1]
+                    },
+                    {
+                        "targets": 1,
+                        'searchable': false,
+                        'orderable': false,
+                        'className': 'select-checkbox',
+                        'render': function (data, type, full, meta) {
+                            return '<input type="checkbox" checked>';
+                        }
+                    }
+                ],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                searching: false,
+                paging: false,
+                bInfo: false,
+                "order": [[2, 'asc']]
+
+            };
+            $('#fishTable').closest('div').show();
+            $('#fishTable').DataTable(config);
+        }
+
+        function populateFishTableV2(data) {
+            $('#fishTable').DataTable().destroy();
+            $('#fishTable').empty();
+            var config = {
+                data: data,
+                "columns": [
+                    {
+                        "class": "details-control",
+                        "orderable": false,
+                        "data": null,
+                        "defaultContent": "",
+                        title: "Info"
+                    },
+                    {
+                        title: "Add/Remove",
+                        name: "add_remove"
+                    },
+                    {
+                        data: "common_name",
+                        title: "Common Name",
+                        name: "common_name"
+                    },
+                    {
+                        data: "species",
+                        title: "Scientific Name",
+                        name: "scientific_name"
+                    },
+                    {
+                        data: "genus",
+                        title: "Genus",
+                        name: "genus"
+                    },
+                    {
+                        data: "genusID",
+                        title: "Genus Id",
+                        name: "genus_id"
+                    },
+                    {
+                        data: "species_id",
+                        title: "Species Id",
+                        name: "species_id"
+
+                    },
+                    {
+                        data: "mean_weight",
+                        title: "Mean Weight",
+                        name: "mean_weight"
+                    },
+                    {
+                        data: "rarity",
+                        title: "Rarity",
+                        name: "rarity"
+                    },
+                    {
+                        data: "thinning",
+                        title: "&beta;",
+                        name: "beta"
+                    },
+                    {
+                        data: "thin_adj",
+                        title: "&Delta;",
+                        name: "delta"
+                    },
+                    {
+                        data: "slope_l",
+                        title: "Slope Lower",
+                        name: "slope_l"
+                    },
+                    {
+                        data: "slope_u",
+                        title: "Slope Upper",
+                        name: "slope_u"
+                    },
+                    {
+                        data: "area_l",
+                        title: "Area Lower",
+                        name: "area_l"
+                    },
+                    {
+                        data: "area_u",
+                        title: "Area Upper",
+                        name: "area_u"
+                    },
+                    {
+                        data: "elev_l",
+                        title: "Elevation Lower",
+                        name: "elev_l"
+                    },
+                    {
+                        data: "elev_u",
+                        title: "Elevation Upper",
+                        name: "elev_u"
+                    },
+                    {
+                        data: "iwi_l",
+                        title: "IWI Lower",
+                        name: "iwi_l"
+                    },
+                    {
+                        data: "iwi_u",
+                        title: "IWI Upper",
+                        name: "iwi_u"
+                    },
+                    {
+                        data: "bmmi_l",
+                        title: "BMMI Lower",
+                        name: "bmmi_l"
+                    },
+                    {
+                        data: "bmmi_u",
+                        title: "BMMI Upper",
+                        name: "bmmi_u"
+                    }
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row["genus"] + " " + data;
+                        },
+                        "targets": 3
+                    },
+                    {
+                        width: 50, targets: [0, 1]
+                    },
+                    {
+                        "targets": 1,
+                        'searchable': false,
+                        'orderable': false,
+                        'className': 'select-checkbox',
+                        'render': function (data, type, full, meta) {
+                            return '<input type="checkbox" checked>';
+                        }
+                    }
+                ],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                searching: false,
+                paging: false,
+                bInfo: false,
+                "order": [[2, 'asc']]
+
+            };
+            $('#fishTable').closest('div').show();
+            $('#fishTable').DataTable(config);
+        }
+
+        function populateFilteredFishTable(data) {
+            $('#filteredFishTable').DataTable().destroy();
+            $('#filteredFishTable').empty();
+            var config = {
+                data: data,
+                "columns": [
+                    {
+                        data: "common_name",
+                        title: "Common Name",
+                        name: "common_name"
+                    },
+                    {
+                        data: "species",
+                        title: "Scientific Name",
+                        name: "scientific_name"
+
+                    },
+                    {
+                        data: "genus",
+                        title: "Genus",
+                        name: "genus"
+                    },
+                    {
+                        data: "genusID",
+                        title: "Genus Id",
+                        name: "genus_id"
+                    },
+                    {
+                        data: "species_id",
+                        title: "Species Id",
+                        name: "species_id"
+
+                    },
+                    {
+                        data: "mean_weight",
+                        title: "Mean Weight",
+                        name: "mean_weight"
+                    },
+                    {
+                        data: "depth_l",
+                        title: "Depth Lower",
+                        name: "depth_lower"
+                    },
+                    {
+                        data: "depth_u",
+                        title: "Depth Upper",
+                        name: "depth_upper"
+                    },
+                    {
+                        data: "width_l",
+                        title: "Width Lower",
+                        name: "width_lower"
+                    },
+                    {
+                        data: "width_u",
+                        title: "Width Upper",
+                        name: "width_upper"
+                    },
+                    {
+                        data: "area_l",
+                        title: "Area Lower",
+                        name: "area_lower"
+                    },
+                    {
+                        data: "area_u",
+                        title: "Area Upper",
+                        name: "area_upper"
+                    },
+                    {
+                        data: "tss_l",
+                        title: "TSS Lower",
+                        name: "tss_lower"
+                    },
+                    {
+                        data: "tss_u",
+                        title: "TSS Upper",
+                        name: "tss_upper"
+                    },
+                    {
+                        data: "slope_l",
+                        title: "Slope Lower",
+                        name: "slope_lower"
+                    },
+                    {
+                        data: "slope_u",
+                        title: "Slope Upper",
+                        name: "slope_upper"
+                    },
+                    {
+                        data: "ph_l",
+                        title: "pH Lower",
+                        name: "ph_lower"
+                    },
+                    {
+                        data: "ph_u",
+                        title: "pH Upper",
+                        name: "ph_upper"
+                    },
+                    {
+                        data: "cond_l",
+                        title: "Conductivity Lower",
+                        name: "conduct_lower"
+                    },
+                    {
+                        data: "cond_u",
+                        title: "Conductivity Upper",
+                        name: "conduct_upper"
+                    },
+                    {
+                        data: "do_l",
+                        title: "Dissolved Oxygen Lower",
+                        name: "do_lower"
+                    },
+                    {
+                        data: "do_u",
+                        title: "Dissolved Oxygen Upper",
+                        name: "do_upper"
+                    },
+                    {
+                        data: "rarity",
+                        title: "Rarity",
+                        name: "rarity"
+                    },
+                    {
+                        data: "thinning",
+                        title: "&beta;",
+                        name: "beta"
+                    },
+                    {
+                        data: "thin_adj",
+                        title: "&Delta;",
+                        name: "delta"
+                    }
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row["genus"] + " " + data;
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "bSortable": false,
+                        "aTargets": [0, 1]
+                    }
+                ],
+                sorting: false,
+                searching: false,
+                paging: false,
+                bInfo: false
+            };
+            $('#filteredFishTable').closest('div').show();
+            $('#filteredFishTable').DataTable(config);
+        }
+
+        function populateFilteredFishTableV2(data) {
+            $('#filteredFishTable').DataTable().destroy();
+            $('#filteredFishTable').empty();
+            var config = {
+                data: data,
+                "columns": [
+                    {
+                        data: "common_name",
+                        title: "Common Name",
+                        name: "common_name"
+                    },
+                    {
+                        data: "species",
+                        title: "Scientific Name",
+                        name: "scientific_name"
+                    },
+                    {
+                        data: "genus",
+                        title: "Genus",
+                        name: "genus"
+                    },
+                    {
+                        data: "genusID",
+                        title: "Genus Id",
+                        name: "genus_id"
+                    },
+                    {
+                        data: "species_id",
+                        title: "Species Id",
+                        name: "species_id"
+
+                    },
+                    {
+                        data: "mean_weight",
+                        title: "Mean Weight",
+                        name: "mean_weight"
+                    },
+                    {
+                        data: "rarity",
+                        title: "Rarity",
+                        name: "rarity"
+                    },
+                    {
+                        data: "thinning",
+                        title: "&beta;",
+                        name: "beta"
+                    },
+                    {
+                        data: "thin_adj",
+                        title: "&Delta;",
+                        name: "delta"
+                    },
+                    {
+                        data: "slope_l",
+                        title: "Slope Lower",
+                        name: "slope_l"
+                    },
+                    {
+                        data: "slope_u",
+                        title: "Slope Upper",
+                        name: "slope_u"
+                    },
+                    {
+                        data: "area_l",
+                        title: "Area Lower",
+                        name: "area_l"
+                    },
+                    {
+                        data: "area_u",
+                        title: "Area Upper",
+                        name: "area_u"
+                    },
+                    {
+                        data: "elev_l",
+                        title: "Elevation Lower",
+                        name: "elev_l"
+                    },
+                    {
+                        data: "elev_u",
+                        title: "Elevation Upper",
+                        name: "elev_u"
+                    },
+                    {
+                        data: "iwi_l",
+                        title: "IWI Lower",
+                        name: "iwi_l"
+                    },
+                    {
+                        data: "iwi_u",
+                        title: "IWI Upper",
+                        name: "iwi_u"
+                    },
+                    {
+                        data: "bmmi_l",
+                        title: "BMMI Lower",
+                        name: "bmmi_l"
+                    },
+                    {
+                        data: "bmmi_u",
+                        title: "BMMI Upper",
+                        name: "bmmi_u"
+                    }
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row["genus"] + " " + data;
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "bSortable": false,
+                        "aTargets": [0, 1]
+                    }
+                ],
+                sorting: false,
+                searching: false,
+                paging: false,
+                bInfo: false
+            };
+            $('#filteredFishTable').closest('div').show();
+            $('#filteredFishTable').DataTable(config);
+        }
+
+        function populateCalcTable(data) {
+            var d2 = JSON.parse(JSON.stringify(data));
+            $('#calc_table').DataTable().destroy();
+            $('#calc_table').empty();
+            var config = {
+                data: d2,
+                "columns": [
+                    {
+                        data: "thinning",
+                        title: "Thin Coef.",
+                        name: "beta"
+                    },
+                    {
+                        data: "thin_adj",
+                        title: "Thin Adj",
+                        name: "delta"
+                    },
+                    {
+                        data: "mean_weight",
+                        title: "Mean Weight(g)",
+                        name: "mean_weight"
+                    },
+                    {
+                        data: "biomass",
+                        title: "Biomass(kg)",
+                        name: "biomass",
+                        defaultContent: ''
+                    },
+                    {
+                        data: "count",
+                        title: "Count",
+                        name: "count",
+                        defaultContent: ''
+                    }
+                ],
+                "columnDefs": [
+                    {
+                        "bSortable": false,
+                        "aTargets": [0, 1, 2, 3, 4]
+                    }
+                ],
+                sorting: false,
+                searching: false,
+                paging: false,
+                bInfo: false
+            };
+            $('#calc_table').DataTable(config);
+        }
+
+        function addStreamSeg(streamData) {
+            var latlon = streamData.output.ary_flowlines[0].shape.coordinates.map(function (c) {
+                return c.reverse();
+            });
+            var huc8 = getStreamHuc(streamData.output.ary_flowlines[0].wbd_huc12);
+            var huc8geom;
+            if (huc8[0][0] < 0) {
+                huc8geom = huc8.map(function (c) {
+                    return c.reverse();
+                });
+            }
+            else {
+                huc8geom = huc8;
+            }
+
+            if (map.hasLayer(selectedStream)) {
+                map.removeLayer(selectedStream);
+                map.removeLayer(streamHuc);
+            }
+
+            selectedStream = L.polyline(latlon, {
+                color: '#02bfe7',
+                weight: 5,
+                opacity: 0.9,
+                lineJoin: 'round'
+            }).addTo(map);
+            streamHuc = L.polygon(huc8geom, {
+                color: 'white',
+                weight: 2,
+                opacity: 0.9,
+                fillColor: '#9ecae1',
+                fillOpacity: 0.3
+            }).addTo(map);
+            map.fitBounds(selectedStream.getBounds());
+        }
+
+        function getStreamHuc(hucID) {
+            var huc8 = null;
+            L.geoJSON(huc8s, {
+                filter: function (feature, layer) {
+                    if (feature.properties.HUC_CODE === hucID.substring(0, 8)) {
+                        huc8 = feature.geometry.coordinates[0];
+                    }
+                }
+            });
+            selectedHuc = hucID.substring(0, 8);
+            return huc8;
+        }
+
+        {# Accordion JS #}
+
+        function expandFilter() {
+            var acc = document.getElementsByClassName("accordion");
+            var i;
+
+            for (i = 0; i < acc.length; i++) {
+                acc[i].onclick = function () {
+                    this.classList.toggle("active");
+                    var panel = this.nextElementSibling;
+                    if (panel.style.maxHeight) {
+                        panel.style.maxHeight = null;
+                    } else {
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+                    }
+                }
+            }
+            return false;
+        }
+
+        function startCalculation() {
+            if ($('#biomass_weight_field').val() !== "") {
+                calculateAbundanceFromBiomass(10000);
+            }
+            else if ($('#biomass_count_field').val() !== "") {
+                calculateAbundanceFromCount(Number($('#biomass_count_field').val()));
+            }
+            endLoad();
+        }
+
+        function calculateAbundanceFromCount(c) {
+            var fishList = $('#calc_table').DataTable();
+            var beta = fishList.column(0).data();
+            var delta = fishList.column(1).data();
+            var mW = fishList.column(2).data();
+
+            // Calculating abundance for each fish.
+            var A = mW.map(function (W, i) {
+                return Math.pow(W, -(beta[i] - delta[i]));
+            });
+            // Sum of abundance
+            var sumA = A.reduce(function (pv, cv) {
+                return pv + cv;
+            }, 0);
+
+            // Relative abundance
+            var RA = A.map(function (a) {
+                return a / sumA;
+            });
+
+            // Species Count
+            var count = RA.map(function (ra) {
+                return Math.round(ra * c);
+            });
+
+            // Biomass for each species
+            var BM = count.map(function (cnt, i) {
+                return Number(((cnt * mW[i]) / 1000).toFixed(1));
+            });
+
+            var sumBM = BM.reduce(function (sum, v) {
+                return sum + v;
+            });
+
+            $('#biomass_weight_field').val(sumBM.toFixed(1));
+
+            $("#calc_table").DataTable().rows().every(function (rowIdx, tableLoop, rowLoop) {
+                var rowData = this.data();
+                rowData["biomass"] = BM[rowIdx];
+                rowData["count"] = count[rowIdx];
+                $('#calc_table').DataTable().row(this).data(rowData).draw();
+            });
+            $("#calc_table").DataTable().draw();
+        }
+
+        function calculateAbundanceFromBiomass(c) {
+            var B = Number($('#biomass_weight_field').val());
+
+            var fishList = $('#calc_table').DataTable();
+            var beta = fishList.column(0).data();
+            var delta = fishList.column(1).data();
+            var mW = fishList.column(2).data();
+
+            // Calculating abundance for each fish.
+            var A = mW.map(function (W, i) {
+                return Math.pow(W, -(beta[i] - delta[i]));
+            });
+            // Sum of abundance
+            var sumA = A.reduce(function (pv, cv) {
+                return pv + cv;
+            }, 0);
+
+            // Relative abundance
+            var RA = A.map(function (a) {
+                return a / sumA;
+            });
+
+            var E = 0; // ERROR value;
+            while (E < 0.95 || E > 1.05) {
+                // Species Count
+                var count = RA.map(function (ra) {
+                    return Math.round(ra * c);
+                });
+
+                var BM = count.map(function (cnt, i) {
+                    return Number(((cnt * mW[i]) / 1000).toFixed(1));
+                });
+                // Sun of biomass
+                var sumBM = BM.reduce(function (pv, cv) {
+                    return pv + cv;
+                }, 0);
+
+                // Adjustment of ERROR. Count is modified by the ERROR value.
+                E = B / sumBM;
+                c = E * c;
+            }
+
+            $('#biomass_count_field').val(Math.round(c));
+            $("#calc_table").DataTable().rows().every(function (rowIdx, tableLoop, rowLoop) {
+                var rowData = this.data();
+                rowData["biomass"] = BM[rowIdx];
+                rowData["count"] = count[rowIdx];
+                $('#calc_table').DataTable().row(this).data(rowData).draw();
+            });
+            $("#calc_table").DataTable().draw();
+        }
+
+        var loadScreen;
+
+        function startLoad() {
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("loader_background").style.display = "block";
+            loadScreen = setTimeout(endLoad, 30000)
+        }
+
+        function endLoad() {
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("loader_background").style.display = "none";
+            clearTimeout(loadScreen);
+        }
+
+
+    </script>
+</head>
+<body>
+<div class="panel-display panel-1col clearfix">
+    <div id="loader" style="display:none;"></div>
+    <div id="loader_background" style="display:none"></div>
+    <div class="panel-panel panel-col">
+        <div class="streamSearch">
+            <input type="checkbox" name="streamSearch" class="streamSearch-checkbox hucSearch" id="streamSearchSwitch"
+                   checked>
+            <label class="streamSearch-label" for="streamSearchSwitch" title="Toggle HUC ID/Stream Lat, Lon Search">
+                <span class="streamSearch-inner"></span>
+                <span class="streamSearch-switch"></span>
+            </label>
+            <form class="streamSearchForm" onsubmit="return false;">
+                <input type="text" id="streamSearchValue" class="streamSearchValue" placeholder="HUC 8 ID"
+                       title="Search for specific HUC8 by HUC ID">
+                <input class="fishSearchButton" type="button" title="Search">
+            </form>
+            <div id="searchError"></div>
+        </div>
+    </div>
+    <!--- content div -->
+    <div class="col-md-10">
+        <div class="box multi news">
+            <div class="pane-content" id="mapDiv">
+                <p id="streamMapInfo"><strong>Zoom in and select a stream</strong> on the map to view a list of fish
+                    species associated
+                    with the stream segment.</p>
+                <!-- leaflet map div -->
+                <div id="map" class="mapNoTransition"></div>
+                <div id="basemaps-wrapper" class="leaflet-bar">
+                    <select name="basemaps" id="basemaps" onChange="changeBasemap(basemaps)" title="Base Map">
+                        <option value="Imagery">Imagery</option>
+                        <option value="Streets">Streets</option>
+                        <option value="NationalGeographic">National Geographic</option>
+                        <option value="ShadedRelief">Shaded Relief</option>
+                    </select>
+                </div>
+            </div>
+            <br class="row" id="streamData">
+            <div id="fish_filters" style="display:none;">
+                <div class="filterTitle">Fish Assemblage Filters</div>
+                <div style="text-align:center;">
+                    <div class="panel" id="assemblage_filters">
+                        <div class="fish_filter">
+                            <input id="area_filter" type="button" name="area_13_14" value="Area" class="filterButton"
+                                   align="center" title="Filter fish by stream drainage area."><br>
+                            <input type="text" id="filter_field" class="area_value" placeholder="(ha)"
+                                   title="Enter a value in hectares.">
+                        </div>
+                        <div class="fish_filter">
+                            <input id="slope_filter" type="button" name="slope_11_12" value="Slope" class="filterButton"
+                                   align="center" title="Filter fish by stream slope."><br>
+                            <input type="text" id="filter_field" class="slope_value" placeholder="(%)"
+                                   title="Enter a value as a percent grade.">
+                        </div>
+                         <div class="fish_filter">
+                            <input id="elevation_filter" type="button" name="elevation_15_16" value="Mean Elevation" class="filterButton"
+                                   align="center" title="Filter fish by mean elevation."><br>
+                            <input type="text" id="filter_field" class="elevation_value" placeholder="(m)"
+                                   title="Enter a value in meters.">
+                        </div>
+                        <div class="fish_filter">
+                            <input id="iwi_filter" type="button" name="iwi_17_18" value="Index of Watershed Integrity" class="filterButton"
+                                   align="center" title="Filter fish by index of watershed integrity."><br>
+                            <input type="text" id="filter_field" class="iwi_value" placeholder=""
+                                   title="Enter a value as an index of watershed integrity.">
+                        </div>
+                        <div class="fish_filter">
+                            <input id="bmmi_filter" type="button" name="bmmi_19_20" value="Benthic Invertebrate Index" class="filterButton"
+                                   align="center" title="Filter fish by benthic invertebrate index."><br>
+                            <input type="text" id="filter_field" class="bmmi_value" placeholder=""
+                                   title="Enter a value as a value of benthic invertebrate index">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="huc_calc_toggle huc_table" id="huc_calc_toggle" style="display:none;">
+                <input type="checkbox" name="huc_calc_toggle" class="huc_calc_toggle-checkbox"
+                       id="in_huc_calc_toggle"
+                       checked>
+                <label class="huc_calc_toggle-label" for="in_huc_calc_toggle" title="Toggle Abundance Calculator">
+                    <span class="huc_calc_toggle-inner"></span>
+                </label>
+            </div>
+            <div class="col-md-12">
+                <div id="error_msg"></div>
+                <div id="hucFish" style="display:none;">
+                    <h4 style="text-align: center; width: 100%">Fish in Selected HUC</h4>
+                    <table id="fishTable" class="display compact hover" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Scientific Name</th>
+                            <th>Genus</th>
+                            <th>Genus ID</th>
+                            <th>Species ID</th>
+                            <th>Max Size</th>
+                            <th>Depth - Lower</th>
+                            <th>Depth - Upper</th>
+                            <th>Width - Lower</th>
+                            <th>Width - Upper</th>
+                            <th>Area - Lower</th>
+                            <th>Area - Upper</th>
+                            <th>TSS - Lower</th>
+                            <th>TSS - Upper</th>
+                            <th>Slope - Lower</th>
+                            <th>Slope - Upper</th>
+                            <th>HUC ID</th>
+                            <th>PH - Lower</th>
+                            <th>PH - Upper</th>
+                            <th>Cond - Lower</th>
+                            <th>Cond - Upper</th>
+                            <th>DO - Lower</th>
+                            <th>DO - Upper</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="abundance_calc" style="display:none;">
+                    <h4 style="text-align: center; width: 100%">Abundance Calculator</h4>
+                    <table id="calc_table" class="display compact hover" cellspacing="0" width="100%"
+                           title="Click on Thinning Coefficient and/or Mean Weight to modify values.">
+                        <thead>
+                        <tr>
+                            <td>&beta;</td>
+                            <td>&Delta;</td>
+                            <td>W&#772;</td>
+                            <td>Count</td>
+                            <td>Biomass</td>
+                        </tr>
+                        </thead>
+                    </table>
+                    <div style="float:right; width: 30%;">
+                        <div style="float:left;">
+                            <label for="biomass_weight_field" style="font-size: 14px;display: inline;">Biomass
+                                (kg):</label>
+                            <input type="text" id="biomass_weight_field" class="biomass_value"
+                                   placeholder="biomass (kg)"
+                                   title="Enter a total biomass (kg) for the selected stream segment.">
+                        </div>
+                        <div style="float:left;">
+                            <label for="biomass_count_field" style="font-size: 14px;display: inline;">Fish
+                                Count:</label>
+                            <input type="text" id="biomass_count_field" class="biomass_value"
+                                   placeholder="fish count"
+                                   title="Enter a total biomass (count) for the selected stream segment.">
+                        </div>
+                        <div>
+                            <input type="button" id="biomass_submit"
+                                   class="biomass_button"
+                                   name="biomass_button"
+                                   value="Calculate" title="Calculate fish assemblage biomass.">
+                        </div>
+                        <div>
+                            <input type="button" id="biomass_reset"
+                                   class="biomass_reset_button"
+                                   name="biomass_reset_button"
+                                   value="Restore Defaults" title="Reset thinning coefficient and mean weight.">
+                        </div>
+                        <div>
+                            <input type="button" id="save_to_csv"
+                                   class="save_to_csv_button"
+                                   name="save_to_csv_button"
+                                   value="Save to CSV" title="Export results of Abundance Calculator to CSV.">
+                        </div>
+                    </div>
+                </div>
+                <div id="fish_assemblage_estimator">
+                    <h4 style="text-align: center; width: 100%">Filtered Fish Assemblage</h4>
+                    <table id="filteredFishTable" class="display compact hover" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Common Name</th>
+                            <th>Scientific Name</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="table-focus" tabindex="-1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<script> // initialize the map
+
+document.getElementById("map").focus();
+
+var map = L.map('map').setView([40.265306, -98.623725], 5);
+// sets variable for selected stream
+var selectedStream;
+// sets the Huc for the selected stream
+var streamHuc;
+
+// load a tile layer
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: ['a', 'b', 'c']
+}).addTo(map);
+
+// -------------- BASE MAP code -------------- //
+
+var layer = L.esri.basemapLayer('Imagery').addTo(map);
+var layerLabels;
+
+function setBasemap(basemap) {
+    if (layer) {
+        map.removeLayer(layer);
+    }
+
+    layer = L.esri.basemapLayer(basemap);
+
+    map.addLayer(layer);
+
+    if (layerLabels) {
+        map.removeLayer(layerLabels);
+    }
+
+    if (basemap === 'ShadedRelief'
+        || basemap === 'Imagery'
+        || basemap === 'Terrain'
+        {#        || basemap === 'Topographic'#}
+    ) {
+        layerLabels = L.esri.basemapLayer(basemap + 'Labels');
+        map.addLayer(layerLabels);
+    }
+}
+
+function changeBasemap(basemaps) {
+    var basemap = basemaps.value;
+    setBasemap(basemap);
+    addStreams();
+}
+
+// ------------ STREAM NETWORK code ------------- //
+
+//L.control.layers(streamNetwork).addTo(map);
+function addStreams() {
+    L.tileLayer.wms('https://watersgeo.epa.gov/arcgis/services/NHDPlus_NP21/NHDSnapshot_NP21/MapServer/WmsServer??', {
+        layers: 4,
+        format: 'image/png',
+        minZoom: 0,
+        maxZoom: 18,
+        transparent: true
+    }).addTo(map);
+}
+
+map.on('click', onStreamMapClick);
+addStreams();
+// --------------- INFO WINDOW code -------------- //
+
+var info = L.control();
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'stream_info');
+    this.update();
+    return this._div;
+};
+
+info.update = function (props) {
+    this._div.innerHTML = '<h5>Stream Segment Info</h5>' +
+        '<table id="stream_info_table" style="margin-bottom: 0px !important; background: none !important;"> ' +
+        '<tr><td>Latitude:</td> <td id="latVal"></td></tr>' +
+        '<tr><td>Longitude:</td><td id="lngVal"></td></tr>' +
+        '<tr><td>Com ID:</td><td id="comid"></td></tr>' +
+        {#        '<tr><td>EcoRegion Name:</td><td id="ecoRegionName"></td></tr>' +#}
+        '<tr style="display:none;"><td>EcoRegion ID:</td><td id=ecoRegionId></td></tr>' +
+        '<tr><td>WBD HUC8:</td><td id="huc8"></td></tr>';
+};
+
+
+info.addTo(map);
+
+</script>
+</body>
+
+</html>

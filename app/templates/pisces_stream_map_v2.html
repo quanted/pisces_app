@@ -1,0 +1,291 @@
+<head>
+    {{ IMPORTS }}
+</head>
+<body>
+<div class="panel-display panel-1col clearfix">
+    <div id="loader" style="display:none;"></div>
+    <div id="loader_background" style="display:none"></div>
+    <div class="panel-panel panel-col">
+        <div class="streamSearch">
+            <input type="checkbox" name="streamSearch" class="streamSearch-checkbox hucSearch" id="streamSearchSwitch"
+                   checked>
+            <label class="streamSearch-label" for="streamSearchSwitch" title="Toggle HUC ID/Stream Lat, Lon Search">
+                <span class="streamSearch-inner"></span>
+                <span class="streamSearch-switch"></span>
+            </label>
+            <form class="streamSearchForm" onsubmit="return false;">
+                <input type="text" id="streamSearchValue" class="streamSearchValue" placeholder="HUC 8 ID"
+                       title="Search for specific HUC8 by HUC ID">
+                <input class="fishSearchButton" type="button" title="Search">
+            </form>
+            <div id="searchError"></div>
+        </div>
+    </div>
+    <!--- content div -->
+    <div class="col-md-10">
+        <div class="box multi news">
+            <div class="pane-content" id="mapDiv">
+                <p id="streamMapInfo"><strong>Zoom in and select a stream</strong> on the map to view a list of fish
+                    species associated
+                    with the stream segment.</p>
+                <!-- leaflet map div -->
+                <div id="map" class="mapNoTransition"></div>
+                <div id="basemaps-wrapper" class="leaflet-bar">
+                    <select name="basemaps" id="basemaps" onChange="changeBasemap(basemaps)" title="Base Map">
+                        <option value="Imagery">Imagery</option>
+                        <option value="Streets">Streets</option>
+                        <option value="NationalGeographic">National Geographic</option>
+                        <option value="ShadedRelief">Shaded Relief</option>
+                    </select>
+                </div>
+            </div>
+            <br class="row" id="streamData">
+            <div id="fish_filters" style="display:none;">
+                <div class="filterTitle"><h4>Stream Characteristics</h4></div>
+                <div style="text-align:center;">
+                     <div class="panel" id="stream_characteristics">
+                         <div class="s_parameter">
+                             <label for="wa_value" class="wa_title p_title">Watershed Drainage Area (sqkm)</label>
+                             <input type="text" id="wa_value" class="wa_value" placeholder="(sqkm)"
+                                    title="Total watershed drainage area." disabled>
+                         </div>
+                         <div class="s_parameter">
+                             <label for="slope_value" class="slope_title p_title">Stream Slope (%)</label>
+                             <input type="text" id="slope_value" class="slope_value" placeholder="(%)"
+                                    title="Average slope grade of watershed." disabled>
+                         </div>
+                         <div class="s_parameter">
+                             <label for="elev_value" class="elev_title p_title">Elevation (m)</label>
+                             <input type="text" id="elev_value" class="elev_value" placeholder="(m)"
+                                    title="Average elevation of watershed." disabled>
+                         </div>
+                         <div class="s_parameter">
+                             <label for="iwi_value" class="iwi_title p_title">Index of Watershed Integrity</label>
+                             <input type="text" id="iwi_value" class="iwi_value" placeholder=""
+                                    title="Adjust index of watershed integrity value.">
+                         </div>
+                         <div class="s_parameter">
+                             <label for="bmmi_value" class="bmmi_title p_title">Benthic Invertebrate Index</label>
+                             <input type="text" id="bmmi_value" class="bmmi_value" placeholder=""
+                                    title="Adjust benthic invertebrate index value.">
+                         </div>
+                         <div class="s_parameter">
+                            <input type="button" class="filterButton" id="update_fishtable" value="Update Probabilities">
+                         </div>
+                    </div>
+                </div>
+                <br>
+                <div class="filterTile" style="text-align: center;">
+                    <h4>Threshold Filter</h4>
+                    <select id="threshold_selection">
+                        <option value="Crit_P1">P1</option>
+                        <option value="Crit_1SD">1SD</option>
+                        <option value="Crit_Ave" selected>Average</option>
+                        <option value="Crit_2SD">2SD</option>
+                        <option value="Crit_P0">P0</option>
+                    </select>
+                </div>
+            </div>
+            <br>
+            <div class="huc_calc_toggle huc_table" id="huc_calc_toggle" style="display:none;">
+                <input type="checkbox" name="huc_calc_toggle" class="huc_calc_toggle-checkbox"
+                       id="in_huc_calc_toggle"
+                       checked>
+                <label class="huc_calc_toggle-label" for="in_huc_calc_toggle" title="Toggle Abundance Calculator">
+                    <span class="huc_calc_toggle-inner"></span>
+                </label>
+            </div>
+            <div class="col-md-12">
+                <div id="error_msg"></div>
+                <div id="hucFish" style="display:none;">
+                    <h4 style="text-align: center; width: 100%">Fish in Selected HUC</h4>
+                    <table id="fishTable" class="display compact hover" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Scientific Name</th>
+                            <th>Genus</th>
+                            <th>Genus ID</th>
+                            <th>Species ID</th>
+                            <th>Max Size</th>
+                            <th>Depth - Lower</th>
+                            <th>Depth - Upper</th>
+                            <th>Width - Lower</th>
+                            <th>Width - Upper</th>
+                            <th>Area - Lower</th>
+                            <th>Area - Upper</th>
+                            <th>TSS - Lower</th>
+                            <th>TSS - Upper</th>
+                            <th>Slope - Lower</th>
+                            <th>Slope - Upper</th>
+                            <th>HUC ID</th>
+                            <th>PH - Lower</th>
+                            <th>PH - Upper</th>
+                            <th>Cond - Lower</th>
+                            <th>Cond - Upper</th>
+                            <th>DO - Lower</th>
+                            <th>DO - Upper</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="abundance_calc" style="display:none;">
+                    <h4 style="text-align: center; width: 100%">Abundance Calculator</h4>
+                    <table id="calc_table" class="display compact hover" cellspacing="0" width="100%"
+                           title="Click on Thinning Coefficient and/or Mean Weight to modify values.">
+                        <thead>
+                        <tr>
+                            <td>&beta;</td>
+                            <td>&Delta;</td>
+                            <td>W&#772;</td>
+                            <td>Count</td>
+                            <td>Biomass</td>
+                        </tr>
+                        </thead>
+                    </table>
+                    <div style="float:right; width: 30%;">
+                        <div style="float:left;">
+                            <label for="biomass_weight_field" style="font-size: 14px;display: inline;">Biomass
+                                (kg):</label>
+                            <input type="text" id="biomass_weight_field" class="biomass_value"
+                                   placeholder="biomass (kg)"
+                                   title="Enter a total biomass (kg) for the selected stream segment.">
+                        </div>
+                        <div style="float:left;">
+                            <label for="biomass_count_field" style="font-size: 14px;display: inline;">Fish
+                                Count:</label>
+                            <input type="text" id="biomass_count_field" class="biomass_value"
+                                   placeholder="fish count"
+                                   title="Enter a total biomass (count) for the selected stream segment.">
+                        </div>
+                        <div>
+                            <input type="button" id="biomass_submit"
+                                   class="biomass_button"
+                                   name="biomass_button"
+                                   value="Calculate" title="Calculate fish assemblage biomass.">
+                        </div>
+                        <div>
+                            <input type="button" id="biomass_reset"
+                                   class="biomass_reset_button"
+                                   name="biomass_reset_button"
+                                   value="Restore Defaults" title="Reset thinning coefficient and mean weight.">
+                        </div>
+                        <div>
+                            <input type="button" id="save_to_csv"
+                                   class="save_to_csv_button"
+                                   name="save_to_csv_button"
+                                   value="Save to CSV" title="Export results of Abundance Calculator to CSV.">
+                        </div>
+                    </div>
+                </div>
+                <div id="fish_assemblage_estimator">
+                    <h4 style="text-align: center; width: 100%">Filtered Fish Assemblage</h4>
+                    <table id="filteredFishTable" class="display compact hover" cellspacing="0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Common Name</th>
+                            <th>Scientific Name</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div id="table-focus" tabindex="-1"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<script>
+    // initialize the map
+
+    document.getElementById("map").focus();
+
+    var map = L.map('map').setView([40.265306, -98.623725], 5);
+    // sets variable for selected stream
+    var selectedStream;
+    // sets the Huc for the selected stream
+    var streamHuc;
+
+    // load a tile layer
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        subdomains: ['a', 'b', 'c']
+    }).addTo(map);
+
+    // -------------- BASE MAP code -------------- //
+
+    var layer = L.esri.basemapLayer('Imagery').addTo(map);
+    var layerLabels;
+
+    function setBasemap(basemap) {
+        if (layer) {
+            map.removeLayer(layer);
+        }
+
+        layer = L.esri.basemapLayer(basemap);
+
+        map.addLayer(layer);
+
+        if (layerLabels) {
+            map.removeLayer(layerLabels);
+        }
+
+        if (basemap === 'ShadedRelief'
+            || basemap === 'Imagery'
+            || basemap === 'Terrain'
+            {#        || basemap === 'Topographic'#}
+        ) {
+            layerLabels = L.esri.basemapLayer(basemap + 'Labels');
+            map.addLayer(layerLabels);
+        }
+    }
+
+    function changeBasemap(basemaps) {
+        var basemap = basemaps.value;
+        setBasemap(basemap);
+        addStreams();
+    }
+
+    // ------------ STREAM NETWORK code ------------- //
+
+    //L.control.layers(streamNetwork).addTo(map);
+    function addStreams() {
+        L.tileLayer.wms('https://watersgeo.epa.gov/arcgis/services/NHDPlus_NP21/NHDSnapshot_NP21/MapServer/WmsServer??', {
+            layers: 4,
+            format: 'image/png',
+            minZoom: 0,
+            maxZoom: 18,
+            transparent: true
+        }).addTo(map);
+    }
+
+    map.on('click', onStreamMapClick);
+    addStreams();
+    // --------------- INFO WINDOW code -------------- //
+
+    var info = L.control();
+
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'stream_info');
+        this.update();
+        return this._div;
+    };
+
+    info.update = function (props) {
+        this._div.innerHTML = '<h5>Stream Segment Info</h5>' +
+            '<table id="stream_info_table" style="margin-bottom: 0px !important; background: none !important;"> ' +
+            '<tr><td>Latitude:</td> <td id="latVal"></td></tr>' +
+            '<tr><td>Longitude:</td><td id="lngVal"></td></tr>' +
+            '<tr><td>Com ID:</td><td id="comid"></td></tr>' +
+            '<tr style="display:none;"><td>EcoRegion ID:</td><td id=ecoRegionId></td></tr>' +
+            '<tr><td>WBD HUC8:</td><td id="huc8"></td></tr>';
+    };
+
+
+    info.addTo(map);
+
+</script>
+</body>
+
+</html>
