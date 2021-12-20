@@ -156,7 +156,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = 'pisces/static/'
-STATIC_ROOT = os.path.join("/src", "app", "collected_static", "pisces")
+STATIC_ROOT = os.path.join("/src", "pisces_app", "collected_static", "pisces")
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
