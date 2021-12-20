@@ -71,11 +71,10 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join("app", "templates"),
-            os.path.join("app", "templates", "drupal_2014"),
-            os.path.join("app", "templates", "drupal_2017"),
-            # os.path.join("app", "templates", "uber2011"),
-            os.path.join("app", "templates", "uber2017"),
+            os.path.join(BASE_DIR, "app", "templates"),
+            os.path.join(BASE_DIR, "app", "templates", "drupal_2014"),
+            os.path.join(BASE_DIR, "app", "templates", "drupal_2017"),
+            os.path.join(BASE_DIR, "app", "templates", "uber2017"),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
