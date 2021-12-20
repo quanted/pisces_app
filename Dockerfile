@@ -9,7 +9,7 @@ RUN python -m pip install --upgrade pip setuptools wheel
 
 COPY . /src/pisces_app
 
-RUN pip install -r /src/requirements.txt
+RUN pip install -r /src/pisces_app/requirements.txt
 RUN pip install uwsgi
 
 COPY app/uwsgi.ini /etc/uwsgi/
