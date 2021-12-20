@@ -17,5 +17,5 @@ RUN chown -R www-data:www-data /src
 
 WORKDIR /src
 ENV PYTHONPATH="/src:/src/app:${PYTHONPATH}"
-ENV NPATH="/src:/src/app:${PATH}"
+ENV PATH="/src:/src/app:${PATH}"
 USER ${APP_USER}:${APP_USER}
