@@ -1,6 +1,4 @@
 #!/bin/bash
-python /src/manage.py collectstatic --noinput
-python /src/manage.py migrate
-django-admin migrate auth --noinput          # used for login
-django-admin migrate sessions --noinput      # used for login
+python /src/pisces_app/manage.py collectstatic --noinput
+python /src/pisces_app/manage.py migrate
 exec uwsgi /etc/uwsgi/uwsgi.ini
