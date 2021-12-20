@@ -7,7 +7,7 @@ RUN apt-get update
 RUN apt-get install -y python3-pip libpq-dev python-dev
 RUN python -m pip install --upgrade pip setuptools wheel
 
-COPY . /src/
+COPY . /src/pisces_app
 
 RUN pip install -r /src/requirements.txt
 RUN pip install uwsgi
@@ -15,7 +15,7 @@ RUN pip install uwsgi
 COPY app/uwsgi.ini /etc/uwsgi/
 RUN chown -R www-data:www-data /src
 
-WORKDIR /src
-ENV PYTHONPATH="/src:/src/app:${PYTHONPATH}"
-ENV PATH="/src:/src/app:${PATH}"
+WORKDIR /src/pisces_app
+ENV PYTHONPATH="/src:/src/pisces_app:${PYTHONPATH}"
+ENV PATH="/src:/src/pisces_app:${PATH}"
 USER ${APP_USER}:${APP_USER}
