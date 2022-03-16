@@ -5,8 +5,8 @@ from django.shortcuts import redirect
 import os
 from django.conf import settings
 from . import links_left
-from pisces_app.app import views
-from pisces_app.app import stream
+from app import views
+from app import stream
 
 
 @ensure_csrf_cookie

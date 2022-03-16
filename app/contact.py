@@ -1,6 +1,6 @@
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect
-import pisces_app.app.links_left as links_left
+import app.links_left as links_left
 import sqlite3
 import os
 import logging
