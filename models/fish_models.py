@@ -51,7 +51,7 @@ class PiscesModel:
             model_path = model_path3
         model.load_model(model_path)
         pred = float(model.predict_proba(inputs)[:, 1])
-        self.probability = round(pred, 3)
+        self.probability = round(100 * pred, 3)
 
     def get_prediction(self, threshold=None):
         threshold = str(threshold).lower()
