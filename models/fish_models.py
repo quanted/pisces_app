@@ -40,7 +40,7 @@ class PiscesModel:
         model = xgb.XGBClassifier()
         model_path = None
         model_name = f"Model_{self.properties['model']}.RData"
-        model_path1 = os.path.abspath('C:/git/qed_kube/data/app-data/pisces/Model_Files/' + model_name)
+        model_path1 = os.path.abspath('D:\\git\\pisces\\Model_Files_1\\' + model_name)
         model_path2 = os.path.abspath('./pisces_app/models/Model_Files/' + model_name)
         model_path3 = os.path.abspath('/src/app-data/pisces/Model_Files/' + model_name)
         if os.path.exists(model_path1):
@@ -51,7 +51,7 @@ class PiscesModel:
             model_path = model_path3
         model.load_model(model_path)
         pred = float(model.predict_proba(inputs)[:, 1])
-        self.probability = round(100 * pred, 2)
+        self.probability = round(100 * pred, 1)
 
     def get_prediction(self, threshold=None):
         threshold = str(threshold).lower()
@@ -63,4 +63,4 @@ class PiscesModel:
             prediction = 0
         else:
             prediction = 1
-        return prediction
+        return round(100 * prediction, 1)
