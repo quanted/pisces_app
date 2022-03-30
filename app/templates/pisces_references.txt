@@ -19,6 +19,7 @@ Specific EPA guidance and the Microsoft Excel version of the Pisces model are no
 <h3>Primary Reference:</h3>
 </p>
 <ul>
+<li><a href="https://doi.org/10.1016/j.envsoft.2020.104703">Cyterski, M., Barber, C., Galvin, M., Parmar, R., Johnston, J.M., Smith, D., Ignatius, A., Prieto, L., and K. Wolfe. 2020. PiSCES: Pi(scine) Stream Community Estimation System. Environmental Modeling and Software.</a>
 <li><a href="https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=297970">Cyterski, Mike. PisCES: Pis(cine) Community Estimation Software. US EPA Office of Research and Development, Washington, DC, EPA/600/F-14/451, 2014</a>
 </ul>
 

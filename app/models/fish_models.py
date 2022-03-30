@@ -63,4 +63,4 @@ class PiscesModel:
             prediction = 0
         else:
             prediction = 1
-        return prediction
+        return round(100 * prediction, 2)
