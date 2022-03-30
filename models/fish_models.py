@@ -34,7 +34,7 @@ class PiscesModel:
             self.threshold = "crit_ave"
 
     def get_model_input(self):
-        return np.asarray([[self.wa, self.elevation, self.bmmi, self.iwi, self.slope]]
+        return np.asarray([[self.wa, self.elevation, self.bmmi, self.iwi, self.slope]])
 
     def run_model(self, inputs):
         model = xgb.XGBClassifier()
