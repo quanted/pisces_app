@@ -71,7 +71,8 @@ def run_species_models(request):
             for t in thresholds:
                 s[t] = fish.get_prediction(t)
         else:
-            s['probability'] = -9999
+            # s['probability'] = -9999
+            s['probability'] = "No Model"
             for t in thresholds:
                 s[t] = 0
         if s["model"] and id not in fish_envelopes:
