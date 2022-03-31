@@ -302,7 +302,10 @@ def get_stream_properties_data(comid, latitude, longitude):
     iwi = None
     wa = None
 
-    slope = lst_stream_seg[0]['slope']
+    if lst_stream_seg is not None:
+        slope = lst_stream_seg[0]['slope']
+    else:
+        slope = 1.001e-5
     if (slope < 1.001e-5) and (slope > 0):
         slope = 1.001e-5
 
