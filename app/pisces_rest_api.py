@@ -63,11 +63,16 @@ def run_species_models(request):
         id = s['species_id']
         if s["model"] and id in fish_envelopes:
             fish = PiscesModel(id, s, bmmi, iwi, wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'])
+            for threshold in ["crit_ave", "crit_p1", "crit_1sd", "crit_p0", "crit_2sd"]:
+                _threshold = round(100 * fish.properties[threshold], 3)
+                fish.properties[threshold] = _threshold
+                s[threshold] = _threshold
             s['probability'] = fish.probability
             for t in thresholds:
                 s[t] = fish.get_prediction(t)
         else:
             s['probability'] = -9999
+            # s['probability'] = "No Model"
             for t in thresholds:
                 s[t] = 0
         if s["model"] and id not in fish_envelopes:
@@ -297,7 +302,10 @@ def get_stream_properties_data(comid, latitude, longitude):
     iwi = None
     wa = None
 
-    slope = lst_stream_seg[0]['slope']
+    if lst_stream_seg is not None:
+        slope = lst_stream_seg[0]['slope']
+    else:
+        slope = 1.001e-5
     if (slope < 1.001e-5) and (slope > 0):
         slope = 1.001e-5
 

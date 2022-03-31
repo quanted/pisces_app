@@ -732,6 +732,26 @@ function populateFishTable(data) {
                     return Number(data).toFixed(2);
                 },
                 "targets": [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+            },
+            {
+                "targets": 20,
+                "type": "num"
+            },
+            {
+                "targets": 20,
+                "render": function(data, type, row){
+                    if (type === "sort"){
+                        var value = data;
+                        if(value === "No Model"){
+                            value = -9999;
+                        }
+                        return Number(value);
+                    }
+                    if(data < 0){
+                        return "No Model";
+                    }
+                    return data;
+                }
             }
         ],
         select: {
@@ -741,7 +761,7 @@ function populateFishTable(data) {
         searching: false,
         paging: false,
         bInfo: false,
-        "order": [[1, 'asc']]
+        "order": [[20, 'desc']]
 
     };
     $('#fishTable').closest('div').show();
@@ -932,7 +952,7 @@ function populateFilteredFishTableV2(data) {
         searching: false,
         paging: false,
         bInfo: false,
-        "order": [[0, 'asc']]
+        "order": [[19, 'desc']]
     };
     $('#filteredFishTable').closest('div').show();
     $('#filteredFishTable').DataTable(config);
