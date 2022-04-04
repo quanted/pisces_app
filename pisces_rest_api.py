@@ -71,7 +71,10 @@ def run_species_models(request):
             for t in thresholds:
                 s[t] = fish.get_prediction(t)
         else:
-            s['probability'] = -9999
+            if s["model"]:
+                s['probability'] = -9999
+            else:
+                s['probability'] = -9998
             for threshold in ["crit_ave", "crit_p1", "crit_1sd", "crit_p0", "crit_2sd"]:
                 if s[threshold] is None:
                     _threshold = 0.0
