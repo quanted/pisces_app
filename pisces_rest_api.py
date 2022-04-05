@@ -71,7 +71,7 @@ def run_species_models(request):
             for t in thresholds:
                 s[t] = fish.get_prediction(t)
         else:
-            if s["model"]:
+            if not s["model"]:
                 s['probability'] = -9999
             else:
                 s['probability'] = -9998
