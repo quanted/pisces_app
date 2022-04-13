@@ -680,27 +680,27 @@ function populateFishTable(data) {
             },
             {
                 data: "crit_1sd",
-                title: "1SD",
+                title: "Threshold",
                 name: "crit_1sd"
             },
             {
                 data: "crit_2sd",
-                title: "2SD",
+                title: "Threshold",
                 name: "crit_2sd"
             },
             {
                 data: "crit_ave",
-                title: "Ave",
+                title: "Threshold",
                 name: "crit_ave"
             },
             {
                 data: "crit_p0",
-                title: "P0",
+                title: "Threshold",
                 name: "crit_p0"
             },
             {
                 data: "crit_p1",
-                title: "P1",
+                title: "Threshold",
                 name: "crit_p1"
             }
         ],
@@ -729,7 +729,12 @@ function populateFishTable(data) {
             },
             {
                 "render": function(data, type, row){
-                    return Number(data).toFixed(2);
+                    if (row["probability"] < -1){
+                        return "-";
+                    }
+                    else{
+                        return Number(data).toFixed(2);
+                    }
                 },
                 "targets": [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
             },
@@ -745,10 +750,16 @@ function populateFishTable(data) {
                         if(value === "No Model"){
                             value = -9999;
                         }
+                        else if(value === "Very Unlikely"){
+                            value = -9998;
+                        }
                         return Number(value);
                     }
-                    if(data < 0){
+                    if(data === -9999){
                         return "No Model";
+                    }
+                    else if(data === -9998){
+                        return "Very Unlikely"
                     }
                     return data;
                 }

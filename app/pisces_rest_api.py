@@ -65,14 +65,21 @@ def run_species_models(request):
             fish = PiscesModel(id, s, bmmi, iwi, wa, stream_data['attributes']['elevation'], stream_data['attributes']['slope'])
             for threshold in ["crit_ave", "crit_p1", "crit_1sd", "crit_p0", "crit_2sd"]:
                 _threshold = round(100 * fish.properties[threshold], 3)
-                fish.properties[threshold] = _threshold
                 s[threshold] = _threshold
             s['probability'] = fish.probability
             for t in thresholds:
                 s[t] = fish.get_prediction(t)
         else:
-            s['probability'] = -9999
-            # s['probability'] = "No Model"
+            if not s["model"]:
+                s['probability'] = -9999
+            else:
+                s['probability'] = -9998
+            for threshold in ["crit_ave", "crit_p1", "crit_1sd", "crit_p0", "crit_2sd"]:
+                if s[threshold] is None:
+                    _threshold = 0.0
+                else:
+                    _threshold = round(100 * s[threshold], 3)
+                s[threshold] = _threshold
             for t in thresholds:
                 s[t] = 0
         if s["model"] and id not in fish_envelopes:
