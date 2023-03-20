@@ -4,6 +4,7 @@ from .fish_names import FishNames
 from .hucs import Hucs
 from .ecoregions import EcoRegions
 from .stream_segment import Segments
+from .utils import clean_query
 
 
 def query_species_by_huc(huc_id):
@@ -25,6 +26,10 @@ def query_species_by_huc(huc_id):
         query = query.format(huc_id)
 
         print('Query: ' + query)
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
+
         fish_props = list()
         for fish_prop in FishNames.objects.raw(query):
             fish_props.append(fish_prop)
@@ -63,11 +68,13 @@ def query_genera_by_huc(huc_id):
             "from fishproperties inner join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
             "left join envelopes on fishproperties.speciesid=envelopes.speciesid where fishhucs.HUC = '{0}'")
 
-        #whereClause = "fishhucs.HUC='{0}'"
-
         query = query.format(huc_id)
 
         print('Query: ' + query)
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
+
         fish_props = list()
         for fish_prop in FishGenusProperties.objects.raw(query):
             fish_props.append(fish_prop)
@@ -75,7 +82,7 @@ def query_genera_by_huc(huc_id):
         return fish_props
 
     except Exception as inst:
-        print ("Exception: " + inst.message)
+        print("Exception: " + inst.message)
 
     return None
 
@@ -103,6 +110,10 @@ def query_genera_by_huc_v2(huc_id):
         query = query.format(huc_id)
 
         print('Query: ' + query)
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
+
         fish_props = list()
         for fish_prop in FishGenusPropertiesV2.objects.raw(query):
             fish_props.append(fish_prop)
@@ -124,13 +135,14 @@ def query_hucs_by_species(speciesid):
     #   If there are no species, no reason to continue
     if not speciesid:
         return []
-
     try:
 
         query = ("select fishproperties.SpeciesID, fishhucs.HUC from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
                 "where fishproperties.SpeciesID={0}")
         query = str.format(query, speciesid)
-
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
 
         hucs = list()
         for huc in Hucs.objects.raw(query):
@@ -140,8 +152,6 @@ def query_hucs_by_species(speciesid):
 
     except:
         pass
-        # logging.error(sys.exc_info()[0])
-
     return None
 
 
@@ -162,6 +172,10 @@ def query_fish_properties_by_species(speciesid):
         "where fishproperties.SpeciesID={0}")
         query = str.format(query, speciesid)
 
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
+
         fish_props = list()
         for fish_prop in FishSpeciesProperties.objects.raw(query):
             fish_props.append(fish_prop)
@@ -170,11 +184,11 @@ def query_fish_properties_by_species(speciesid):
 
     except:
         pass
-        # logging.error(sys.exc_info()[0])
-
     return None
 
 ##################################################################
+
+
 def query_fish_properties_by_filter(query):
     """
         Arg1: Fish species id.
@@ -186,6 +200,9 @@ def query_fish_properties_by_filter(query):
         return []
 
     try:
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return []
 
         fish_props = list()
         for fish_prop in FishSpeciesProperties.objects.raw(query):
@@ -193,13 +210,11 @@ def query_fish_properties_by_filter(query):
 
         return fish_props
 
-
     except Exception as ex:
         msg = ex
         print(ex)
 
     return None
-
 
 
 def query_fish_names_by_search_string(search_string):
@@ -224,6 +239,9 @@ def query_fish_names_by_search_string(search_string):
         query = str.format(query, like_str, like_str, like_str)
 
         print(query)
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
 
         fish_props = list()
         for fish_prop in FishNames.objects.raw(query):
@@ -234,10 +252,8 @@ def query_fish_names_by_search_string(search_string):
     except Exception as ex:
         print("Database error: {0}".format(ex))
         pass
-        # logging.error(sys.exc_info()[0])
 
     return None
-
 
 
 def query_fish_by_huc(hucIDs):
@@ -246,14 +262,10 @@ def query_fish_by_huc(hucIDs):
     Returns: List of fish and associated properties from FishProperties (by species)    
     and properties by genus.
     """
-
-    #print("HUCS:" + hucIDs)
-    # If there are no hucs, no reason to continue
     if not hucIDs:
         return []
 
     try:
-
         query = ("select fishproperties.SpeciesID, fishproperties.CommonName, fishproperties.Genus, fishproperties.Species, "
                  "fishproperties.Max_Size, fishhucs.HUC, genera.* "
                  "from fishproperties join fishhucs on fishproperties.SpeciesID=fishhucs.SpeciesID "
@@ -268,13 +280,16 @@ def query_fish_by_huc(hucIDs):
                 query = query + " or "
 
         print('Query: ' + query)
+
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return []
+
         fish_props = list()
         for fish_prop in FishGenusProperties.objects.raw(query):
             fish_props.append(fish_prop)
 
         return fish_props
-
-
 
     except Exception as inst:
         print ("Exception: " + inst.message)
@@ -293,7 +308,6 @@ def query_fish_range_by_species(specieIDs):
         return []
 
     try:
-
         query = "select * from FishProperties where "
 
         whereClause = "SpeciesID ='{0}'"
@@ -304,6 +318,10 @@ def query_fish_range_by_species(specieIDs):
             if count != len(specieIDs):
                 query = query + " or "
 
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return []
+
         fish_props = list()
         for fish_prop in FishSpeciesProperties.objects.raw(query):
             fish_props.append(fish_prop)
@@ -312,9 +330,8 @@ def query_fish_range_by_species(specieIDs):
 
     except:
         pass
-        # logging.error(sys.exc_info()[0])
-
     return None
+
 
 def query_ecoregion_from_lat_lng(lat, long):
     """Return the EcoRegion containing the give coordinate"""
@@ -325,6 +342,10 @@ def query_ecoregion_from_lat_lng(lat, long):
         query = str.format("SELECT gid, aggregated from wsaecoregions where st_contains(geom, ST_GeomFromText('{0}', 4326))", point)
 
         print('Query: ' + query)
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
+
         eco_regions = list()
         for eco_region in EcoRegions.objects.raw(query):
             eco_regions.append(eco_region)
@@ -332,17 +353,21 @@ def query_ecoregion_from_lat_lng(lat, long):
         return eco_regions
 
     except Exception as inst:
-        print ("Exception: " + inst.message)
+        print("Exception: " + inst.message)
         pass
-
-
     return None
+
 
 def query_stream_segment(comid):
 
     try:
         #query = "select comid, totdasqkm, slope, precipvc, maflowv, mavelv from nhdplusv21attributes where comid = " + comid
         query = "select comid, totdasqkm, slope, precipvc, maxelevsmo, minelevsmo, maflowv, mavelv, bmmi, iwi, wa, elev from nhdplusv21attributes where comid = " + comid
+
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
+
         lst_stream_segments = []
         for stream_segment in Segments.objects.raw(query):
             lst_stream_segments.append(stream_segment)
@@ -389,6 +414,10 @@ def query_fish_by_attributes_v3(wa, ele, slope, iwi, bmmi):
         query = (q)
 
         print('Query: ' + query)
+        if not clean_query(query):
+            print(f"Invalid query string provided: {query}")
+            return None
+
         fish_props = list()
         for fish_prop in FishGenusPropertiesV3.objects.raw(query):
             fish_props.append(fish_prop.speciesid)
