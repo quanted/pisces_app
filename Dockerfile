@@ -34,6 +34,14 @@ COPY . /src/pisces_app
 COPY --from=base /opt/conda/envs/pyenv $CONDA_ENV
 RUN conda run -p $CONDA_ENV --no-capture-output conda install psycopg2
 
+# Removes all pips from image to "resolve" open Prisma CVE
+RUN rm -rf \
+    /home/www-data/pyenv/lib/python3.10/site-packages/pip \
+    /home/www-data/pyenv/bin/pip \
+    /opt/conda/lib/python3.10/site-packages/pip \
+    /opt/conda/bin/pip \
+    /root/.cache/pip
+
 COPY app/uwsgi.ini /etc/uwsgi/
 
 RUN chown -R ${APP_USER}:${APP_USER} /src/pisces_app
