@@ -5,6 +5,7 @@ ENV CONDA_ENV_BASE=pyenv
 
 RUN apk update
 RUN apk add postgresql
+RUN conda update cryptography
 
 COPY requirements.txt /tmp/requirements.txt
 
@@ -17,6 +18,15 @@ RUN conda run -n $CONDA_ENV_BASE --no-capture-output pip install -r /tmp/require
     find /opt/conda/ -follow -type f -name '*.js.map' -delete
 RUN conda install -n $CONDA_ENV_BASE uwsgi
 
+# Removes all pips from image to "resolve" open Prisma CVE
+# NOTE: Also added this in "prime" image. Not sure if removing from both is required.
+RUN rm -rf \
+    /home/www-data/pyenv/lib/python3.10/site-packages/pip \
+    /home/www-data/pyenv/bin/pip \
+    /opt/conda/lib/python3.10/site-packages/pip \
+    /opt/conda/bin/pip \
+    /root/.cache/pip
+
 # FROM continuumio/miniconda3:4.10.3p0-alpine as prime
 FROM continuumio/miniconda3:23.5.2-0-alpine as prime
 
@@ -27,7 +37,9 @@ RUN adduser -S $APP_USER -G $APP_USER
 
 RUN apk update
 RUN apk add postgresql
-RUN pip install -U pip
+# RUN pip install -U pip
+
+RUN conda update cryptography
 
 WORKDIR /src/pisces_app
 COPY . /src/pisces_app
