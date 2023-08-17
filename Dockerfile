@@ -1,4 +1,5 @@
-FROM continuumio/miniconda3:4.10.3p0-alpine as base
+# FROM continuumio/miniconda3:4.10.3p0-alpine as base
+FROM continuumio/miniconda3:23.5.2-0-alpine as base
 
 ENV CONDA_ENV_BASE=pyenv
 
@@ -7,7 +8,7 @@ RUN apk add postgresql
 
 COPY requirements.txt /tmp/requirements.txt
 
-RUN conda create -n $CONDA_ENV_BASE python=3.9
+RUN conda create -n $CONDA_ENV_BASE python=3.10
 RUN conda config --add channels conda-forge
 RUN conda run -n $CONDA_ENV_BASE --no-capture-output pip install -r /tmp/requirements.txt && \
     conda run -n $CONDA_ENV_BASE --no-capture-output conda clean -afy && \
@@ -16,7 +17,8 @@ RUN conda run -n $CONDA_ENV_BASE --no-capture-output pip install -r /tmp/require
     find /opt/conda/ -follow -type f -name '*.js.map' -delete
 RUN conda install -n $CONDA_ENV_BASE uwsgi
 
-FROM continuumio/miniconda3:4.10.3p0-alpine as prime
+# FROM continuumio/miniconda3:4.10.3p0-alpine as prime
+FROM continuumio/miniconda3:23.5.2-0-alpine as prime
 
 ARG APP_USER=www-data
 ARG CONDA_ENV_BASE
