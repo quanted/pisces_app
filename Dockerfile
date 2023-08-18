@@ -42,7 +42,7 @@ RUN conda run -p $CONDA_ENV --no-capture-output conda install psycopg2
 RUN rm -rf \
     /home/www-data/pyenv/lib/python3.10/site-packages/pip* \
     /home/www-data/pyenv/bin/pip \
-    /opt/conda/lib/python3.10/site-packages/pip \
+    /opt/conda/lib/python3.10/site-packages/pip* \
     /opt/conda/bin/pip \
     /root/.cache/pip
 
