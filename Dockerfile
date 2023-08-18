@@ -37,14 +37,19 @@ COPY . /src/pisces_app
 COPY --from=base /opt/conda/envs/pyenv $CONDA_ENV
 RUN conda run -p $CONDA_ENV --no-capture-output conda install psycopg2
 
-# Removes all pips from image to "resolve" open Prisma CVE.
-# NOTE: No very sustainable, will break with higher version of Python.
+# Removes all pips from image to "resolve" open Prisma CVE:
+# (NOTE: No very sustainable, will break with higher version of Python.)
 RUN rm -rf \
     /home/www-data/pyenv/lib/python3.10/site-packages/pip* \
     /home/www-data/pyenv/bin/pip \
     /opt/conda/lib/python3.10/site-packages/pip* \
     /opt/conda/bin/pip \
     /root/.cache/pip
+
+# Removing some test keys that Prisma thinks are an issue (they're not):
+RUN rm \
+    /opt/conda/pkgs/conda-content-trust-0.1.1-pyhd3eb1b0_0/info/test/tests/testdata/test_key_1_268B62D0.pri.asc \
+    /opt/conda/pkgs/conda-content-trust-0.1.1-pyhd3eb1b0_0/info/test/tests/testdata/test_key_2_7DB43643.pri.asc
 
 COPY app/uwsgi.ini /etc/uwsgi/
 
