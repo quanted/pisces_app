@@ -201,7 +201,14 @@
 
     document.getElementById("map").focus();
 
-    var map = L.map('map').setView([40.265306, -98.623725], 5);
+    var map = L.map('map', {
+        zoom: 10,
+        minZoom: 5,
+        zoomSnap: 0.125,
+        zoomDelta: 0.125,
+        zoomControl: true,
+        wheelPxPerZoomLevel: 125
+    }).setView([40.265306, -98.623725], 5);
     // sets variable for selected stream
     var selectedStream;
     // sets the Huc for the selected stream
@@ -251,12 +258,18 @@
 
     //L.control.layers(streamNetwork).addTo(map);
     function addStreams() {
-        L.tileLayer.wms('https://watersgeo.epa.gov/arcgis/services/NHDPlus_NP21/NHDSnapshot_NP21/MapServer/WmsServer??', {
+        L.tileLayer.wms('https://watersgeo.epa.gov/arcgis/services/NHDPlus_NP21/NHDSnapshot_NP21/MapServer/WmsServer?', {
             layers: 4,
             format: 'image/png',
-            minZoom: 0,
+            minZoom: 10,
             maxZoom: 18,
-            transparent: true
+            transparent: true,
+            style: {
+                color: "#00FFFF",
+                weight: 1,
+                fillColor: "#00FFFF",
+                fillOpacity: 0,
+            },
         }).addTo(map);
     }
 

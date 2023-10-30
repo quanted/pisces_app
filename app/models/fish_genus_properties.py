@@ -116,11 +116,16 @@ class FishGenusPropertiesV2(models.Model):
         attrib['bmmi_l'] = self.bmmi_l
         attrib['bmmi_u'] = self.bmmi_u
         attrib['model'] = self.model
-        attrib['crit_p0'] = self.crit_p0
-        attrib['crit_p1'] = self.crit_p1
-        attrib['crit_ave'] = self.crit_ave
-        attrib['crit_1sd'] = self.crit_1sd
-        attrib['crit_2sd'] = self.crit_2sd
+        attrib['crit_p0'] = self.crit_p0 if self.crit_p0 is None else self.crit_p0 * 100
+        attrib['crit_p1'] = self.crit_p1 if self.crit_p1 is None else self.crit_p1 * 100
+        attrib['crit_ave'] = self.crit_ave if self.crit_ave is None else self.crit_ave * 100
+        attrib['crit_1sd'] = self.crit_1sd if self.crit_1sd is None else self.crit_1sd * 100
+        attrib['crit_2sd'] = self.crit_2sd if self.crit_2sd is None else self.crit_2sd * 100
+        # attrib['crit_p0'] = self.crit_p0
+        # attrib['crit_p1'] = self.crit_p1
+        # attrib['crit_ave'] = self.crit_ave
+        # attrib['crit_1sd'] = self.crit_1sd
+        # attrib['crit_2sd'] = self.crit_2sd
         return attrib
 
 

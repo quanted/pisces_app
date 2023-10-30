@@ -46,7 +46,7 @@ urlpatterns = [
     # front end urls
     path('', description.description_page, {'model': 'pisces'}),
     path('watershed/', watershed.watershed_page, {'model': 'pisces'}),
-    path('stream/', stream.stream_page, {'model': 'pisces'}),
+    path('stream/', stream.stream_page_v2, {'model': 'pisces'}),
     path('species/', species_explorer.query_page, {'model': 'pisces'}),
     path('algorithms/', algorithms.algorithm_page, {'model': 'pisces'}),
     path('references/', references.references_page, {'model': 'pisces'}),

@@ -195,9 +195,11 @@ $(document).ready(function () {
                     huc8geom = huc8;
                 }
 
-                if (map.hasLayer(selectedStream) || map.hasLayer(streamHuc)) {
-                    map.removeLayer(selectedStream);
-                    map.removeLayer(streamHuc);
+                if (selectedStream !== undefined) {
+                    if (map.hasLayer(selectedStream) || map.hasLayer(streamHuc)) {
+                        map.removeLayer(selectedStream);
+                        map.removeLayer(streamHuc);
+                    }
                 }
 
                 streamHuc = L.polygon(huc8geom, {
@@ -1043,9 +1045,11 @@ function addStreamSeg(streamData) {
         huc8geom = huc8;
     }
 
-    if (map.hasLayer(selectedStream)) {
-        map.removeLayer(selectedStream);
-        map.removeLayer(streamHuc);
+    if (selectedStream !== undefined) {
+        if (map.hasLayer(selectedStream)) {
+            map.removeLayer(selectedStream);
+            map.removeLayer(streamHuc);
+        }
     }
 
     selectedStream = L.polyline(latlon, {
