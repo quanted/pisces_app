@@ -47,9 +47,8 @@ RUN rm -rf \
     /root/.cache/pip
 
 # Removing some test keys that Prisma thinks are an issue (they're not):
-RUN rm \
-    /opt/conda/pkgs/conda-content-trust-0.1.1-pyhd3eb1b0_0/info/test/tests/testdata/test_key_1_268B62D0.pri.asc \
-    /opt/conda/pkgs/conda-content-trust-0.1.1-pyhd3eb1b0_0/info/test/tests/testdata/test_key_2_7DB43643.pri.asc
+RUN rm \opt/conda/pkgs/conda-content-trust-0.1.1-pyhd3eb1b0_0/info/test/tests/testdata/test_key_1_268B62D0.pri.asc || true
+RUN rm \opt/conda/pkgs/conda-content-trust-0.1.1-pyhd3eb1b0_0/info/test/tests/testdata/test_key_2_7DB43643.pri.asc || true
 
 COPY app/uwsgi.ini /etc/uwsgi/
 
