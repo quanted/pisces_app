@@ -29,7 +29,7 @@ ENV CONDA_ENV=/home/www-data/pyenv
 RUN adduser -S $APP_USER -G $APP_USER
 
 RUN apk update
-RUN apk upgrade openssl
+RUN apk upgrade --available
 RUN apk add postgresql
 # RUN pip install -U pip
 
