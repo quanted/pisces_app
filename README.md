@@ -1,2 +1,3 @@
 # pisces_app
-django app for pisces
+
+Django application for the PiSCES tech stack, kubernetes deployment.
